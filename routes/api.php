@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\hotelController;
 use App\Http\Controllers\roomsController;
+use App\Http\Controllers\CateRoomController;
+use App\Models\cateogryRoom;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,4 +26,8 @@ Route::prefix('hotels')->group(function () {
 });
 Route::prefix('rooms')->group(function () {
     Route::get('/',[roomsController::class,'list'])->name('rooms.list');
+});
+
+Route::prefix('category')->group(function () {
+    Route::get('/',[CateRoomController::class,'list'])->name('categories.list');
 });
