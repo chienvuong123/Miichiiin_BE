@@ -4,6 +4,7 @@ use App\Http\Controllers\hotelController;
 use App\Http\Controllers\roomsController;
 use App\Http\Controllers\CateRoomController;
 use App\Http\Controllers\CityController;
+use App\Http\Controllers\FloorController;
 use App\Models\cateogryRoom;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -34,5 +35,8 @@ Route::prefix('category')->group(function () {
 });
 Route::prefix('city')->group(function () {
     Route::get('/',[CityController::class,'list'])->name('city.list');
+});
+Route::prefix('floor')->group(function () {
+    Route::get('/',[FloorController::class,'list'])->name('floor.list');
 });
 
