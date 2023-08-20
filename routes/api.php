@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\hotelController;
 use App\Http\Controllers\roomsController;
 use App\Http\Controllers\CateRoomController;
@@ -43,4 +44,7 @@ Route::prefix('floor')->group(function () {
 
 Route::prefix('distric')->group(function () {
     Route::get('/',[DistricController::class,'list'])->name('distric.list');
+});
+Route::prefix('bookings')->group(function () {
+    Route::get('/',[BookingController::class,'list'])->name('booking.list');
 });
