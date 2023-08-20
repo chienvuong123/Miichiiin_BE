@@ -3,6 +3,7 @@
 use App\Http\Controllers\hotelController;
 use App\Http\Controllers\roomsController;
 use App\Http\Controllers\CateRoomController;
+use App\Http\Controllers\CityController;
 use App\Models\cateogryRoom;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -31,3 +32,7 @@ Route::prefix('rooms')->group(function () {
 Route::prefix('category')->group(function () {
     Route::get('/',[CateRoomController::class,'list'])->name('categories.list');
 });
+Route::prefix('city')->group(function () {
+    Route::get('/',[CityController::class,'list'])->name('city.list');
+});
+
