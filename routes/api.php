@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BookingDetailController;
 use App\Http\Controllers\hotelController;
@@ -26,6 +27,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::resource('users', UserController::class);
+
 Route::prefix('hotels')->group(function () {
     Route::get('/',[hotelController::class,'list'])->name('hotels.list');
 });
