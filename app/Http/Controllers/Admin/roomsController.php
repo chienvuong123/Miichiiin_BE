@@ -12,4 +12,8 @@ class roomsController extends Controller
         $rooms = room::all();
         return response()->json($rooms);
     }
+    public function create(){
+        $rooms = room::all();
+        return response()->json($rooms);
+    }
 }
