@@ -29,29 +29,26 @@ class FloorRequest extends FormRequest
         $currentAction = $this->route()->getActionMethod();
         switch ($this->method()):
             case 'POST':
-                    case 'store':
-                        // xay dung rule validate trong nay
-                        $rules = [
-                            'name' => 'required',
-                        ];
+                case 'store':
+                    // xay dung rule validate trong nay
+                    $rules = [
+                        'name' => 'required',
+                    ];
                     break;
-            break;
             case 'PUT':
                 case 'update':
                     // xay dung rule validate trong nay
                     $rules = [
                         'name' => 'required',
                     ];
-                break;
-            break;
+                    break;
             case 'PATCH':
                 case 'update':
                     // xay dung rule validate trong nay
                     $rules = [
                         'name' => 'required',
                     ];
-                break;
-            break;
+                    break;
         endswitch;
         return $rules;
     }

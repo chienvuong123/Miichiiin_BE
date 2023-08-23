@@ -28,7 +28,7 @@ class UserFactory extends Factory
             'phone' => fake()->phoneNumber,
             'address' => fake()->address,
             'status' => fake()->numberBetween(0,1),
-            'gender' => fake()->randomElement(['Nam', 'Nữ']),
+            'gender' => fake()->numberBetween(0,2),
             'date' => fake()->date
         ];
     }
