@@ -30,24 +30,20 @@ use Illuminate\Support\Facades\Route;
 
 Route::resource('users', UserController::class)->except(['create', 'edit']);
 
-Route::prefix('hotels')->group(function () {
-    Route::get('/',[hotelController::class,'list'])->name('hotels.list');
-});
-Route::prefix('rooms')->group(function () {
-    Route::get('/',[roomsController::class,'list'])->name('rooms.list');
-});
+Route::resource('hotel', hotelController::class);
 
-Route::prefix('category')->group(function () {
-    Route::get('/',[CateRoomController::class,'list'])->name('categories.list');
-});
+Route::resource('room', roomsController::class);
+
+
+Route::resource('category', CateRoomController::class);
+
 Route::resource('city', CityController::class);
+
 Route::resource('floor', FloorController::class);
 
 Route::resource('distric', DistricController::class);
 
-Route::prefix('bookings')->group(function () {
-    Route::get('/',[BookingController::class,'list'])->name('booking.list');
-});
-Route::prefix('bookingDetails')->group(function () {
-    Route::get('/',[BookingDetailController::class,'list'])->name('bookingdetail.list');
-});
+Route::resource('booking', BookingController::class);
+
+Route::resource('bookingdetail', BookingDetailController::class);
+

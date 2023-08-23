@@ -6,7 +6,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class DistricRequest extends FormRequest
+class CategoryRoomRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,7 +15,6 @@ class DistricRequest extends FormRequest
     {
         return true;
     }
-
 
     /**
      * Get the validation rules that apply to the request.
@@ -30,35 +29,35 @@ class DistricRequest extends FormRequest
         $currentAction = $this->route()->getActionMethod();
         switch ($this->method()):
             case 'POST':
-                switch($currentAction):
-                    case 'store':
-                        // xay dung rule validate trong nay
-                        $rules = [
-                            'name' => 'required',
-                        ];
-                    break;
-                endswitch;
-            break;
+            case 'store':
+                // xay dung rule validate trong nay
+                $rules = [
+                    'name' => 'required',
+                    'description' => 'required',
+                    'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:204',
+                ];
+                break;
+                break;
             case 'PUT':
-                switch($currentAction):
-                case 'update':
-                    // xay dung rule validate trong nay
-                    $rules = [
-                        'name' => 'required',
-                    ];
+            case 'update':
+                // xay dung rule validate trong nay
+                $rules = [
+                    'name' => 'required',
+                    'description' => 'required',
+                    // 'image' => 'image|mimes:jpeg,png,jpg,gif|max:204',
+                ];
                 break;
-            endswitch;
-            break;
+                break;
             case 'PATCH':
-                switch($currentAction):
-                case 'update':
-                    // xay dung rule validate trong nay
-                    $rules = [
-                        'name' => 'required',
-                    ];
+            case 'update':
+                // xay dung rule validate trong nay
+                $rules = [
+                    'name' => 'required',
+                    'description' => 'required',
+                    'image' => 'image|mimes:jpeg,png,jpg,gif|max:204',
+                ];
                 break;
-            endswitch;
-            break;
+                break;
         endswitch;
         return $rules;
     }
@@ -66,6 +65,9 @@ class DistricRequest extends FormRequest
     {
         return [
             'name.required' => 'Tên Không Được Để Trống',
+            'description.required' => 'Mô Tả Không Được Để Trống',
+            'image.required' => 'Ảnh Không Được Để Trống',
+            'image.mimes' => 'Ảnh Không Đúng Định Dạng',
         ];
     }
     protected function failedValidation(Validator $validator)
@@ -73,7 +75,7 @@ class DistricRequest extends FormRequest
         throw new HttpResponseException(response()->json([
             'errors' => $validator->errors(),
             'messenger' => "Fail",
-            "Sucess"=>false,
+            "Sucess" => false,
         ]));
     }
 }

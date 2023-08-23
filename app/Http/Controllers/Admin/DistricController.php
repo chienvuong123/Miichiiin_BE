@@ -29,7 +29,17 @@ class DistricController extends Controller
             ]);
         }
     }
-    public function create(){}
+    public function create(DistricRequest $request,$id){
+        $distric = distric::find($id);
+        $params = $request->except('_token');
+        if($distric){
+        $distric->update($params);
+                return response()->json([
+                    'message'=>$distric,
+                    'status' => "Sửa Thành Công"
+                ]);
+        }
+    }
     public function update(DistricRequest $request,$id){
         $distric = distric::find($id);
         $params = $request->except('_token');

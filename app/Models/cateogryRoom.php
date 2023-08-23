@@ -13,5 +13,6 @@ class cateogryRoom extends Model
         "id",
         "name",
         "description",
+        "image",
     ];
 }
