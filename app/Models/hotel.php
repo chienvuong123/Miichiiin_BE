@@ -14,7 +14,7 @@ class hotel extends Model
         "name",
         "description",
         "id_city",
-        "description",
+        "quantity_of_room",
         "star",
         "status",
         "quantity_floor",

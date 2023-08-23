@@ -5,8 +5,9 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Carbon;
 
-class DistricRequest extends FormRequest
+class HotelRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -16,56 +17,45 @@ class DistricRequest extends FormRequest
         return true;
     }
 
-
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
-    public function rules()
+    public function rules(): array
     {
         // tạo ra 1 mảng
-        $rules = [];
+        $rules = [
+            'name' => 'required',
+            'description' => 'required',
+            'quantity_of_room' => 'required|integer',
+            'id_city' => 'required|integer',
+            'star' => 'required|integer',
+            'status' => 'required|integer',
+            'quantity_floor' => 'required|integer',
+        ];
         // lấy ra tên phương thức cần sử lý
         $currentAction = $this->route()->getActionMethod();
         switch ($this->method()):
             case 'POST':
-                switch($currentAction):
-                    case 'store':
-                        // xay dung rule validate trong nay
-                        $rules = [
-                            'name' => 'required',
-                        ];
-                    break;
-                endswitch;
-            break;
+                break;
+
             case 'PUT':
-                switch($currentAction):
-                case 'update':
-                    // xay dung rule validate trong nay
-                    $rules = [
-                        'name' => 'required',
-                    ];
-                break;
-            endswitch;
-            break;
             case 'PATCH':
-                switch($currentAction):
-                case 'update':
-                    // xay dung rule validate trong nay
-                    $rules = [
-                        'name' => 'required',
-                    ];
                 break;
-            endswitch;
-            break;
         endswitch;
         return $rules;
     }
+
     public function messages()
     {
         return [
             'name.required' => 'Tên Không Được Để Trống',
+            'description.required' => 'Mô Tả Không Được Để Trống',
+            'star.required' => 'Sao Tầng Không Được Để Trống',
+            'status.required' => 'Trạng Thái Không Được Để Trống',
+            'quantity_floor.required' => 'Số Lượng Tầng Không Được Để Trống',
+            'quantity_of_room.required' => 'Số Lượng Phòng Không Được Để Trống',
         ];
     }
     protected function failedValidation(Validator $validator)

@@ -27,31 +27,31 @@ class CityRequest extends FormRequest
         $rules = [];
         // lấy ra tên phương thức cần sử lý
         $currentAction = $this->route()->getActionMethod();
-        switch ($this->method()):
-            case 'POST':
-                    case 'store':
-                        // xay dung rule validate trong nay
-                        $rules = [
-                            'name' => 'required',
-                        ];
-                    break;
-            break;
-            case 'PUT':
-                case 'update':
+    switch ($this->method()):
+        case 'POST':
+                case 'store':
                     // xay dung rule validate trong nay
                     $rules = [
                         'name' => 'required',
                     ];
                 break;
+        break;
+        case 'PUT':
+            case 'update':
+                // xay dung rule validate trong nay
+                $rules = [
+                    'name' => 'required',
+                ];
             break;
-            case 'PATCH':
-                case 'update':
-                    // xay dung rule validate trong nay
-                    $rules = [
-                        'name' => 'required',
-                    ];
-                break;
+        break;
+        case 'PATCH':
+            case 'update':
+                // xay dung rule validate trong nay
+                $rules = [
+                    'name' => 'required',
+                ];
             break;
+        break;
         endswitch;
         return $rules;
     }
