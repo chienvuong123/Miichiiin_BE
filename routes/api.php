@@ -1,14 +1,14 @@
 <?php
 
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\BookingController;
-use App\Http\Controllers\BookingDetailController;
-use App\Http\Controllers\hotelController;
-use App\Http\Controllers\roomsController;
-use App\Http\Controllers\CateRoomController;
-use App\Http\Controllers\CityController;
-use App\Http\Controllers\DistricController;
-use App\Http\Controllers\FloorController;
+use App\Http\Controllers\Admin\BookingController;
+use App\Http\Controllers\Admin\BookingDetailController;
+use App\Http\Controllers\Admin\hotelController;
+use App\Http\Controllers\Admin\roomsController;
+use App\Http\Controllers\Admin\CateRoomController;
+use App\Http\Controllers\Admin\CityController;
+use App\Http\Controllers\Admin\DistricController;
+use App\Http\Controllers\Admin\FloorController;
 use App\Models\cateogryRoom;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,11 +24,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
-Route::resource('users', UserController::class);
+// Route::resource('users', UserController::class);
 
 Route::prefix('hotels')->group(function () {
     Route::get('/',[hotelController::class,'list'])->name('hotels.list');
@@ -40,16 +40,11 @@ Route::prefix('rooms')->group(function () {
 Route::prefix('category')->group(function () {
     Route::get('/',[CateRoomController::class,'list'])->name('categories.list');
 });
-Route::prefix('city')->group(function () {
-    Route::get('/',[CityController::class,'list'])->name('city.list');
-});
-Route::prefix('floor')->group(function () {
-    Route::get('/',[FloorController::class,'list'])->name('floor.list');
-});
+Route::resource('city', CityController::class);
+Route::resource('floor', FloorController::class);
 
-Route::prefix('distric')->group(function () {
-    Route::get('/',[DistricController::class,'list'])->name('distric.list');
-});
+Route::resource('distric', DistricController::class);
+
 Route::prefix('bookings')->group(function () {
     Route::get('/',[BookingController::class,'list'])->name('booking.list');
 });
