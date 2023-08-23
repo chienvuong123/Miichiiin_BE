@@ -28,7 +28,7 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-// Route::resource('users', UserController::class);
+Route::resource('users', UserController::class)->except(['create', 'edit']);
 
 Route::prefix('hotels')->group(function () {
     Route::get('/',[hotelController::class,'list'])->name('hotels.list');
