@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class UserController extends Controller
 {
@@ -47,8 +47,18 @@ class UserController extends Controller
     public function update(UserRequest $request, string $id)
     {
         $user = User::query()->find($id);
+        $oldImg = $user->image;
 
         $user->fill($request->post());
+
+        if ($request->file('image')) {
+            $user->image = upload_file('image', $request->file('image'));
+            delete_file($oldImg);
+        }
+
+        $user->save();
+
+        return response()->json($user);
     }
 
     /**
@@ -56,6 +66,9 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $user = User::query()->find($id);
+        $user->delete();
+        delete_file($user->image);
+        return response()->json(Response::HTTP_OK);
     }
 }
