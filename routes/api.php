@@ -34,7 +34,7 @@ use Illuminate\Support\Facades\Route;
 Route::resource('users', UserController::class)->except(['create', 'edit']);
 
 // ADMIN
-Route::resource('admins', AdminController::class)->except(['create', 'edit']);
+Route::resource('admins', AdminCotroller::class)->except(['create', 'edit']);
 
 // HOTEL
 Route::resource('hotel', hotelController::class);
