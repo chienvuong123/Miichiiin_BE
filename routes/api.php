@@ -9,7 +9,8 @@ use App\Http\Controllers\Admin\CateRoomController;
 use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\Admin\DistricController;
 use App\Http\Controllers\Admin\FloorController;
-use App\Models\cateogryRoom;
+use App\Http\Controllers\Admin\ImageController;
+use App\Http\Controllers\Admin\ImageDetailController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -46,4 +47,9 @@ Route::resource('distric', DistricController::class);
 Route::resource('booking', BookingController::class);
 
 Route::resource('bookingdetail', BookingDetailController::class);
+
+Route::resource('imageDetail', ImageDetailController::class);
+
+Route::resource('image', ImageController::class);
+
 
