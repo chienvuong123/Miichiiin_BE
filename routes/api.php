@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\BookingDetailController;
@@ -29,27 +30,40 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
+// USER
 Route::resource('users', UserController::class)->except(['create', 'edit']);
 
+// ADMIN
+Route::resource('admins', AdminController::class)->except(['create', 'edit']);
+
+// HOTEL
 Route::resource('hotel', hotelController::class);
 
+// ROOM
 Route::resource('room', roomsController::class);
 
-
+// CATEGORY
 Route::resource('category', CateRoomController::class);
 
+// CITY
 Route::resource('city', CityController::class);
 
+// FLOOR
 Route::resource('floor', FloorController::class);
 
+// DISTRICT
 Route::resource('distric', DistricController::class);
 
+// BOOKING
 Route::resource('booking', BookingController::class);
 
+// BOOKING DETAIL
 Route::resource('bookingdetail', BookingDetailController::class);
 
+// IMAGE DETAIL
 Route::resource('imageDetail', ImageDetailController::class);
 
+// IMAGE
 Route::resource('image', ImageController::class);
 
 
