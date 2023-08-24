@@ -9,6 +9,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UserRequest extends FormRequest
 {
+    use BaseRequest;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -51,12 +52,17 @@ class UserRequest extends FormRequest
         return $rules;
     }
 
+//    public function messages()
+//    {
+//        return [
+//            'name.required' => 'Tên Không Được Để Trống',
+//        ];
+//    }
     public function messages()
     {
-        return [
-            'name.required' => 'Tên Không Được Để Trống',
-        ];
+        return $this->message();
     }
+
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(response()->json([
