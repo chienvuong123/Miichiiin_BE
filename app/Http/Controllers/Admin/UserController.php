@@ -24,7 +24,7 @@ class UserController extends Controller
     public function store(UserRequest $request)
     {
         $user = new User();
-        $user->fill($request->except('re_password'));
+        $user->fill($request->except(['re_password', '_token']));
 
         $user->image = upload_file('image', $request->file('image'));
         $user->save();
@@ -49,7 +49,7 @@ class UserController extends Controller
         $user = User::query()->find($id);
         $oldImg = $user->image;
 
-        $user->fill($request->post());
+        $user->fill($request->except(['re_password', '_token']));
 
         if ($request->file('image')) {
             $user->image = upload_file('image', $request->file('image'));

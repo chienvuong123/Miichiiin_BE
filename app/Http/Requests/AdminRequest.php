@@ -2,12 +2,12 @@
 
 namespace App\Http\Requests;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
-use Carbon\Carbon;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class UserRequest extends FormRequest
+class AdminRequest extends FormRequest
 {
     use BaseRequest;
     /**
@@ -28,9 +28,9 @@ class UserRequest extends FormRequest
         // tạo ra 1 mảng
         $rules = [
             'name' => 'required',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|unique:admins,email',
             'password' => 'required',
-            'image' => 'required|mimes:jpg,jpeg,png',
+            'image' => 'required|mimes:jpg,jpeg,png|max:2048',
             'phone' => 'required',
             'address' => 'required',
             'date' => 'required|date|before:' . Carbon::now(),
@@ -51,12 +51,6 @@ class UserRequest extends FormRequest
         return $rules;
     }
 
-//    public function messages()
-//    {
-//        return [
-//            'name.required' => 'Tên Không Được Để Trống',
-//        ];
-//    }
     public function messages()
     {
         return $this->message();
