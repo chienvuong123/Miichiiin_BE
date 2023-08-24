@@ -31,8 +31,10 @@ trait BaseRequest {
     public function message () {
         return [
             'name.required' => 'Tên Không Được Để Trống',
+            'email.required' => 'Email không được để trống',
             'password.required' => 'Mật khẩu ko được để trống',
             'image.required' => 'Ảnh không được để trống',
+            'image.mimes' => 'Ảnh không đúng định dạng',
             'cate_room.required' => 'Không được để trống danh mục phòng'
         ];
     }
