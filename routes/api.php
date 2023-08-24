@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\DistricController;
 use App\Http\Controllers\Admin\FloorController;
 use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\ImageDetailController;
+use App\Http\Controllers\Admin\ServiceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -34,7 +35,7 @@ use Illuminate\Support\Facades\Route;
 Route::resource('users', UserController::class)->except(['create', 'edit']);
 
 // ADMIN
-Route::resource('admins', AdminCotroller::class)->except(['create', 'edit']);
+Route::resource('admins', AdminController::class)->except(['create', 'edit']);
 
 // HOTEL
 Route::resource('hotel', hotelController::class);
@@ -65,5 +66,8 @@ Route::resource('imageDetail', ImageDetailController::class);
 
 // IMAGE
 Route::resource('image', ImageController::class);
+
+// SERVICE
+Route::resource('services', ServiceController::class);
 
 

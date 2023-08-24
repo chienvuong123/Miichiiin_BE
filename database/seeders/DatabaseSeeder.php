@@ -31,7 +31,8 @@ class DatabaseSeeder extends Seeder
             BookingDetailSeeder::class,
             UserSeeder::class,
             ImageSeeder::class,
-            imageDetailSeeder::class
+            imageDetailSeeder::class,
+            ServiceSeeder::class
         ]);
     }
 }
