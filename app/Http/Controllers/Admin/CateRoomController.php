@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryRoomRequest;
-use App\Models\cateogryRoom;
+use App\Models\categoryRoom;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -12,18 +12,18 @@ class CateRoomController extends Controller
 {
     //
     public function index(){
-        $cateogryRoom = cateogryRoom::all();
+        $cateogryRoom = categoryRoom::all();
         return response()->json($cateogryRoom);
     }
     public function show($id){
-        $cateogryRoom = cateogryRoom::find($id);
+        $cateogryRoom = categoryRoom::find($id);
         return response()->json($cateogryRoom);
     }
     public function store(CategoryRoomRequest $request){
             // nếu như tồn tại file sẽ upload file
             $params = $request->except('_token');
             $params['image'] = upload_file('image', $request->file('image'));
-            $cateogryRoom  = cateogryRoom::create($params);
+            $cateogryRoom  = categoryRoom::create($params);
             if($cateogryRoom->id){
                 return response()->json([
                     'message'=>$cateogryRoom,
@@ -33,7 +33,7 @@ class CateRoomController extends Controller
     }
     public function create(){}
     public function update(CategoryRoomRequest $request,$id){
-        $cateogryRoom = cateogryRoom::find($id);
+        $cateogryRoom = categoryRoom::find($id);
         $params = $request->except('_token');
 
         if($request->hasFile('image') && $request->file('image')){
@@ -53,7 +53,7 @@ class CateRoomController extends Controller
         }
     }
     public function edit(CategoryRoomRequest $request,$id){
-        $cateogryRoom = cateogryRoom::find($id);
+        $cateogryRoom = categoryRoom::find($id);
         $params = $request->except('_token');
             if($cateogryRoom){
                 return response()->json([
@@ -62,7 +62,7 @@ class CateRoomController extends Controller
             }
     }
     public function destroy($id){
-        $cateogryRoom = cateogryRoom::find($id);
+        $cateogryRoom = categoryRoom::find($id);
             if($cateogryRoom){
         $del = delete_file($cateogryRoom->image);
         $cateogryRoom->delete();
