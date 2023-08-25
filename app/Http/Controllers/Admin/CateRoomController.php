@@ -36,18 +36,18 @@ class CateRoomController extends Controller
         $cateogryRoom = categoryRoom::find($id);
         $params = $request->except('_token');
 
-        if($request->hasFile('image') && $request->file('image')){
+        if ($request->hasFile('image') && $request->file('image')) {
             $del = delete_file($request->image);
-            if($del){
+            if ($del) {
                 $params['image'] = upload_file('image', $request->file('image'));
             }
-        }else{
-            $params['image'] = $cateogryRoom->image;
+        } else {
+            $params['image'] = $categoryRoom->image;
         }
-        if($cateogryRoom){
-            $cateogryRoom->update($params);
+        if ($categoryRoom) {
+            $categoryRoom->update($params);
             return response()->json([
-                'message'=>$cateogryRoom,
+                'message' => $categoryRoom,
                 'status' => "Sửa Thành Công"
             ]);
         }
@@ -55,12 +55,13 @@ class CateRoomController extends Controller
     public function edit(CategoryRoomRequest $request,$id){
         $cateogryRoom = categoryRoom::find($id);
         $params = $request->except('_token');
-            if($cateogryRoom){
-                return response()->json([
-                    'message'=>$cateogryRoom,
-                ]);
-            }
+        if ($categoryRoom) {
+            return response()->json([
+                'message' => $categoryRoom,
+            ]);
+        }
     }
+
     public function destroy($id){
         $cateogryRoom = categoryRoom::find($id);
             if($cateogryRoom){
