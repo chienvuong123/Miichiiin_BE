@@ -9,6 +9,7 @@ use Illuminate\Support\Carbon;
 
 class HotelRequest extends FormRequest
 {
+    use BaseRequest;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -49,21 +50,10 @@ class HotelRequest extends FormRequest
 
     public function messages()
     {
-        return [
-            'name.required' => 'Tên Không Được Để Trống',
-            'description.required' => 'Mô Tả Không Được Để Trống',
-            'star.required' => 'Sao Tầng Không Được Để Trống',
-            'status.required' => 'Trạng Thái Không Được Để Trống',
-            'quantity_floor.required' => 'Số Lượng Tầng Không Được Để Trống',
-            'quantity_of_room.required' => 'Số Lượng Phòng Không Được Để Trống',
-        ];
+        return $this->message();
     }
-    protected function failedValidation(Validator $validator)
+    protected function handleFailedValidation($validator)
     {
-        throw new HttpResponseException(response()->json([
-            'errors' => $validator->errors(),
-            'messenger' => "Fail",
-            "Sucess"=>false,
-        ]));
+        $this->failedValidation($validator);
     }
 }

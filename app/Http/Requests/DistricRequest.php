@@ -8,6 +8,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 class DistricRequest extends FormRequest
 {
+    use BaseRequest;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -25,55 +26,28 @@ class DistricRequest extends FormRequest
     public function rules()
     {
         // tạo ra 1 mảng
-        $rules = [];
+        $rules = [
+            'name' => 'required',
+        ];
         // lấy ra tên phương thức cần sử lý
         $currentAction = $this->route()->getActionMethod();
         switch ($this->method()):
             case 'POST':
-                switch($currentAction):
-                    case 'store':
-                        // xay dung rule validate trong nay
-                        $rules = [
-                            'name' => 'required',
-                        ];
-                    break;
-                endswitch;
-            break;
+                break;
+
             case 'PUT':
-                switch($currentAction):
-                case 'update':
-                    // xay dung rule validate trong nay
-                    $rules = [
-                        'name' => 'required',
-                    ];
-                break;
-            endswitch;
-            break;
             case 'PATCH':
-                switch($currentAction):
-                case 'update':
-                    // xay dung rule validate trong nay
-                    $rules = [
-                        'name' => 'required',
-                    ];
                 break;
-            endswitch;
-            break;
         endswitch;
         return $rules;
     }
     public function messages()
     {
-        return [
-            'name.required' => 'Tên Không Được Để Trống',
-        ];
+        return $this->message();
     }
-    protected function failedValidation(Validator $validator)
+     // Bạn có thể gọi phương thức failedValidation từ đây
+     protected function handleFailedValidation($validator)
     {
-        throw new HttpResponseException(response()->json([
-            'errors' => $validator->errors(),
-            'messenger' => "Fail",
-            "Sucess"=>false,
-        ]));
+        $this->failedValidation($validator);
     }
 }

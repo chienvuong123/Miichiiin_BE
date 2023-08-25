@@ -8,6 +8,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 class BookingDetailRequest extends FormRequest
 {
+    use BaseRequest;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -45,16 +46,7 @@ class BookingDetailRequest extends FormRequest
 
     public function messages()
     {
-        return [
-            'id_promotions.required' => 'Mã Hóa Đơn Không Được Để Trống',
-            'id_room.required' => 'Mã Phòng Không Được Để Trống',
-            'id_booking.required' => 'Mã Booking Không Được Để Trống',
-            'id_services.required' => 'Dịch Vụ Không Được Để Trống',
-            'id_promotions.integer' => 'Mã Hóa Đơn Là Số',
-            'id_room.integer' => 'Mã Phòng Là Số',
-            'id_booking.integer' => 'Mã Booking Là Số',
-            'id_services.integer' => 'Dịch Vụ Là Số',
-        ];
+        return $this->message();
     }
     protected function failedValidation(Validator $validator)
     {

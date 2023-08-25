@@ -8,6 +8,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 class CategoryRoomRequest extends FormRequest
 {
+    use BaseRequest;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -24,58 +25,33 @@ class CategoryRoomRequest extends FormRequest
     public function rules()
     {
         // tạo ra 1 mảng
-        $rules = [];
+        $rules = [
+            'name' => 'required',
+            'description' => 'required',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:204',
+        ];
         // lấy ra tên phương thức cần sử lý
         $currentAction = $this->route()->getActionMethod();
         switch ($this->method()):
             case 'POST':
-            case 'store':
-                // xay dung rule validate trong nay
-                $rules = [
-                    'name' => 'required',
-                    'description' => 'required',
-                    'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:204',
-                ];
                 break;
-                break;
+
             case 'PUT':
-            case 'update':
-                // xay dung rule validate trong nay
-                $rules = [
-                    'name' => 'required',
-                    'description' => 'required',
-                    // 'image' => 'image|mimes:jpeg,png,jpg,gif|max:204',
-                ];
-                break;
-                break;
             case 'PATCH':
-            case 'update':
-                // xay dung rule validate trong nay
-                $rules = [
-                    'name' => 'required',
-                    'description' => 'required',
-                    'image' => 'image|mimes:jpeg,png,jpg,gif|max:204',
-                ];
-                break;
                 break;
         endswitch;
         return $rules;
     }
     public function messages()
     {
-        return [
-            'name.required' => 'Tên Không Được Để Trống',
-            'description.required' => 'Mô Tả Không Được Để Trống',
-            'image.required' => 'Ảnh Không Được Để Trống',
-            'image.mimes' => 'Ảnh Không Đúng Định Dạng',
-        ];
+        return $this->message();
     }
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(response()->json([
             'errors' => $validator->errors(),
             'messenger' => "Fail",
-            "Sucess" => false,
+            "Success" => false,
         ]));
     }
 }

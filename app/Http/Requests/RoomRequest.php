@@ -9,6 +9,7 @@ use Illuminate\Support\Carbon;
 
 class RoomRequest extends FormRequest
 {
+    use BaseRequest;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -57,15 +58,10 @@ class RoomRequest extends FormRequest
 
     public function messages()
     {
-        return [
-        ];
+        return $this->message();
     }
-    protected function failedValidation(Validator $validator)
+    protected function handleFailedValidation($validator)
     {
-        throw new HttpResponseException(response()->json([
-            'errors' => $validator->errors(),
-            'messenger' => "Fail",
-            "Sucess"=>false,
-        ]));
+        $this->failedValidation($validator);
     }
 }
