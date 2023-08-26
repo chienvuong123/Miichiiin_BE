@@ -28,6 +28,7 @@ class BookingDetailRequest extends FormRequest
         $rules = [
             'check_in' => 'required|integer',
             'id_room' => 'required|integer',
+            'id_cate' => 'required|integer',
             'id_booking' => 'required|integer',
             'id_services' => 'required|integer',
         ];
@@ -48,12 +49,8 @@ class BookingDetailRequest extends FormRequest
     {
         return $this->message();
     }
-    protected function failedValidation(Validator $validator)
+    protected function handleFailedValidation($validator)
     {
-        throw new HttpResponseException(response()->json([
-            'errors' => $validator->errors(),
-            'messenger' => "Fail",
-            "Sucess"=>false,
-        ]));
+        $this->failedValidation($validator);
     }
 }

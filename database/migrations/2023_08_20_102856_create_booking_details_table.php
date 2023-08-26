@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('id_promotions');
             $table->integer('id_room');
+            $table->integer('id_cate');
             $table->integer('id_services');
             $table->integer('id_booking');
             $table->timestamps();

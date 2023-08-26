@@ -29,18 +29,10 @@ class RoomRequest extends FormRequest
     {
         // tạo ra 1 mảng
         $rules = [
-            'description' => 'required',
-            'name' => 'required',
-            'id_floor' => 'required|integer',
-            'id_hotel' => 'required|integer',
-            'likes' => 'required|integer',
-            'acreage' => 'required|integer',
-            'price' => 'required|integer',
-            'quantity_of_people' => 'required|integer',
-             'views' => 'required',
-            'status' => 'required|integer',
             'id_cate' => 'required',
-            'short_description' => 'required',
+            'status' => 'required|integer',
+            'id_hotel' => 'required|integer',
+            'name' => 'required',
         ];
         // lấy ra tên phương thức cần sử lý
         $currentAction = $this->route()->getActionMethod();

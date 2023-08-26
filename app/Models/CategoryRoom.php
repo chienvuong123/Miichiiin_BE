@@ -12,7 +12,15 @@ class categoryRoom extends Model
     protected $fillable = [
         "id",
         "name",
-        "description",
         "image",
+        "description",
+        "short_description",
+        "floor",
+        "acreage",
+        "price",
+        "likes",
+        "views",
+        "id_cate",
+        "quantity_of_people",
     ];
 }

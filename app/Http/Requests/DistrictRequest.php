@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
 
-class FloorRequest extends FormRequest
+class DistrictRequest extends FormRequest
 {
     use BaseRequest;
     /**
@@ -22,13 +20,13 @@ class FloorRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
-    public function rules()
+    public function rules(): array
     {
         // tạo ra 1 mảng
         $rules = [
             'name' => 'required',
         ];
-        // lấy ra tên phương thức cần sử lý
+
         $currentAction = $this->route()->getActionMethod();
         switch ($this->method()):
             case 'POST':
@@ -40,12 +38,12 @@ class FloorRequest extends FormRequest
         endswitch;
         return $rules;
     }
+
     public function messages()
     {
         return $this->message();
     }
-     // Bạn có thể gọi phương thức failedValidation từ đây
-     protected function handleFailedValidation($validator)
+    protected function handleFailedValidation($validator)
     {
         $this->failedValidation($validator);
     }

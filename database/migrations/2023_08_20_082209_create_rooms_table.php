@@ -14,15 +14,7 @@ return new class extends Migration
         Schema::create('rooms', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
-            $table->string('description')->nullable();
-            $table->string('short_description')->nullable();
-            $table->integer('quantity_of_people')->nullable();
-            $table->integer('price')->nullable();
-            $table->integer('acreage')->nullable();
-            $table->integer('id_floor')->nullable();
             $table->integer('id_hotel')->nullable();
-            $table->integer('likes')->nullable();
-            $table->integer('views')->nullable();
             $table->integer('status')->nullable();
             $table->integer('id_cate')->nullable();
             $table->timestamps();
