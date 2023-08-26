@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\ServiceDetailController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\BookingDetailController;
@@ -74,6 +75,7 @@ Route::resource('imageDetail', ImageDetailController::class);
 Route::resource('image', ImageController::class);
 
 // SERVICE
-Route::resource('services', ServiceController::class);
+Route::resource('services', ServiceController::class)->except(['create', 'edit']);
+Route::resource('service_detail', ServiceDetailController::class)->except(['create', 'edit']);
 
 
