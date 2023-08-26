@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\floor>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\district>
  */
-class floorFactory extends Factory
+class districtFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -19,7 +19,6 @@ class floorFactory extends Factory
         return [
             //
             "name"=>fake()->name(),
-
         ];
     }
 }

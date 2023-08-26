@@ -29,6 +29,13 @@ class CategoryRoomRequest extends FormRequest
             'name' => 'required',
             'description' => 'required',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:204',
+            'floor' => 'required|integer',
+            'likes' => 'required|integer',
+            'acreage' => 'required|integer',
+            'price' => 'required|integer',
+            'quantity_of_people' => 'required|integer',
+             'views' => 'required',
+            'short_description' => 'required',
         ];
         // lấy ra tên phương thức cần sử lý
         $currentAction = $this->route()->getActionMethod();
@@ -46,12 +53,8 @@ class CategoryRoomRequest extends FormRequest
     {
         return $this->message();
     }
-    protected function failedValidation(Validator $validator)
+    protected function handleFailedValidation($validator)
     {
-        throw new HttpResponseException(response()->json([
-            'errors' => $validator->errors(),
-            'messenger' => "Fail",
-            "Success" => false,
-        ]));
+        $this->failedValidation($validator);
     }
 }

@@ -56,12 +56,8 @@ class AdminRequest extends FormRequest
         return $this->message();
     }
 
-    protected function failedValidation(Validator $validator)
+    protected function handleFailedValidation($validator)
     {
-        throw new HttpResponseException(response()->json([
-            'errors' => $validator->errors(),
-            'messenger' => "Fail",
-            "Success"=>false,
-        ]));
+        $this->failedValidation($validator);
     }
 }

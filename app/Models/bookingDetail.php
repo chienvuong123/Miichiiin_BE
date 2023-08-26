@@ -13,6 +13,7 @@ class bookingDetail extends Model
         "id",
         "id_promotions",
         "id_room",
+        "id_cate",
         "id_services",
         "id_booking",
     ];

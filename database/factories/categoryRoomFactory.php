@@ -20,7 +20,14 @@ class categoryRoomFactory extends Factory
             //
             'name'=>fake()->name(),
             'description'=>fake()->text(),
+            'short_description'=>fake()->text(),
             'image'=>fake()->imageUrl(),
+            "price" => fake()->numberBetween(),
+            "acreage" => fake()->numberBetween(),
+            "floor" => fake()->numberBetween(),
+            "likes" => fake()->numberBetween(),
+            "views" => fake()->numberBetween(),
+            "quantity_of_people" => fake()->numberBetween(),
         ];
     }
 }

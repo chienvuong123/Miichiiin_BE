@@ -16,6 +16,13 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->string('description')->nullable();
             $table->string('image')->nullable();
+            $table->string('short_description')->nullable();
+            $table->integer('quantity_of_people')->nullable();
+            $table->integer('price')->nullable();
+            $table->integer('acreage')->nullable();
+            $table->integer('floor')->nullable();
+            $table->integer('likes')->nullable();
+            $table->integer('views')->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cateogry_rooms');
+        Schema::dropIfExists('category_rooms');
     }
 };

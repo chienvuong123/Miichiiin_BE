@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class floor extends Model
+class district extends Model
 {
     use HasFactory;
-    protected $table = 'floors';
+    protected $table = 'districts';
+
     protected $fillable = [
         "id",
         "name",

@@ -15,6 +15,11 @@ class roomsController extends Controller
         $room = room::all();
         return response()->json($room);
     }
+    public function room_cate($cate)
+    {
+        $room = room::get()->where('id_cate', "=" , $cate);
+        return response()->json($room);
+    }
     public function show($id)
     {
         $room = room::find($id);

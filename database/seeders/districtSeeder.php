@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\floor;
+use App\Models\district;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class floorSeeder extends Seeder
+class districtSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,7 +14,7 @@ class floorSeeder extends Seeder
     public function run(): void
     {
         //
-        floor::factory()->count(10)->create();
+        district::factory()->count(10)->create();
 
     }
 }
