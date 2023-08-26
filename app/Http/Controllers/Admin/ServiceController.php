@@ -87,6 +87,9 @@ class ServiceController extends Controller
         $service = Service::query()->find($id);
         $service->delete();
         delete_file($service->image);
-        return response()->json(Response::HTTP_OK);
+        return response()->json([
+            "message" => "Delete success",
+            "status" => 200
+        ]);
     }
 }

@@ -19,6 +19,7 @@ class ServiceFactory extends Factory
     {
         return [
             'name' => fake()->text(20),
+            'id_hotel' => fake()->numberBetween(0,5),
             'description' => fake()->text(20),
             'quantity' => fake()->numerify,
             'price' => fake()->numerify,
