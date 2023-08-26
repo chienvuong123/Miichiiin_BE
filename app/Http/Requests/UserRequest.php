@@ -51,23 +51,12 @@ class UserRequest extends FormRequest
         return $rules;
     }
 
-//    public function messages()
-//    {
-//        return [
-//            'name.required' => 'Tên Không Được Để Trống',
-//        ];
-//    }
-    public function messages()
-    {
-        return $this->message();
-    }
-
-    protected function failedValidation(Validator $validator)
-    {
-        throw new HttpResponseException(response()->json([
-            'errors' => $validator->errors(),
-            'messenger' => "Fail",
-            "Success"=>false,
-        ]));
-    }
+public function messages()
+{
+    return $this->message();
+}
+protected function handleFailedValidation($validator)
+{
+    $this->failedValidation($validator);
+}
 }

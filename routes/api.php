@@ -8,11 +8,11 @@ use App\Http\Controllers\Admin\hotelController;
 use App\Http\Controllers\Admin\roomsController;
 use App\Http\Controllers\Admin\CateRoomController;
 use App\Http\Controllers\Admin\CityController;
-use App\Http\Controllers\Admin\DistricController;
 use App\Http\Controllers\Admin\FloorController;
 use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\ImageDetailController;
 use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\Admin\districtController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -43,6 +43,11 @@ Route::resource('hotel', hotelController::class);
 // ROOM
 Route::resource('room', roomsController::class);
 
+Route::prefix('room')->group(function () {
+Route::get('cate_room/{id}', [roomsController::class,'room_cate']);
+});
+
+
 // CATEGORY
 Route::resource('category', CateRoomController::class);
 
@@ -53,7 +58,8 @@ Route::resource('city', CityController::class);
 Route::resource('floor', FloorController::class);
 
 // DISTRICT
-Route::resource('distric', DistricController::class);
+Route::resource('district', districtController::class);
+
 
 // BOOKING
 Route::resource('booking', BookingController::class);

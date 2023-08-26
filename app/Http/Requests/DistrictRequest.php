@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
 
-class CategoryRoomRequest extends FormRequest
+class DistrictRequest extends FormRequest
 {
     use BaseRequest;
     /**
@@ -22,22 +20,13 @@ class CategoryRoomRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
-    public function rules()
+    public function rules(): array
     {
         // tạo ra 1 mảng
         $rules = [
             'name' => 'required',
-            'description' => 'required',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:204',
-            'floor' => 'required|integer',
-            'likes' => 'required|integer',
-            'acreage' => 'required|integer',
-            'price' => 'required|integer',
-            'quantity_of_people' => 'required|integer',
-             'views' => 'required',
-            'short_description' => 'required',
         ];
-        // lấy ra tên phương thức cần sử lý
+
         $currentAction = $this->route()->getActionMethod();
         switch ($this->method()):
             case 'POST':
@@ -49,6 +38,7 @@ class CategoryRoomRequest extends FormRequest
         endswitch;
         return $rules;
     }
+
     public function messages()
     {
         return $this->message();

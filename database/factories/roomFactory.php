@@ -19,17 +19,10 @@ class roomFactory extends Factory
         return [
             //
             "name" => fake()->name(),
-            "description" => fake()->text(),
-            "short_description" => fake()->text(),
-            "price" => fake()->numberBetween(),
-            "acreage" => fake()->numberBetween(),
-            "status" => fake()->numberBetween(0,1),
             "id_hotel" => fake()->numberBetween(),
-            "id_floor" => fake()->numberBetween(),
-            "likes" => fake()->numberBetween(),
-            "views" => fake()->numberBetween(),
             "id_cate" => fake()->numberBetween(),
-            "quantity_of_people" => fake()->numberBetween(),
+            "status" => fake()->numberBetween(0,1),
+
         ];
     }
 }

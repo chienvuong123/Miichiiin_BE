@@ -9,6 +9,7 @@ use Illuminate\Support\Carbon;
 
 class BookingRequest extends FormRequest
 {
+    use BaseRequest;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -52,23 +53,10 @@ class BookingRequest extends FormRequest
 
     public function messages()
     {
-        return [
-            'check_in.required' => 'Check_in Không Được Để Trống',
-            'check_in.after' => 'Check_in Không Được Nhỏ Hơn Hiện tại',
-            'check_out.after' => 'check_out > Check_in',
-            'check_out.required' => 'Check_out Không Được Để Trống',
-            'people_quantity.required' => ' Không Được Để Trống',
-            'total_amount.required' => ' Không Được Để Trống',
-            'phone.regex' => 'Số Sai Định Dạng',
-            'phone.required' => 'Số Điện thoại Không Được Để Trống',
-        ];
+        return $this->message();
     }
-    protected function failedValidation(Validator $validator)
+    protected function handleFailedValidation($validator)
     {
-        throw new HttpResponseException(response()->json([
-            'errors' => $validator->errors(),
-            'messenger' => "Fail",
-            "Sucess"=>false,
-        ]));
+        $this->failedValidation($validator);
     }
 }

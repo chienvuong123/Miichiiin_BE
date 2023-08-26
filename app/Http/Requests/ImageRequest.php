@@ -8,6 +8,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Carbon;
 class ImageRequest extends FormRequest
 {
+    use BaseRequest;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -26,7 +27,6 @@ class ImageRequest extends FormRequest
         // tạo ra 1 mảng
         $rules = [
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:204',
-            'alt' => 'required',
         ];
         // lấy ra tên phương thức cần sử lý
         $currentAction = $this->route()->getActionMethod();
@@ -43,21 +43,10 @@ class ImageRequest extends FormRequest
 
     public function messages()
     {
-        return [
-            'name.required' => 'Tên Không Được Để Trống',
-            'description.required' => 'Mô Tả Không Được Để Trống',
-            'star.required' => 'Sao Tầng Không Được Để Trống',
-            'status.required' => 'Trạng Thái Không Được Để Trống',
-            'quantity_floor.required' => 'Số Lượng Tầng Không Được Để Trống',
-            'quantity_of_room.required' => 'Số Lượng Phòng Không Được Để Trống',
-        ];
+        return $this->message();
     }
-    protected function failedValidation(Validator $validator)
+    protected function handleFailedValidation($validator)
     {
-        throw new HttpResponseException(response()->json([
-            'errors' => $validator->errors(),
-            'messenger' => "Fail",
-            "Sucess"=>false,
-        ]));
+        $this->failedValidation($validator);
     }
 }

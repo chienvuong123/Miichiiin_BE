@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\cateogryRoom>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\district>
  */
-class cateogryRoomFactory extends Factory
+class districtFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,9 +18,7 @@ class cateogryRoomFactory extends Factory
     {
         return [
             //
-            'name'=>fake()->name(),
-            'description'=>fake()->text(),
-            'image'=>fake()->imageUrl(),
+            "name"=>fake()->name(),
         ];
     }
 }
