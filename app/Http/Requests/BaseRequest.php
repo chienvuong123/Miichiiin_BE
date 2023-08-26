@@ -35,7 +35,8 @@ trait BaseRequest {
             'password.required' => 'Mật khẩu ko được để trống',
             'image.required' => 'Ảnh không được để trống',
             'image.mimes' => 'Ảnh không đúng định dạng',
-            'cate_room.required' => 'Không được để trống danh mục phòng'
+            'cate_room.required' => 'Không được để trống danh mục phòng',
+            'quantity.required' => 'Số lượng không được để trống'
         ];
     }
 }
