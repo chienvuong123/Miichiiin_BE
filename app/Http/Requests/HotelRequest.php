@@ -31,6 +31,8 @@ class HotelRequest extends FormRequest
             'description' => 'required',
             'quantity_of_room' => 'required|integer',
             'id_city' => 'required|integer',
+            'phone' => 'required | regex:/^([0-9\s\-\+\(\)]*)$/',
+            'email' => 'required|email|unique:users,email',
             'star' => 'required|integer',
             'status' => 'required|integer',
             'quantity_floor' => 'required|integer',

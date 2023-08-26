@@ -18,6 +18,8 @@ return new class extends Migration
             $table->integer('quantity_of_room')->nullable();
             $table->integer('id_city')->nullable();
             $table->integer('star')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('email')->nullable();
             $table->integer('status')->nullable();
             $table->integer('quantity_floor')->nullable();
             $table->timestamps();

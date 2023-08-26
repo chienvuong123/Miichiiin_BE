@@ -16,6 +16,8 @@ class hotel extends Model
         "id_city",
         "quantity_of_room",
         "star",
+        "email",
+        "phone",
         "status",
         "quantity_floor",
     ];
