@@ -46,6 +46,7 @@ class CateRoomController extends Controller
         ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
         ->leftJoin('image_details', 'image_details.id_cate', '=', 'category_rooms.id')
         ->leftJoin('images', 'images.id', '=', 'image_details.id_image')
+
         ->where('category_rooms.id', '=', $id)
         ->groupBy(
             'category_rooms.id',
@@ -65,7 +66,7 @@ class CateRoomController extends Controller
         )
         ->get();
 
-    return response()->json($rooms);
+        return response()->json($rooms);
     }
     public function show($id)
     {

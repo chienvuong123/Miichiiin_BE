@@ -52,7 +52,7 @@ Route::prefix('admin')->group(function () {
     Route::resource('room', roomsController::class);
 
     Route::prefix('room')->group(function () {
-    Route::get('cate_room/{id}', [roomsController::class,'room_cate']);
+        Route::get('cate_room/{id}', [roomsController::class, 'room_cate']);
     });
 
 
@@ -107,9 +107,11 @@ Route::prefix('users')->group(function () {
     // hiển thị tất cả services cả hệ thống
     Route::get('/services', [ServiceController::class, 'index']);
     // hiển thị services theo id_hotel
-    Route::get('/services/{id}', [ServiceController::class, 'list_services_hotel']);
+    Route::get('/services/hotels={id}', [ServiceController::class, 'list_services_hotel']);
     // hiển thị khách sạn theo thành phố
     Route::get('/hotel/city={id}', [hotelController::class, 'home_city']);
+        // hiển thị khách sạn theo id (detail_hotel)
+    Route::get('/hotel/{id}', [hotelController::class, 'detail_hotel_user']);
     // hiển thị comment theo id_cate
     Route::get('/comment/id_cate={id}', [RateController::class, 'comment_cate']);
     // hiển thị cate_room theo hotel
@@ -119,7 +121,6 @@ Route::prefix('users')->group(function () {
         // hiển thị booking_detail theo id_user
         Route::get('/bookingDetail/{id}', [BookingDetailController::class, 'booking_detail_list']);
 });
-
-
-
-
+    // hiển thị voucher
+    Route::get('/vouchers/', [CateRoomController::class, 'list_voucher']);
+});
