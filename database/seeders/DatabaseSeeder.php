@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Comfort;
+use App\Models\Permission;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -36,7 +37,8 @@ class DatabaseSeeder extends Seeder
             ServiceDetailSeeder::class,
             ComfortSeeder::class,
             comfortDetailSeeder::class,
-            RateSeeder::class
+            RateSeeder::class,
+            PermissionSeeder::class
         ]);
     }
 }
