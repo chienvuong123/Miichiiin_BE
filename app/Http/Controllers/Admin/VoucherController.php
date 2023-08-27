@@ -93,7 +93,7 @@ class VoucherController extends Controller
                 "status" => Response::HTTP_NOT_FOUND
             ]);
         }
-
+        $voucher->delete();
         delete_file($voucher->image);
         return response()->json([
             "message" => "Delete success",

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Comfort;
 use App\Models\Permission;
+use App\Models\PermissionDetail;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -39,6 +40,7 @@ class DatabaseSeeder extends Seeder
             comfortDetailSeeder::class,
             RateSeeder::class,
             PermissionSeeder::class,
+            PermissionDetailSeeder::class,
             VoucherSeeder::class
         ]);
     }
