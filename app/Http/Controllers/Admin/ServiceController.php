@@ -37,7 +37,6 @@ class ServiceController extends Controller
 
         $service->fill($request->except('_token'));
 
-        $service->image = upload_file('image', $request->file('image'));
         $service->save();
 
         return response()->json($service);
@@ -70,11 +69,6 @@ class ServiceController extends Controller
 
         $service->fill($request->except('_token'));
 
-        if ($request->file('image')) {
-            $service->image = upload_file('image', $request->file('image'));
-            delete_file($oldImg);
-        }
-
         $service->save();
 
         return response()->json($service);
@@ -87,7 +81,6 @@ class ServiceController extends Controller
     {
         $service = Service::query()->find($id);
         $service->delete();
-        delete_file($service->image);
         return response()->json([
             "message" => "Delete success",
             "status" => 200
