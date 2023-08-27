@@ -61,8 +61,6 @@ trait BaseRequest {
 
             // category
             'description.required' => 'Mô Tả Không Được Để Trống',
-            'image.required' => 'Ảnh Không Được Để Trống',
-            'image.mimes' => 'Ảnh Không Đúng Định Dạng',
 
             //hotel
             'star.required' => 'Sao Tầng Không Được Để Trống',
@@ -73,6 +71,10 @@ trait BaseRequest {
             //city
 
             // distinct
+
+            //rate
+            'content.required' => 'Nội dung không được để trống',
+            'rating.required' => 'Đánh giá không được để trống'
 
         ];
     }
