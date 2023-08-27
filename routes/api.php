@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\ImageDetailController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\districtController;
 use App\Http\Controllers\Admin\ComfortDetailController;
+use App\Http\Controllers\Admin\VoucherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -88,6 +89,9 @@ Route::prefix('admin')->group(function () {
 
     // PERMISSION
     Route::resource('permissions', PermissionController::class)->except(['create', 'edit']);
+
+    // VOUCHER
+    Route::resource('vouchers', VoucherController::class)->except(['create', 'edit']);
 });
 // USER
 Route::get('/',[hotelController::class,'home_user']);
