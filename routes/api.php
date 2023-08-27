@@ -33,51 +33,55 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-// USER
-Route::resource('users', UserController::class)->except(['create', 'edit']);
+Route::prefix('admin')->group(function () {
+    Route::resource('users', UserController::class)->except(['create', 'edit']);
 
-// ADMIN
-Route::resource('admins', AdminController::class)->except(['create', 'edit']);
+    // ADMIN
+    Route::resource('admins', AdminController::class)->except(['create', 'edit']);
 
-// HOTEL
-Route::resource('hotel', hotelController::class);
+    // HOTEL
+    Route::resource('hotel', hotelController::class);
 
-// ROOM
-Route::resource('room', roomsController::class);
+    // ROOM
+    Route::resource('room', roomsController::class);
 
-Route::prefix('room')->group(function () {
-Route::get('cate_room/{id}', [roomsController::class,'room_cate']);
+    Route::prefix('room')->group(function () {
+    Route::get('cate_room/{id}', [roomsController::class,'room_cate']);
+    });
+
+
+    // CATEGORY
+    Route::resource('category', CateRoomController::class);
+
+    // CITY
+    Route::resource('city', CityController::class);
+
+    // FLOOR
+    Route::resource('floor', FloorController::class);
+
+    // DISTRICT
+    Route::resource('district', districtController::class);
+
+
+    // BOOKING
+    Route::resource('booking', BookingController::class);
+
+    // BOOKING DETAIL
+    Route::resource('bookingdetail', BookingDetailController::class);
+
+    // IMAGE DETAIL
+    Route::resource('imageDetail', ImageDetailController::class);
+
+    // IMAGE
+    Route::resource('image', ImageController::class);
+
+    // SERVICE
+    Route::resource('services', ServiceController::class)->except(['create', 'edit']);
+    Route::resource('service_detail', ServiceDetailController::class)->except(['create', 'edit']);
 });
+// USER
+Route::get('/',[hotelController::class,'home_user']);
 
-
-// CATEGORY
-Route::resource('category', CateRoomController::class);
-
-// CITY
-Route::resource('city', CityController::class);
-
-// FLOOR
-Route::resource('floor', FloorController::class);
-
-// DISTRICT
-Route::resource('district', districtController::class);
-
-
-// BOOKING
-Route::resource('booking', BookingController::class);
-
-// BOOKING DETAIL
-Route::resource('bookingdetail', BookingDetailController::class);
-
-// IMAGE DETAIL
-Route::resource('imageDetail', ImageDetailController::class);
-
-// IMAGE
-Route::resource('image', ImageController::class);
-
-// SERVICE
-Route::resource('services', ServiceController::class)->except(['create', 'edit']);
-Route::resource('service_detail', ServiceDetailController::class)->except(['create', 'edit']);
 
 // COMFORT
 Route::resource('comforts', ComfortController::class)->except(['create', 'edit']);
