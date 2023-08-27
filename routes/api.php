@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\ImageDetailController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\districtController;
+use App\Http\Controllers\Admin\ComfortDetailController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -74,6 +75,7 @@ Route::prefix('admin')->group(function () {
 
     // IMAGE
     Route::resource('image', ImageController::class);
+    Route::resource('comfortDetail', ComfortDetailController::class);
 
     // SERVICE
     Route::resource('services', ServiceController::class)->except(['create', 'edit']);

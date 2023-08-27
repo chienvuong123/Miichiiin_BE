@@ -19,14 +19,25 @@ class hotelController extends Controller
     }
     public function home_user()
     {
-        $hotels = Hotel::select('hotels.*', 'cities.name as city_name', 'images.image', DB::raw('COUNT(rooms.id) as total_rooms'), DB::raw('COUNT(DISTINCT category_rooms.id) as total_categories'))
+        $hotels = Hotel::select('hotels.*', 'cities.name as city_name', 'images.image',
+         DB::raw('COUNT(DISTINCT rooms.id) as total_rooms'),
+          DB::raw('COUNT(DISTINCT category_rooms.id) as total_categories'),
+           DB::raw('COUNT(DISTINCT comforts.id) as total_comforts'))
         ->leftJoin('image_details', 'hotels.id', '=', 'image_details.id_hotel')
         ->leftJoin('images', 'image_details.id_image', '=', 'images.id')
         ->leftJoin('cities', 'hotels.id_city', '=', 'cities.id')
         ->leftJoin('rooms', 'hotels.id', '=', 'rooms.id_hotel')
         ->leftJoin('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id')
-        ->groupBy('hotels.id', 'hotels.name', 'hotels.description', 'hotels.quantity_of_room', 'hotels.id_city', 'hotels.star', 'hotels.phone', 'hotels.email', 'hotels.status', 'hotels.quantity_floor', 'hotels.created_at', 'hotels.updated_at', 'cities.name', 'images.image')
+        ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
+        ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
+        ->groupBy('hotels.id', 'hotels.name', 'hotels.description',
+         'hotels.quantity_of_room', 'hotels.id_city',
+          'hotels.star', 'hotels.phone', 'hotels.email',
+           'hotels.status', 'hotels.quantity_floor', 'hotels.created_at',
+           'hotels.updated_at', 'cities.name', 'images.image')
         ->get();
+
+
 
         return response()->json($hotels);
     }
