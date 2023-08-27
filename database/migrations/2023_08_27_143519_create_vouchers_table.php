@@ -15,11 +15,14 @@ return new class extends Migration
         Schema::create('vouchers', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
+            $table->string('slug')->nullable();
             $table->string('image')->nullable();
             $table->integer('quantity')->nullable();
             $table->integer('discount')->nullable();
             $table->timestamp('start_at')->nullable();
-            $table->timestamp('expire_at');
+            $table->timestamp('expire_at')->nullable();
+            $table->integer('status')->nullable();
+            $table->string('meta')->nullable();
             $table->string('description')->nullable();
             $table->timestamps();
         });

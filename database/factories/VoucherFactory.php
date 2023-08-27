@@ -18,11 +18,14 @@ class VoucherFactory extends Factory
     {
         return [
             'name' => fake()->text(50),
+            'slug' => fake()->text(10),
             'image' => fake()->imageUrl,
             'quantity' => fake()->numberBetween(0,10),
             'discount' => fake()->numerify,
             'start_at' => fake()->dateTime,
             'expire_at' => fake()->dateTime,
+            'status' => fake()->numberBetween(0,3),
+            'meta' => fake()->text(50),
             'description' => fake()->text(50)
         ];
     }

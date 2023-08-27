@@ -11,11 +11,14 @@ class Voucher extends Model
 
     protected $fillable = [
         'name',
+        'slug',
         'image',
         'discount',
         'start_at',
         'expire_at',
+        'status',
         'description',
+        'meta',
         'quantity'
         ];
 }
