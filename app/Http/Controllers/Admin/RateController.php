@@ -80,4 +80,22 @@ class RateController extends Controller
             "status" => Response::HTTP_OK
         ]);
     }
+    public function comment_cate($id)
+    {
+        $comments = Rate::select(
+            'rates.*',
+            'category_rooms.name as category_name',
+            'users.name as user_name',
+            'users.email as user_email'
+        )
+            ->join('category_rooms', 'rates.id_category', '=', 'category_rooms.id')
+            ->join('users', 'users.id', '=', 'rates.id_user')
+            ->where('category_rooms.id', $id)
+            ->get();
+
+        // sau khi mình gửi cho bên front thông tin comment
+        // bên front sẽ lấy thời gian hiện tại comment
+        //   trừ đi thời gian comment để lấy thời gian comment  ví dụ (8h trước)
+        return response()->json($comments);
+    }
 }
