@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BookingRequest;
 use App\Models\booking;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BookingController extends Controller
 {
@@ -15,6 +16,31 @@ class BookingController extends Controller
 
         // get all booking
         $booking = booking::all();
+        return response()->json($booking);
+    }
+    public function booking_list($id)
+    {
+
+        // get all booking
+        $booking = booking::select(
+            'bookings.*',
+        )
+            ->leftJoin('booking_details', 'booking_details.id_booking', '=', 'bookings.id')
+            ->leftJoin('services', 'services.id', '=', 'booking_details.id_services')
+            ->leftJoin('vouchers', 'vouchers.id', '=', 'booking_details.id_promotions')
+            ->leftJoin('category_rooms', 'category_rooms.id', '=', 'booking_details.id_cate')
+            ->leftJoin('users', 'users.id', '=', 'bookings.id_user')
+            ->groupBy(
+            )
+            ->where('users.id','=',$id)
+            ->distinct()
+            ->get()
+            ->groupBy('id')
+            ->map(function ($group) {
+                return $group->first();
+            })
+            ->values();
+
         return response()->json($booking);
     }
     public function show($id)

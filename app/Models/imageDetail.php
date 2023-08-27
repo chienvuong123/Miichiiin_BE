@@ -14,6 +14,7 @@ class imageDetail extends Model
         "id_rooms",
         "id_hotel",
         "id_services",
+        "id_cate",
         "id_image",
     ];
 }

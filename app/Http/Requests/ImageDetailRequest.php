@@ -28,6 +28,7 @@ class ImageDetailRequest extends FormRequest
         $rules = [
             'id_hotel' => 'required | integer',
             'id_rooms' => 'required | integer',
+            'id_cate' => 'required | integer',
             'id_services' => 'required|integer',
             'id_image' => 'required|integer',
 

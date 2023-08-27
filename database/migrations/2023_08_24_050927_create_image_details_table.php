@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('id_hotel')->nullable();
             $table->integer('id_rooms')->nullable();
+            $table->integer('id_cate')->nullable();
             $table->integer('id_services')->nullable();
             $table->integer('id_image')->nullable();
             $table->timestamps();

@@ -69,4 +69,45 @@ class BookingDetailController extends Controller
         }
         return response()->json($bookingDetail);
     }
+    public function booking_detail_list($id)
+    {
+
+        // get all booking
+        $bookingDetail = bookingDetail::select(
+            'booking_details.*',
+            'bookings.name as namebooking',
+            'bookings.check_in as check_in',
+            'bookings.check_out as check_out',
+            'bookings.people_quantity as people_quantity',
+            'bookings.total_amount as total_amount',
+            'bookings.status as status',
+            'bookings.nationality as nationality',
+            'bookings.cccd as cccd',
+            'bookings.phone as phone',
+            'bookings.email as email',
+            'bookings.message as message',
+            'rooms.name as phong',
+            'category_rooms.name as loaiphong',
+            'vouchers.name as khuyenmai',
+            'services.name as dichvu',
+        )
+            ->leftJoin('bookings', 'booking_details.id_booking', '=', 'bookings.id')
+            ->leftJoin('services', 'services.id', '=', 'booking_details.id_services')
+            ->leftJoin('vouchers', 'vouchers.id', '=', 'booking_details.id_promotions')
+            ->leftJoin('rooms', 'rooms.id', '=', 'booking_details.id_room')
+            ->leftJoin('category_rooms', 'category_rooms.id', '=', 'booking_details.id_cate')
+            ->leftJoin('users', 'users.id', '=', 'bookings.id_user')
+            ->groupBy(
+            )
+            ->where('users.id','=',$id)
+            ->distinct()
+            ->get()
+            ->groupBy('id')
+            ->map(function ($group) {
+                return $group->first();
+            })
+            ->values();
+
+        return response()->json($bookingDetail);
+    }
 }

@@ -114,6 +114,10 @@ Route::prefix('users')->group(function () {
     Route::get('/comment/id_cate={id}', [RateController::class, 'comment_cate']);
     // hiển thị cate_room theo hotel
     Route::get('/cateRoom/{id}', [CateRoomController::class, 'list_cate']);
+       // hiển thị booking theo id_user
+       Route::get('/booking/{id}', [BookingController::class, 'booking_list']);
+        // hiển thị booking_detail theo id_user
+        Route::get('/bookingDetail/{id}', [BookingDetailController::class, 'booking_detail_list']);
 });
 
 
