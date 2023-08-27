@@ -19,7 +19,7 @@ class CateRoomController extends Controller
     }
 
 
-    public function list_cate($id)
+    public function detail_list_cate($id)
     {
         $rooms = CategoryRoom::select(
             'category_rooms.id',
@@ -48,6 +48,55 @@ class CateRoomController extends Controller
         ->leftJoin('images', 'images.id', '=', 'image_details.id_image')
 
         ->where('category_rooms.id', '=', $id)
+        ->groupBy(
+            'category_rooms.id',
+            'category_rooms.name',
+            'category_rooms.description',
+            'category_rooms.image',
+            'category_rooms.short_description',
+            'category_rooms.quantity_of_people',
+            'category_rooms.price',
+            'category_rooms.acreage',
+            'category_rooms.floor',
+            'category_rooms.likes',
+            'category_rooms.views',
+            'category_rooms.created_at',
+            'category_rooms.updated_at',
+            'hotels.name'
+        )
+        ->get();
+
+        return response()->json($rooms);
+    }
+    public function list_cate($id)
+    {
+        $rooms = CategoryRoom::select(
+            'category_rooms.id',
+            'category_rooms.name',
+            'category_rooms.description',
+            'category_rooms.image',
+            'category_rooms.short_description',
+            'category_rooms.quantity_of_people',
+            'category_rooms.price',
+            'category_rooms.acreage',
+            'category_rooms.floor',
+            'category_rooms.likes',
+            'category_rooms.views',
+            'category_rooms.created_at',
+            'category_rooms.updated_at',
+            'hotels.name as nameHotel',
+            DB::raw('COUNT(DISTINCT rooms.id) as total_rooms'),
+            DB::raw('COUNT(DISTINCT comforts.id) as total_comfort'),
+            DB::raw('CONCAT("[", GROUP_CONCAT(DISTINCT CONCAT(images.image)), "]") as image_urls')
+        )
+        ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
+        ->leftJoin('hotels', 'hotels.id', '=', 'rooms.id_hotel')
+        ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
+        ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
+        ->leftJoin('image_details', 'image_details.id_cate', '=', 'category_rooms.id')
+        ->leftJoin('images', 'images.id', '=', 'image_details.id_image')
+
+        ->where('hotels.id', '=', $id)
         ->groupBy(
             'category_rooms.id',
             'category_rooms.name',

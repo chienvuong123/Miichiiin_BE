@@ -104,23 +104,23 @@ Route::prefix('admin')->group(function () {
 Route::prefix('users')->group(function () {
     // hiển thị thông tin hotel trang home_user
     Route::get('hotel', [hotelController::class, 'home_user']);
+    // hiển thị khách sạn theo thành phố
+    Route::get('/hotel/city={id}', [hotelController::class, 'home_city']);
     // hiển thị tất cả services cả hệ thống
+    // hiển thị khách sạn theo id (detail_hotel)
+    Route::get('/hotel/{id}', [hotelController::class, 'detail_hotel_user']);
     Route::get('/services', [ServiceController::class, 'index']);
     // hiển thị services theo id_hotel
     Route::get('/services/hotels={id}', [ServiceController::class, 'list_services_hotel']);
-    // hiển thị khách sạn theo thành phố
-    Route::get('/hotel/city={id}', [hotelController::class, 'home_city']);
-        // hiển thị khách sạn theo id (detail_hotel)
-    Route::get('/hotel/{id}', [hotelController::class, 'detail_hotel_user']);
     // hiển thị comment theo id_cate
     Route::get('/comment/id_cate={id}', [RateController::class, 'comment_cate']);
-    // hiển thị cate_room theo hotel
-    Route::get('/cateRoom/{id}', [CateRoomController::class, 'list_cate']);
-       // hiển thị booking theo id_user
-       Route::get('/booking/{id}', [BookingController::class, 'booking_list']);
-        // hiển thị booking_detail theo id_user
-        Route::get('/bookingDetail/{id}', [BookingDetailController::class, 'booking_detail_list']);
+    // hiển thị cate_room theo id
+    Route::get('/cateRoom/{id}', [CateRoomController::class, 'detail_list_cate']);
+        // hiển thị cate_room theo hotel
+    Route::get('/cateRoomsss/hotels={id}', [CateRoomController::class, 'list_cate']);
+    // hiển thị booking theo id_user
+    Route::get('/booking/{id}', [BookingController::class, 'booking_list']);
+    // hiển thị booking_detail theo id_user
+    Route::get('/bookingDetail/{id}', [BookingDetailController::class, 'booking_detail_list']);
 });
-    // hiển thị voucher
-    Route::get('/vouchers/', [CateRoomController::class, 'list_voucher']);
-});
+// hiển thị voucher
