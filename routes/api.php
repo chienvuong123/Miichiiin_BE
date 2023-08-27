@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\ComfortController;
 use App\Http\Controllers\Admin\ServiceDetailController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\BookingController;
@@ -82,4 +83,6 @@ Route::prefix('admin')->group(function () {
 Route::get('/',[hotelController::class,'home_user']);
 
 
+// COMFORT
+Route::resource('comforts', ComfortController::class)->except(['create', 'edit']);
 
