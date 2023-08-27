@@ -18,7 +18,11 @@ class VoucherController extends Controller
         $voucher = Voucher::orderByDesc('created_at')->get();
         return response()->json($voucher);
     }
-
+    public function list_vourcher()
+    {
+        $voucher = Voucher::orderByDesc('created_at')->get();
+        return response()->json($voucher);
+    }
     /**
      * Show the form for creating a new resource.
      */
