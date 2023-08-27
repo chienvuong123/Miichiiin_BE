@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryRoomRequest;
 use App\Models\categoryRoom;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -15,6 +16,42 @@ class CateRoomController extends Controller
     {
         $categoryRoom = categoryRoom::all();
         return response()->json($categoryRoom);
+    }
+
+
+    public function list_cate($id)
+    {
+        $rooms = CategoryRoom::select(
+            'category_rooms.id',
+            'category_rooms.name',
+            'category_rooms.description',
+            'category_rooms.image',
+            'category_rooms.short_description',
+            'category_rooms.quantity_of_people',
+            'category_rooms.price',
+            'category_rooms.acreage',
+            'category_rooms.floor',
+            'category_rooms.likes',
+            'category_rooms.views',
+            'category_rooms.created_at',
+            'category_rooms.updated_at',
+            'hotels.name as nameHotel' ,
+            DB::raw('COUNT(DISTINCT rooms.id) as total_rooms')
+        )
+        ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
+        ->leftJoin('hotels', 'hotels.id', '=', 'rooms.id_hotel')
+        ->where('hotels.id', '=', $id)
+        ->groupBy('category_rooms.id', 'category_rooms.name', 'category_rooms.description',
+            'category_rooms.image', 'category_rooms.short_description', 'category_rooms.quantity_of_people',
+            'category_rooms.price', 'category_rooms.acreage', 'category_rooms.floor', 'category_rooms.likes',
+            'category_rooms.views', 'category_rooms.created_at', 'category_rooms.updated_at','hotels.name'
+        )
+        ->get();
+
+    return response()->json($rooms);
+
+
+
     }
     public function show($id)
     {

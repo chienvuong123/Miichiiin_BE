@@ -86,7 +86,21 @@ Route::prefix('admin')->group(function () {
     Route::resource('rates', RateController::class)->except(['create', 'edit']);
 });
 // USER
-Route::get('/',[hotelController::class,'home_user']);
+
+Route::prefix('users')->group(function () {
+    // hiển thị thông tin hotel trang home_user
+    Route::get('hotel', [hotelController::class, 'home_user']);
+    // hiển thị tất cả services cả hệ thống
+    Route::get('/services', [ServiceController::class, 'index']);
+    // hiển thị services theo id_hotel
+    Route::get('/services/{id}', [ServiceController::class, 'list_services_hotel']);
+    // hiển thị khách sạn theo thành phố
+    Route::get('/hotel/city={id}', [hotelController::class, 'home_city']);
+    // hiển thị comment theo id_cate
+    Route::get('/comment/id_cate={id}', [RateController::class, 'comment_cate']);
+    // hiển thị cate_room theo hotel
+    Route::get('/cateRoom/{id}', [CateRoomController::class, 'list_cate']);
+});
 
 
 
