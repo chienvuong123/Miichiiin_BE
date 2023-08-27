@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\ComfortController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\PermissionDetailController;
 use App\Http\Controllers\Admin\RateController;
+use App\Http\Controllers\Admin\RoleControler;
 use App\Http\Controllers\Admin\ServiceDetailController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\BookingController;
@@ -94,6 +95,9 @@ Route::prefix('admin')->group(function () {
 
     // VOUCHER
     Route::resource('vouchers', VoucherController::class)->except(['create', 'edit']);
+
+    // ROLE
+    Route::resource('roles', RoleControler::class)->except(['create', 'edit']);
 });
 // USER
 
