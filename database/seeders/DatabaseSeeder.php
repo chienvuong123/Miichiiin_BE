@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Comfort;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -32,7 +33,8 @@ class DatabaseSeeder extends Seeder
             ImageSeeder::class,
             imageDetailSeeder::class,
             ServiceSeeder::class,
-            ServiceDetailSeeder::class
+            ServiceDetailSeeder::class,
+            ComfortSeeder::class
         ]);
     }
 }

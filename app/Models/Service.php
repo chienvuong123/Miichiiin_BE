@@ -11,7 +11,6 @@ class Service extends Model
 
     protected $fillable = [
         'name',
-        'id_hotel',
         'description',
         'quantity',
         'price',
