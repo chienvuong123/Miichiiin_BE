@@ -28,6 +28,7 @@ class hotelController extends Controller
             DB::raw('COUNT(DISTINCT comforts.id) as total_comforts'),
             DB::raw('COUNT(DISTINCT rates.content) as total_rating_content'),
             DB::raw('COUNT(DISTINCT services.id) as total_services'),
+            DB::raw('CONCAT("[", GROUP_CONCAT(DISTINCT CONCAT(images.image)), "]") as image_urls')
         )
             ->leftJoin('image_details', 'hotels.id', '=', 'image_details.id_hotel')
             ->leftJoin('images', 'image_details.id_image', '=', 'images.id')
@@ -76,6 +77,7 @@ class hotelController extends Controller
             DB::raw('COUNT(DISTINCT comforts.id) as total_comforts'),
             DB::raw('COUNT(DISTINCT rates.content) as total_rating_content'),
             DB::raw('COUNT(DISTINCT services.id) as total_services'),
+            DB::raw('CONCAT("[", GROUP_CONCAT(DISTINCT CONCAT(images.image)), "]") as image_urls')
         )
             ->leftJoin('image_details', 'hotels.id', '=', 'image_details.id_hotel')
             ->leftJoin('images', 'image_details.id_image', '=', 'images.id')
@@ -126,6 +128,7 @@ class hotelController extends Controller
             DB::raw('COUNT(DISTINCT comforts.id) as total_comforts'),
             DB::raw('COUNT(DISTINCT rates.content) as total_rating_content'),
             DB::raw('COUNT(DISTINCT services.id) as total_services'),
+            DB::raw('CONCAT("[", GROUP_CONCAT(DISTINCT CONCAT(images.image)), "]") as image_urls')
         )
             ->leftJoin('image_details', 'hotels.id', '=', 'image_details.id_hotel')
             ->leftJoin('images', 'image_details.id_image', '=', 'images.id')
