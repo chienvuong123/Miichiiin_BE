@@ -35,6 +35,7 @@ class DatabaseSeeder extends Seeder
             ServiceSeeder::class,
             ServiceDetailSeeder::class,
             ComfortSeeder::class,
+            comfortDetailSeeder::class,
             RateSeeder::class
         ]);
     }
