@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ComfortController;
+use App\Http\Controllers\Admin\RateController;
 use App\Http\Controllers\Admin\ServiceDetailController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\BookingController;
@@ -57,9 +58,6 @@ Route::prefix('admin')->group(function () {
     // CITY
     Route::resource('city', CityController::class);
 
-    // FLOOR
-    Route::resource('floor', FloorController::class);
-
     // DISTRICT
     Route::resource('district', districtController::class);
 
@@ -80,11 +78,16 @@ Route::prefix('admin')->group(function () {
     // SERVICE
     Route::resource('services', ServiceController::class)->except(['create', 'edit']);
     Route::resource('service_detail', ServiceDetailController::class)->except(['create', 'edit']);
+
+    // COMFORT
+    Route::resource('comforts', ComfortController::class)->except(['create', 'edit']);
+
+    // RATE
+    Route::resource('rates', RateController::class)->except(['create', 'edit']);
 });
 // USER
 Route::get('/',[hotelController::class,'home_user']);
 
 
-// COMFORT
-Route::resource('comforts', ComfortController::class)->except(['create', 'edit']);
+
 
