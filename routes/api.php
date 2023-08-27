@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ComfortController;
 use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\PermissionDetailController;
 use App\Http\Controllers\Admin\RateController;
 use App\Http\Controllers\Admin\ServiceDetailController;
 use App\Http\Controllers\Admin\UserController;
@@ -89,6 +90,7 @@ Route::prefix('admin')->group(function () {
 
     // PERMISSION
     Route::resource('permissions', PermissionController::class)->except(['create', 'edit']);
+    Route::resource('permission_detail', PermissionDetailController::class)->except(['create', 'edit']);
 
     // VOUCHER
     Route::resource('vouchers', VoucherController::class)->except(['create', 'edit']);
