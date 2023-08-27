@@ -7,6 +7,7 @@ use App\Http\Requests\HotelRequest;
 use App\Models\hotel;
 use App\Models\room;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class hotelController extends Controller
 {
@@ -15,6 +16,19 @@ class hotelController extends Controller
     {
         $hotel = hotel::all();
         return response()->json($hotel);
+    }
+    public function home_user()
+    {
+        $hotels = Hotel::select('hotels.*', 'cities.name as city_name', 'images.image', DB::raw('COUNT(rooms.id) as total_rooms'), DB::raw('COUNT(DISTINCT category_rooms.id) as total_categories'))
+        ->leftJoin('image_details', 'hotels.id', '=', 'image_details.id_hotel')
+        ->leftJoin('images', 'image_details.id_image', '=', 'images.id')
+        ->leftJoin('cities', 'hotels.id_city', '=', 'cities.id')
+        ->leftJoin('rooms', 'hotels.id', '=', 'rooms.id_hotel')
+        ->leftJoin('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id')
+        ->groupBy('hotels.id', 'hotels.name', 'hotels.description', 'hotels.quantity_of_room', 'hotels.id_city', 'hotels.star', 'hotels.phone', 'hotels.email', 'hotels.status', 'hotels.quantity_floor', 'hotels.created_at', 'hotels.updated_at', 'cities.name', 'images.image')
+        ->get();
+
+        return response()->json($hotels);
     }
     public function show($id)
     {
@@ -70,5 +84,5 @@ class hotelController extends Controller
         }
         return response()->json($hotel);
     }
-  
+
 }

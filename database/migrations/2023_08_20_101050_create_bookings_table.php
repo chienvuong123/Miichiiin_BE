@@ -18,6 +18,8 @@ return new class extends Migration
             $table->integer('people_quantity')->nullable();
             $table->integer('total_amount')->nullable();
             $table->integer('status')->nullable();
+            $table->string('nationality')->nullable();
+            $table->string('cccd')->nullable();
             $table->string('message')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();

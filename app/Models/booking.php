@@ -16,6 +16,8 @@ class booking extends Model
         "check_in",
         "check_out",
         "people_quantity",
+        "cccd",
+        "nationality",
         "status",
         "total_amount",
         "message",

@@ -24,6 +24,8 @@ class bookingFactory extends Factory
             "people_quantity" => fake()->numberBetween(),
             "total_amount" => fake()->numberBetween(),
             "phone" => fake()->phoneNumber(),
+            "cccd" => fake()->text(),
+            "nationality" => fake()->address(),
             "status" => fake()->numberBetween(0,1),
             "message" => fake()->text(),
             "email" => fake()->email(),

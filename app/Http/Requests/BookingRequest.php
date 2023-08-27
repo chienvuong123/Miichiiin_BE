@@ -32,6 +32,8 @@ class BookingRequest extends FormRequest
             'people_quantity' => 'required|integer | min : 0',
             'total_amount' => 'required|integer | min : 0',
             'status' => 'required|integer',
+            'cccd' => 'required',
+            'nationality' => 'required',
             'email' => 'required|email|unique:users,email',
              'name' => 'required',
             'id_user' => 'required|integer',
