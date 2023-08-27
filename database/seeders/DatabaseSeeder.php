@@ -41,7 +41,8 @@ class DatabaseSeeder extends Seeder
             RateSeeder::class,
             PermissionSeeder::class,
             PermissionDetailSeeder::class,
-            VoucherSeeder::class
+            VoucherSeeder::class,
+            RoleSeeder::class
         ]);
     }
 }
