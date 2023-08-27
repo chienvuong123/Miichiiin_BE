@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ComfortController;
+use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RateController;
 use App\Http\Controllers\Admin\ServiceDetailController;
 use App\Http\Controllers\Admin\UserController;
@@ -84,6 +85,9 @@ Route::prefix('admin')->group(function () {
 
     // RATE
     Route::resource('rates', RateController::class)->except(['create', 'edit']);
+
+    // PERMISSION
+    Route::resource('permissions', PermissionController::class)->except(['create', 'edit']);
 });
 // USER
 Route::get('/',[hotelController::class,'home_user']);
