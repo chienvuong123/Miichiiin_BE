@@ -65,7 +65,6 @@ Route::prefix('admin')->group(function () {
     // DISTRICT
     Route::resource('district', districtController::class);
 
-
     // BOOKING
     Route::resource('booking', BookingController::class);
 
@@ -120,7 +119,7 @@ Route::prefix('users')->group(function () {
     // hiển thị cate_room theo id
     Route::get('/cateRoom/{id}', [CateRoomController::class, 'detail_list_cate']);
         // hiển thị cate_room theo hotel
-    Route::get('/cateRoomsss/hotels={id}', [CateRoomController::class, 'list_cate']);
+        Route::get('/cateRoomsss/hotels={id}/{startDate}/{endDate}', [CateRoomController::class, 'list_cate']);
     // hiển thị booking theo id_user
     Route::get('/booking/{id}', [BookingController::class, 'booking_list']);
     // hiển thị booking_detail theo id_user

@@ -72,7 +72,7 @@ class hotelController extends Controller
             'hotels.*',
             'cities.name as city_name',
             'images.image',
-            DB::raw('COUNT(DISTINCT rooms.id) as total_rooms'),
+            DB::raw('(SELECT COUNT(*) FROM rooms WHERE rooms.id_hotel = hotels.id AND rooms.status = 1) as total_rooms'),
             DB::raw('COUNT(DISTINCT category_rooms.id) as total_categories'),
             DB::raw('COUNT(DISTINCT comforts.id) as total_comforts'),
             DB::raw('COUNT(DISTINCT rates.content) as total_rating_content'),
@@ -105,7 +105,7 @@ class hotelController extends Controller
                 'cities.name',
                 'images.image'
             )
-            ->where('id_city','=',$id)
+            ->where('id_city', '=', $id)
             ->distinct()
             ->get()
             ->groupBy('id')
