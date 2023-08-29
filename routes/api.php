@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\ComfortController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\PermissionDetailController;
@@ -55,7 +56,6 @@ Route::prefix('admin')->group(function () {
         Route::get('cate_room/{id}', [roomsController::class, 'room_cate']);
     });
 
-
     // CATEGORY
     Route::resource('category', CateRoomController::class);
 
@@ -98,6 +98,9 @@ Route::prefix('admin')->group(function () {
 
     // ROLE
     Route::resource('roles', RoleControler::class)->except(['create', 'edit']);
+
+    // BANNER
+    Route::resource('banners', BannerController::class)->except(['create', 'edit']);
 });
 // USER
 
