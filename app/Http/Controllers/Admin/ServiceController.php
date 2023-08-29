@@ -65,8 +65,6 @@ class ServiceController extends Controller
     {
         $service = Service::query()->find($id);
 
-        $oldImg = $service->image;
-
         $service->fill($request->except('_token'));
 
         $service->save();
