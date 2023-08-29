@@ -31,6 +31,7 @@ class CategoryRoomRequest extends FormRequest
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:204',
             'floor' => 'required|integer',
             'likes' => 'required|integer',
+            'status' => 'required|integer',
             'acreage' => 'required|integer',
             'price' => 'required|integer',
             'quantity_of_people' => 'required|integer',

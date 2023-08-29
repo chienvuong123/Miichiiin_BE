@@ -20,6 +20,7 @@ class categoryRoom extends Model
         "price",
         "likes",
         "views",
+        "status",
         "id_cate",
         "quantity_of_people",
     ];
