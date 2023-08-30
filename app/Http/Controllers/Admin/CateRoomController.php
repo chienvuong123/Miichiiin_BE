@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryRoomRequest;
 use App\Models\categoryRoom;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -68,8 +69,14 @@ class CateRoomController extends Controller
 
         return response()->json($rooms);
     }
-    public function list_cate($id,$startDate,$endDate)
+    public function list_cate($id, $check_in = null, $check_out = null,$number_people = null,$total_room = null)
     {
+        $startDate = $check_in ?? Carbon::now();
+        $endDate =  $check_out ?? $startDate->addDays(3)->setTime(12, 0);
+
+        $number_of_people = $number_people ?? 1;
+        $number_room = $total_room ?? 1;
+
         // $rooms = CategoryRoom::select(
         //     'category_rooms.id',
         //     'category_rooms.name',
@@ -153,7 +160,6 @@ class CateRoomController extends Controller
                              ->where('bookings.status','!=',"2")
                              ->where('bookings.status','!=',"3");
                         }
-
                 )
                     ->orWhereNull('booking_details.id_room');
             })
@@ -173,10 +179,126 @@ class CateRoomController extends Controller
                 'category_rooms.updated_at',
                 'hotels.name'
             )
-            ->having('Total_rooms', '>', 0)
+            ->having('Total_rooms', '>=', $number_room)
+            ->having('category_rooms.quantity_of_people', '>=', $number_of_people)
             ->get();
         return response()->json($rooms);
     }
+
+
+    
+    // public function find($id,$start,$end)
+    // {
+    //     dd($start);
+    //     $check_in = $start ?? "";
+    //     $check_out =$end ?? "";
+    //     // $rooms = CategoryRoom::select(
+    //     //     'category_rooms.id',
+    //     //     'category_rooms.name',
+    //     //     'category_rooms.description',
+    //     //     'category_rooms.image',
+    //     //     'category_rooms.short_description',
+    //     //     'category_rooms.quantity_of_people',
+    //     //     'category_rooms.price',
+    //     //     'category_rooms.acreage',
+    //     //     'category_rooms.floor',
+    //     //     'category_rooms.likes',
+    //     //     'category_rooms.views',
+    //     //     'category_rooms.created_at',
+    //     //     'category_rooms.updated_at',
+    //     //     'hotels.name as nameHotel',
+    //     //     DB::raw('COUNT(DISTINCT Rooms.id) as Total_rooms'),
+    //     //     DB::raw('COUNT(DISTINCT Comforts.id) as Total_comfort'),
+    //     //     DB::raw('CONCAT("[", GROUP_CONCAT(DISTINCT CONCAT(images.image)), "]") as image_urls')
+    //     // )
+    //     //     ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
+    //     //     ->leftJoin('hotels', 'hotels.id', '=', 'rooms.id_hotel')
+    //     //     ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
+    //     //     ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
+    //     //     ->leftJoin('image_details', 'image_details.id_cate', '=', 'category_rooms.id')
+    //     //     ->leftJoin('images', 'images.id', '=', 'image_details.id_image')
+    //     //     ->where('hotels.id', '=', $id)
+    //     //     ->where('category_rooms.status', '=', '1')
+    //     //     ->groupBy(
+    //     //         'category_rooms.id',
+    //     //         'category_rooms.name',
+    //     //         'category_rooms.description',
+    //     //         'category_rooms.image',
+    //     //         'category_rooms.short_description',
+    //     //         'category_rooms.quantity_of_people',
+    //     //         'category_rooms.price',
+    //     //         'category_rooms.acreage',
+    //     //         'category_rooms.floor',
+    //     //         'category_rooms.likes',
+    //     //         'category_rooms.views',
+    //     //         'category_rooms.created_at',
+    //     //         'category_rooms.updated_at',
+    //     //         'hotels.name'
+    //     //     )
+    //     //     ->having('Total_rooms', '>', 0)
+    //     //     ->get();
+
+    //     $rooms = CategoryRoom::select(
+    //         'category_rooms.id',
+    //         'category_rooms.name',
+    //         'category_rooms.description',
+    //         'category_rooms.image',
+    //         'category_rooms.short_description',
+    //         'category_rooms.quantity_of_people',
+    //         'category_rooms.price',
+    //         'category_rooms.acreage',
+    //         'category_rooms.floor',
+    //         'category_rooms.likes',
+    //         'category_rooms.views',
+    //         'category_rooms.created_at',
+    //         'category_rooms.updated_at',
+    //         'hotels.name as nameHotel',
+    //         DB::raw('COUNT(DISTINCT rooms.id) as Total_rooms'),
+    //         DB::raw('COUNT(DISTINCT comforts.id) as Total_comfort'),
+    //         DB::raw('CONCAT("[", GROUP_CONCAT(DISTINCT CONCAT(images.image)), "]") as image_urls')
+    //     )
+    //         ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
+    //         ->leftJoin('hotels', 'hotels.id', '=', 'rooms.id_hotel')
+    //         ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
+    //         ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
+    //         ->leftJoin('image_details', 'image_details.id_cate', '=', 'category_rooms.id')
+    //         ->leftJoin('images', 'images.id', '=', 'image_details.id_image')
+    //         ->leftJoin('booking_details', 'booking_details.id_room', '=', 'rooms.id')
+    //         ->leftJoin('bookings', 'bookings.id', '=', 'booking_details.id_booking')
+    //         ->where('hotels.id', '=', $id)
+    //         ->where('category_rooms.status', '=', '1')
+    //         ->where(function ($query) use ($startDate, $endDate) {
+    //             $query->where(
+    //                 function ($q) use ($startDate, $endDate) {
+    //                         $q->where('bookings.check_in', '>=', $endDate)
+    //                          ->orWhere('bookings.check_out', '<=', $startDate)
+    //                          ->where('bookings.status','!=',"2")
+    //                          ->where('bookings.status','!=',"3");
+    //                     }
+    //             )
+    //                 ->orWhereNull('booking_details.id_room');
+    //         })
+    //         ->groupBy(
+    //             'category_rooms.id',
+    //             'category_rooms.name',
+    //             'category_rooms.description',
+    //             'category_rooms.image',
+    //             'category_rooms.short_description',
+    //             'category_rooms.quantity_of_people',
+    //             'category_rooms.price',
+    //             'category_rooms.acreage',
+    //             'category_rooms.floor',
+    //             'category_rooms.likes',
+    //             'category_rooms.views',
+    //             'category_rooms.created_at',
+    //             'category_rooms.updated_at',
+    //             'hotels.name'
+    //         )
+    //         ->having('Total_rooms', '>', $number_of_people)
+    //         ->get();
+    //     return response()->json($rooms);
+    // }
+
     public function show($id)
     {
         $categoryRoom = categoryRoom::find($id);

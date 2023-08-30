@@ -119,7 +119,8 @@ Route::prefix('users')->group(function () {
     // hiển thị cate_room theo id
     Route::get('/cateRoom/{id}', [CateRoomController::class, 'detail_list_cate']);
         // hiển thị cate_room theo hotel
-        Route::get('/cateRoomsss/hotels={id}/{startDate}/{endDate}', [CateRoomController::class, 'list_cate']);
+    Route::get('/cateRoomsss/hotels={id}/{check_in?}/{check_out?}/{number_people?}/{total_room?}',
+     [CateRoomController::class, 'list_cate']);
     // hiển thị booking theo id_user
     Route::get('/booking/{id}', [BookingController::class, 'booking_list']);
     // hiển thị booking_detail theo id_user
