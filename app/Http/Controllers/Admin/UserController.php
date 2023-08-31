@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -70,5 +71,16 @@ class UserController extends Controller
         $user->delete();
         delete_file($user->image);
         return response()->json(Response::HTTP_OK);
+    }
+    public function login(UserRequest $request)
+    {
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            return response()->json(['user' => $user], 200);
+        } else {
+            return response()->json(['message' => 'Đăng nhập thất bại'], 401);
+        }
     }
 }

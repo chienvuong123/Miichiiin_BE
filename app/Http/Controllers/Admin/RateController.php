@@ -15,7 +15,10 @@ class RateController extends Controller
      */
     public function index()
     {
-        $rates = Rate::OrderByDesc('created_at')->get();
+        $rates = Rate::select('rates.*', 'users.name as user_name','category_rooms.name as name_category')
+        ->join('users', 'rates.id_user', '=', 'users.id')
+        ->join('category_rooms', 'rates.id_category', '=', 'category_rooms.id')
+        ->get();
         return response()->json($rates);
     }
 
@@ -38,7 +41,6 @@ class RateController extends Controller
         $rate->save();
         return response()->json($rate);
     }
-
     /**
      * Display the specified resource.
      */

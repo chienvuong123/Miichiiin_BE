@@ -105,6 +105,11 @@ Route::prefix('admin')->group(function () {
 });
 // USER
 
+
+//Login
+Route::post('login', [UserController::class, 'login']);
+
+//
 Route::prefix('users')->group(function () {
     // hiển thị thông tin hotel trang home_user
     Route::get('hotel', [hotelController::class, 'home_user']);
