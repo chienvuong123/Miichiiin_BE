@@ -15,7 +15,9 @@ class BookingController extends Controller
     {
 
         // get all booking
-        $booking = booking::all();
+        $booking = booking::select('bookings.*', 'users.name as name_user',)
+        ->leftJoin('users', 'bookings.id_user', '=', 'users.id')
+        ->get();
         return response()->json($booking);
     }
     public function booking_list($id)

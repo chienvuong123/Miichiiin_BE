@@ -14,8 +14,29 @@ class hotelController extends Controller
     //
     public function index()
     {
-        $hotel = hotel::all();
-        return response()->json($hotel);
+        $hotels = Hotel::select('hotels.*', 'cities.name as name_cities',
+        DB::raw('CONCAT("[", GROUP_CONCAT(DISTINCT CONCAT(images.image)), "]") as image_urls'))
+        ->join('cities', 'hotels.id_city', '=', 'cities.id')
+        ->leftJoin('image_details', 'hotels.id', '=', 'image_details.id_hotel')
+        ->leftJoin('images', 'image_details.id_image', '=', 'images.id')
+        ->groupBy(
+            'hotels.id',
+            'hotels.name',
+            'hotels.description',
+            'hotels.quantity_of_room',
+            'hotels.id_city',
+            'hotels.star',
+            'hotels.phone',
+            'hotels.email',
+            'hotels.status',
+            'hotels.quantity_floor',
+            'hotels.created_at',
+            'hotels.updated_at',
+            'cities.name',
+            'images.image'
+        )
+        ->get();
+        return response()->json($hotels);
     }
     public function home_user()
     {

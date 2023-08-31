@@ -39,6 +39,12 @@ class UserRequest extends FormRequest
         $currentAction = $this->route()->getActionMethod();
         switch ($this->method()):
             case 'POST':
+                if ($currentAction == 'login') {
+                    $rules = [
+                        'email' => 'required|email',
+                        'password' => 'required',
+                    ];
+                }
                 break;
 
             case 'PUT':
