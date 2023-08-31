@@ -40,6 +40,8 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
+//
+
 Route::prefix('admin')->group(function () {
     Route::resource('users', UserController::class)->except(['create', 'edit']);
 
@@ -64,7 +66,6 @@ Route::prefix('admin')->group(function () {
 
     // DISTRICT
     Route::resource('district', districtController::class);
-
 
     // BOOKING
     Route::resource('booking', BookingController::class);
