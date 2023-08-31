@@ -40,6 +40,8 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
+//
+
 Route::prefix('admin')->group(function () {
     Route::resource('users', UserController::class)->except(['create', 'edit']);
 
