@@ -29,6 +29,7 @@ class HotelRequest extends FormRequest
         $rules = [
             'name' => 'required',
             'description' => 'required',
+            'address' => 'required',
             'quantity_of_room' => 'required|integer',
             'id_city' => 'required|integer',
             'phone' => 'required | regex:/^([0-9\s\-\+\(\)]*)$/',

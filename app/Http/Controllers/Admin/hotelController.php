@@ -16,7 +16,7 @@ class hotelController extends Controller
     {
         $hotels = Hotel::select('hotels.*', 'cities.name as name_cities',
         DB::raw('CONCAT("[", GROUP_CONCAT(DISTINCT CONCAT(images.image)), "]") as image_urls'))
-        ->join('cities', 'hotels.id_city', '=', 'cities.id')
+        ->leftJoin('cities', 'hotels.id_city', '=', 'cities.id')
         ->leftJoin('image_details', 'hotels.id', '=', 'image_details.id_hotel')
         ->leftJoin('images', 'image_details.id_image', '=', 'images.id')
         ->groupBy(
@@ -27,6 +27,7 @@ class hotelController extends Controller
             'hotels.id_city',
             'hotels.star',
             'hotels.phone',
+            'hotels.address',
             'hotels.email',
             'hotels.status',
             'hotels.quantity_floor',
@@ -68,6 +69,7 @@ class hotelController extends Controller
                 'hotels.quantity_of_room',
                 'hotels.id_city',
                 'hotels.star',
+                'hotels.address',
                 'hotels.phone',
                 'hotels.email',
                 'hotels.status',
@@ -119,6 +121,7 @@ class hotelController extends Controller
                 'hotels.star',
                 'hotels.phone',
                 'hotels.email',
+                'hotels.address',
                 'hotels.status',
                 'hotels.quantity_floor',
                 'hotels.created_at',

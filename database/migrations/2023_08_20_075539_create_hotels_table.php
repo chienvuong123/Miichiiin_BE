@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->integer('quantity_of_room')->nullable();
             $table->integer('id_city')->nullable();
+            $table->string('address')->nullable();
             $table->integer('star')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
