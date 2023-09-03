@@ -75,7 +75,7 @@ class BookingController extends Controller
                     ->where('bookings.id', $booking_record->id)
                     ->get();
                 $list_room[$list_room_key]['services'] = $services;
-                $total_service = count($services);
+                $total_service += count($services);
             }
 
             $booking[$key]['room'] = $list_room;
@@ -104,9 +104,6 @@ class BookingController extends Controller
             $booking_d_record = [];
             $j = 0;
             for ($i = 0; $i < count($cart); $i++) {
-                if($i == 1) {
-                    dd($i);
-                }
                 $list_room = room::where('id_cate', $cart[$i]['id_cate'])->orderBy('name')->get();
                 if (count($booking_d_record) >= 1) {
                     if ($booking_d_record[count($booking_d_record) - 1]['id_cate'] == $cart[$i]['id_cate']) {
