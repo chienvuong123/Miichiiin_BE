@@ -17,8 +17,8 @@ class PermissionDetailFactory extends Factory
     public function definition(): array
     {
         return [
-            'id_permission' => fake()->numberBetween(0,5),
-            'id_role' => fake()->numberBetween(0,5)
+            'id_permission' => fake()->numberBetween(1,5),
+            'id_role' => fake()->numberBetween(1,5)
         ];
     }
 }

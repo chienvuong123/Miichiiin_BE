@@ -17,8 +17,8 @@ class ServiceDetailFactory extends Factory
     public function definition(): array
     {
         return [
-            'id_hotel' => fake()->numberBetween(0,5),
-            'id_service' => fake()->numberBetween(0,5)
+            'id_hotel' => fake()->numberBetween(1,5),
+            'id_service' => fake()->numberBetween(1,5)
         ];
     }
 }

@@ -34,6 +34,11 @@ class DistrictRequest extends FormRequest
 
             case 'PUT':
             case 'PATCH':
+                if ($currentAction == 'updateState_district') {
+                    $rules = [
+                        'status' => 'required',
+                    ];
+                }
                 break;
         endswitch;
         return $rules;

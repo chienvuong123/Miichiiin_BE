@@ -80,4 +80,21 @@ class PermissionController extends Controller
             "status" => Response::HTTP_OK
         ]);
     }
+    public function updateState_permission(PermissionRequest $request, $id)
+    {
+        $locked = $request->input('status');
+        // Perform the necessary logic to lock or unlock based on the $locked state
+        $Permission = Permission::find($id);
+        if ($Permission) {
+            $Permission->status = $locked == 1 ? 1 : 0;
+            $Permission->save();
+            return response()->json([
+                'message' => 'Toggle switch state updated successfully',
+                'Permission' => $Permission,
+            ]);
+        }
+        return response()->json([
+            'message' => 'Permission not found',
+        ], 404);
+    }
 }

@@ -24,7 +24,7 @@ class VoucherFactory extends Factory
             'discount' => fake()->numerify,
             'start_at' => fake()->dateTime,
             'expire_at' => fake()->dateTime,
-            'status' => fake()->numberBetween(0,3),
+            'status' => fake()->numberBetween(1,3),
             'meta' => fake()->text(50),
             'description' => fake()->text(50)
         ];

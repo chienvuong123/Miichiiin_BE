@@ -17,11 +17,11 @@ class RateFactory extends Factory
     public function definition(): array
     {
         return [
-            'id_user' => fake()->numberBetween(0,5),
-            'id_category' => fake()->numberBetween(0,5),
+            'id_user' => fake()->numberBetween(1,5),
+            'id_category' => fake()->numberBetween(1,5),
             'content' => fake()->text(50),
             'rating' => fake()->randomFloat(2,0,10),
-            'status' => fake()->numberBetween(0,1)
+            'status' => fake()->numberBetween(1)
         ];
     }
 }

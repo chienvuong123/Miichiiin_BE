@@ -104,4 +104,21 @@ class VoucherController extends Controller
             "status" => Response::HTTP_OK
         ]);
     }
+    public function updateState_voucher(VoucherRequest $request, $id)
+    {
+        $locked = $request->input('status');
+        // Perform the necessary logic to lock or unlock based on the $locked state
+        $Voucher = Voucher::find($id);
+        if ($Voucher) {
+            $Voucher->status = $locked == 1 ? 1 : 0;
+            $Voucher->save();
+            return response()->json([
+                'message' => 'Toggle switch state updated successfully',
+                'Voucher' => $Voucher,
+            ]);
+        }
+        return response()->json([
+            'message' => 'Room not found',
+        ], 404);
+    }
 }

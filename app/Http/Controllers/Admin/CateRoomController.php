@@ -186,7 +186,7 @@ class CateRoomController extends Controller
     }
 
 
-    
+
     // public function find($id,$start,$end)
     // {
     //     dd($start);
@@ -364,5 +364,22 @@ class CateRoomController extends Controller
             ]);
         }
         return response()->json($categoryRoom);
+    }
+    public function updateState_cate(CategoryRoomRequest $request, $id)
+    {
+        $locked = $request->input('status');
+        // Perform the necessary logic to lock or unlock based on the $locked state
+        $categoryRoom = categoryRoom::find($id);
+        if ($categoryRoom) {
+            $categoryRoom->status = $locked == 1 ? 1 : 0;
+            $categoryRoom->save();
+            return response()->json([
+                'message' => 'Toggle switch state updated successfully',
+                'categoryRoom' => $categoryRoom,
+            ]);
+        }
+        return response()->json([
+            'message' => 'Room not found',
+        ], 404);
     }
 }

@@ -48,6 +48,11 @@ class BookingRequest extends FormRequest
 
             case 'PUT':
             case 'PATCH':
+                if ($currentAction == 'updateState_booking') {
+                    $rules = [
+                        'status' => 'required',
+                    ];
+                }
                 break;
         endswitch;
         return $rules;

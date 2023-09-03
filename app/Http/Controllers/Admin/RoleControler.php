@@ -86,4 +86,21 @@ class RoleControler extends Controller
             "status" => Response::HTTP_OK
         ]);
     }
+    public function updateState_role(RoleRequest $request, $id)
+    {
+        $locked = $request->input('status');
+        // Perform the necessary logic to lock or unlock based on the $locked state
+        $Role = Role::find($id);
+        if ($Role) {
+            $Role->status = $locked == 1 ? 1 : 0;
+            $Role->save();
+            return response()->json([
+                'message' => 'Toggle switch state updated successfully',
+                'Role' => $Role,
+            ]);
+        }
+        return response()->json([
+            'message' => 'Role not found',
+        ], 404);
+    }
 }

@@ -26,6 +26,7 @@ class RateRequest extends FormRequest
         $rules = [
             'content' => 'required',
             'rating' => 'required',
+            'status' => 'required',
         ];
         // lấy ra tên phương thức cần sử lý
         $currentAction = $this->route()->getActionMethod();
@@ -35,7 +36,10 @@ class RateRequest extends FormRequest
 
             case 'PUT':
             case 'PATCH':
-                if ($currentAction == 'update') {
+                if ($currentAction == 'updateState_rate') {
+                    $rules = [
+                        'status' => 'required',
+                    ];
                 }
                 break;
         endswitch;

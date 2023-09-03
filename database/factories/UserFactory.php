@@ -24,11 +24,11 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => Hash::make('123456'), // password
             'remember_token' => Str::random(10),
-            'image' => fake()->imageUrl,
+            'image' => fake()->imageUrl(),
             'description' => fake()->text(20),
-            'phone' => fake()->phoneNumber,
-            'address' => fake()->address,
-            'status' => fake()->numberBetween(0,1),
+            'phone' => fake()->phoneNumber(),
+            'address' => fake()->address(),
+            'status' => fake()->numberBetween(1),
             'gender' => fake()->numberBetween(0,2),
             'date' => fake()->date
         ];

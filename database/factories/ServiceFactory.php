@@ -20,9 +20,9 @@ class ServiceFactory extends Factory
         return [
             'name' => fake()->text(20),
             'description' => fake()->text(20),
-            'quantity' => fake()->numerify,
-            'price' => fake()->numerify,
-            'status' => fake()->numberBetween(0,2),
+            'quantity' => fake()->numerify(),
+            'price' => fake()->numerify(),
+            'status' => fake()->numberBetween(1,2),
         ];
     }
 }

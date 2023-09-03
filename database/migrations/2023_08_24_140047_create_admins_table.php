@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
-            $table->integer('status')->default(0);
+            $table->integer('status')->default(1);
             $table->integer('gender')->nullable();
             $table->date('date')->nullable();
             $table->rememberToken();

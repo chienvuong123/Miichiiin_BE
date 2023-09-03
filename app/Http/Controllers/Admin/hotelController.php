@@ -245,4 +245,21 @@ class hotelController extends Controller
         }
         return response()->json($hotel);
     }
+    public function updateState_hotel(HotelRequest $request, $id)
+    {
+        $locked = $request->input('status');
+        // Perform the necessary logic to lock or unlock based on the $locked state
+        $hotel = hotel::find($id);
+        if ($hotel) {
+            $hotel->status = $locked == 1 ? 1 : 0;
+            $hotel->save();
+            return response()->json([
+                'message' => 'Toggle switch state updated successfully',
+                'hotel' => $hotel,
+            ]);
+        }
+        return response()->json([
+            'message' => 'hotel not found',
+        ], 404);
+    }
 }
