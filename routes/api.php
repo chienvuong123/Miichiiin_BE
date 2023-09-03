@@ -68,7 +68,7 @@ Route::prefix('admin')->group(function () {
     Route::resource('district', districtController::class);
 
     // BOOKING
-    Route::resource('booking', BookingController::class);
+    Route::resource('bookings', BookingController::class);
 
     // BOOKING DETAIL
     Route::resource('bookingdetail', BookingDetailController::class);
