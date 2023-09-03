@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('id_category');
             $table->string('content')->nullable();
             $table->float('rating')->nullable();
-            $table->string('status')->default(0);
+            $table->string('status')->default(1);
             $table->timestamps();
         });
     }

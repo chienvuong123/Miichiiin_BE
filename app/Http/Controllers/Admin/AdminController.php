@@ -89,4 +89,21 @@ class AdminController extends Controller
         delete_file($admin->image);
         return response()->json(Response::HTTP_OK);
     }
+    public function updateState_admin(AdminRequest $request, $id)
+    {
+        $locked = $request->input('status');
+        // Perform the necessary logic to lock or unlock based on the $locked state
+        $Admin = Admin::find($id);
+        if ($Admin) {
+            $Admin->status = $locked == 1 ? 1 : 0;
+            $Admin->save();
+            return response()->json([
+                'message' => 'Toggle switch state updated successfully',
+                'Admin' => $Admin,
+            ]);
+        }
+        return response()->json([
+            'message' => 'Admin not found',
+        ], 404);
+    }
 }

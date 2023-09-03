@@ -35,7 +35,10 @@ class RoleRequest extends FormRequest
 
             case 'PUT':
             case 'PATCH':
-                if ($currentAction == 'update') {
+                if ($currentAction == 'updateState_role') {
+                    $rules = [
+                        'status' => 'required',
+                    ];
                 }
                 break;
         endswitch;

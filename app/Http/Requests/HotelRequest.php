@@ -46,6 +46,11 @@ class HotelRequest extends FormRequest
 
             case 'PUT':
             case 'PATCH':
+                if ($currentAction == 'updateState_hotel') {
+                    $rules = [
+                        'status' => 'required',
+                    ];
+                }
                 break;
         endswitch;
         return $rules;

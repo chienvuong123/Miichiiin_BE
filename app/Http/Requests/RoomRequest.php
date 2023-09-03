@@ -38,11 +38,20 @@ class RoomRequest extends FormRequest
         $currentAction = $this->route()->getActionMethod();
         switch ($this->method()):
             case 'POST':
+                if ($currentAction == 'updateState') {
+                    $rules = [
+                        'status' => 'required',
+                    ];
+                }
                 break;
 
             case 'PUT':
             case 'PATCH':
-
+                if ($currentAction == 'updateState') {
+                    $rules = [
+                        'status' => 'required',
+                    ];
+                }
                 break;
         endswitch;
         return $rules;

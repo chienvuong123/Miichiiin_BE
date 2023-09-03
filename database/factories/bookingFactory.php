@@ -26,10 +26,10 @@ class bookingFactory extends Factory
             "phone" => fake()->phoneNumber(),
             "cccd" => fake()->text(),
             "nationality" => fake()->address(),
-            "status" => fake()->numberBetween(0,1),
+            "status" => fake()->numberBetween(1),
             "message" => fake()->text(),
             "email" => fake()->email(),
-            "id_user" => fake()->numberBetween(),
+            "id_user" => fake()->numberBetween(1,10),
         ];
     }
 }

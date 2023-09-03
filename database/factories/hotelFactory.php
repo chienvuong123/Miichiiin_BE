@@ -21,13 +21,13 @@ class hotelFactory extends Factory
             "name" => fake()->name(),
             "description" => fake()->text(),
             "star" => fake()->numberBetween(0,5),
-            "status" => fake()->numberBetween(0,1),
-            "email" => fake()->email(),
+            "status" => fake()->numberBetween(1),
+            "email" => fake()->unique()->email(),
             "address" => fake()->address(),
             "phone" => fake()->phoneNumber(),
-            "id_city" => fake()->numberBetween(),
-            "quantity_floor" => fake()->numberBetween(),
-            "quantity_of_room" => fake()->numberBetween(),
+            "id_city" => fake()->numberBetween(1,10),
+            "quantity_floor" => fake()->numberBetween(0,10),
+            "quantity_of_room" => fake()->numberBetween(0,100),
         ];
     }
 }

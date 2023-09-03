@@ -44,32 +44,46 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->group(function () {
     Route::resource('users', UserController::class)->except(['create', 'edit']);
-
+    Route::prefix('users')->group(function () {
+        Route::put('{id}/status', [UserController::class, 'updateState_user']);
+    });
     // ADMIN
     Route::resource('admins', AdminController::class)->except(['create', 'edit']);
-
+    Route::prefix('admins')->group(function () {
+        Route::put('{id}/status', [AdminController::class, 'updateState_admin']);
+    });
     // HOTEL
     Route::resource('hotel', hotelController::class);
+    Route::prefix('hotel')->group(function () {
+        Route::put('{id}/status', [hotelController::class, 'updateState_hotel']);
+    });
 
     // ROOM
     Route::resource('room', roomsController::class);
-
     Route::prefix('room')->group(function () {
         Route::get('cate_room/{id}', [roomsController::class, 'room_cate']);
+        Route::put('{id}/status', [roomsController::class, 'updateState']);
     });
-
     // CATEGORY
     Route::resource('category', CateRoomController::class);
+    Route::prefix('category')->group(function () {
+        Route::put('{id}/status', [CateRoomController::class, 'updateState_cate']);
+    });
 
     // CITY
     Route::resource('city', CityController::class);
 
     // DISTRICT
     Route::resource('district', districtController::class);
+    Route::prefix('district')->group(function () {
+        Route::put('{id}/status', [districtController::class, 'updateState_district']);
+    });
 
     // BOOKING
     Route::resource('bookings', BookingController::class);
-
+    Route::prefix('bookings')->group(function () {
+        Route::put('{id}/status', [BookingController::class, 'updateState_booking']);
+    });
     // BOOKING DETAIL
     Route::resource('bookingdetail', BookingDetailController::class);
 
@@ -82,24 +96,39 @@ Route::prefix('admin')->group(function () {
 
     // SERVICE
     Route::resource('services', ServiceController::class)->except(['create', 'edit']);
+    Route::prefix('services')->group(function () {
+        Route::put('{id}/status', [ServiceController::class, 'updateState_services']);
+    });
     Route::resource('service_detail', ServiceDetailController::class)->except(['create', 'edit']);
 
     // COMFORT
     Route::resource('comforts', ComfortController::class)->except(['create', 'edit']);
-
+    Route::prefix('comforts')->group(function () {
+        Route::put('{id}/status', [ComfortController::class, 'updateState_comfort']);
+    });
     // RATE
     Route::resource('rates', RateController::class)->except(['create', 'edit']);
+    Route::prefix('rates')->group(function () {
+        Route::put('{id}/status', [RateController::class, 'updateState_rate']);
+    });
 
     // PERMISSION
     Route::resource('permissions', PermissionController::class)->except(['create', 'edit']);
+    Route::prefix('permissions')->group(function () {
+        Route::put('{id}/status', [PermissionController::class, 'updateState_permission']);
+    });
     Route::resource('permission_detail', PermissionDetailController::class)->except(['create', 'edit']);
 
     // VOUCHER
     Route::resource('vouchers', VoucherController::class)->except(['create', 'edit']);
-
+    Route::prefix('vouchers')->group(function () {
+        Route::put('{id}/status', [VoucherController::class, 'updateState_voucher']);
+    });
     // ROLE
     Route::resource('roles', RoleControler::class)->except(['create', 'edit']);
-
+    Route::prefix('roles')->group(function () {
+        Route::put('{id}/status', [RoleControler::class, 'updateState_role']);
+    });
     // BANNER
     Route::resource('banners', BannerController::class)->except(['create', 'edit']);
 });
@@ -126,7 +155,7 @@ Route::prefix('users')->group(function () {
     // hiển thị cate_room theo id
     Route::get('/cateRoom/{id}', [CateRoomController::class, 'detail_list_cate']);
         // hiển thị cate_room theo hotel
-    Route::get('/cateRoomsss/hotels={id}/{check_in?}/{check_out?}/{number_people?}/{total_room?}',
+    Route::get('/listRoom/hotels={id}/{check_in?}/{check_out?}/{number_people?}/{total_room?}',
      [CateRoomController::class, 'list_cate']);
     // hiển thị booking theo id_user
     Route::get('/booking/{id}', [BookingController::class, 'booking_list']);

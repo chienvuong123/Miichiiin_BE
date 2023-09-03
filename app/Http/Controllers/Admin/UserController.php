@@ -83,4 +83,21 @@ class UserController extends Controller
             return response()->json(['message' => 'Đăng nhập thất bại'], 401);
         }
     }
+    public function updateState_user(UserRequest $request, $id)
+    {
+        $locked = $request->input('status');
+        // Perform the necessary logic to lock or unlock based on the $locked state
+        $User = User::find($id);
+        if ($User) {
+            $User->status = $locked == 1 ? 1 : 0;
+            $User->save();
+            return response()->json([
+                'message' => 'Toggle switch state updated successfully',
+                'User' => $User,
+            ]);
+        }
+        return response()->json([
+            'message' => 'Room not found',
+        ], 404);
+    }
 }

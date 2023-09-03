@@ -27,6 +27,20 @@ class ComfortRequest extends FormRequest
             'name' => 'required',
             'description' => 'required'
         ];
+        $currentAction = $this->route()->getActionMethod();
+        switch ($this->method()):
+            case 'POST':
+                break;
+
+            case 'PUT':
+            case 'PATCH':
+                if ($currentAction == 'updateState_comfort') {
+                    $rules = [
+                        'status' => 'required',
+                    ];
+                }
+                break;
+        endswitch;
         return $rules;
     }
 

@@ -52,6 +52,11 @@ class UserRequest extends FormRequest
                 if ($currentAction == 'update') {
                     $rules['image'] = 'mimes:jpg,jpeg,png,webp|max:2048';
                 }
+                if ($currentAction == 'updateState_user') {
+                    $rules = [
+                        'status' => 'required',
+                    ];
+                }
                 break;
         endswitch;
         return $rules;

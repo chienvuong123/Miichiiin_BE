@@ -98,7 +98,6 @@ class BookingController extends Controller
         // Create Booking
         $params = $request->except('_token', 'cart');
         $booking  = booking::create($params);
-
         if ($booking->id) {
             $cart = $request->cart;
             $promotion = $request->promotion ?? null;
@@ -124,7 +123,6 @@ class BookingController extends Controller
                     ];
                     continue;
                 }
-
                 foreach ($cart[$i]['services'] as $service) {
                     $booking_d_record[] = [
                         'id_booking' => $booking->id,
@@ -132,7 +130,6 @@ class BookingController extends Controller
                         'id_cate' => $cart[$i]['id_cate'],
                         'id_services' => $service,
                         'id_promotions' => $promotion,
-                        'created_at' => now()
                     ];
                 }
             }
@@ -181,5 +178,22 @@ class BookingController extends Controller
             ]);
         }
         return response()->json($booking);
+    }
+    public function updateState_booking(BookingRequest $request, $id)
+    {
+        $locked = $request->input('status');
+        // Perform the necessary logic to lock or unlock based on the $locked state
+        $booking = booking::find($id);
+        if ($booking) {
+            $booking->status = $locked == 1 ? 1 : 0;
+            $booking->save();
+            return response()->json([
+                'message' => 'Toggle switch state updated successfully',
+                'booking' => $booking,
+            ]);
+        }
+        return response()->json([
+            'message' => 'booking not found',
+        ], 404);
     }
 }

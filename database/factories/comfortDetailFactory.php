@@ -18,8 +18,8 @@ class comfortDetailFactory extends Factory
     {
         return [
             //
-            "id_cate_room" => fake()->numberBetween(0,1),
-            "id_comfort" => fake()->numberBetween(0,1),
+            "id_cate_room" => fake()->numberBetween(1,10),
+            "id_comfort" => fake()->numberBetween(1,10),
         ];
     }
 }

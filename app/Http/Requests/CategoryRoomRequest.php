@@ -46,6 +46,11 @@ class CategoryRoomRequest extends FormRequest
 
             case 'PUT':
             case 'PATCH':
+                if ($currentAction == 'updateState_cate') {
+                    $rules = [
+                        'status' => 'required',
+                    ];
+                }
                 break;
         endswitch;
         return $rules;

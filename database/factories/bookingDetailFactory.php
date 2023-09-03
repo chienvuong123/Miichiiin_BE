@@ -18,11 +18,11 @@ class bookingDetailFactory extends Factory
     {
         return [
             //
-            "id_promotions" => fake()->numberBetween(),
-            "id_cate" => fake()->numberBetween(),
-            "id_room" => fake()->numberBetween(),
-            "id_services" => fake()->numberBetween(),
-            "id_booking" => fake()->numberBetween(),
+            "id_promotions" => fake()->numberBetween(1,10),
+            "id_cate" => fake()->numberBetween(1,10),
+            "id_room" => fake()->numberBetween(1,10),
+            "id_services" => fake()->numberBetween(1,10),
+            "id_booking" => fake()->numberBetween(1,10),
         ];
     }
 }

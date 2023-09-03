@@ -78,4 +78,21 @@ class districtController extends Controller
         }
         return response()->json($district);
     }
+    public function updateState_district(DistrictRequest $request, $id)
+    {
+        $locked = $request->input('status');
+        // Perform the necessary logic to lock or unlock based on the $locked state
+        $district = district::find($id);
+        if ($district) {
+            $district->status = $locked == 1 ? 1 : 0;
+            $district->save();
+            return response()->json([
+                'message' => 'Toggle switch state updated successfully',
+                'district' => $district,
+            ]);
+        }
+        return response()->json([
+            'message' => 'district not found',
+        ], 404);
+    }
 }

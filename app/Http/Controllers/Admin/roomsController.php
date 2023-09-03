@@ -77,4 +77,21 @@ class roomsController extends Controller
         }
         return response()->json($room);
     }
+    public function updateState(RoomRequest $request, $id)
+    {
+        $locked = $request->input('status');
+        // Perform the necessary logic to lock or unlock based on the $locked state
+        $room = Room::find($id);
+        if ($room) {
+            $room->status = $locked == 1 ? 1 : 0;
+            $room->save();
+            return response()->json([
+                'message' => 'Toggle switch state updated successfully',
+                'room' => $room,
+            ]);
+        }
+        return response()->json([
+            'message' => 'Room not found',
+        ], 404);
+    }
 }

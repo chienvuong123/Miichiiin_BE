@@ -95,5 +95,23 @@ class ServiceController extends Controller
         ->get();
         return response()->json($service);
     }
+    public function updateState_services(ServiceRequest $request, $id)
+    {
+        $locked = $request->input('status');
+        $service = Service::find($id);
+        if ($service) {
+            $service->status = $locked == 1 ? 1 : 0;
+            $service->save();
+            return response()->json([
+                'message' => 'switch state updated successfully',
+                'service' => $service,
+            ]);
+        }
+        return response()->json([
+            'message' => 'service not found',
+        ], 404);
+    }
+
+
 
 }

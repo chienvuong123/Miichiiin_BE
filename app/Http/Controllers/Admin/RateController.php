@@ -100,4 +100,22 @@ class RateController extends Controller
         //   trừ đi thời gian comment để lấy thời gian comment  ví dụ (8h trước)
         return response()->json($comments);
     }
+
+    public function updateState_rate(RateRequest $request, $id)
+    {
+        $locked = $request->input('status');
+        // Perform the necessary logic to lock or unlock based on the $locked state
+        $Rate = Rate::find($id);
+        if ($Rate) {
+            $Rate->status = $locked == 1 ? 1 : 0;
+            $Rate->save();
+            return response()->json([
+                'message' => 'Toggle switch state updated successfully',
+                'Rate' => $Rate,
+            ]);
+        }
+        return response()->json([
+            'message' => 'Rate not found',
+        ], 404);
+    }
 }
