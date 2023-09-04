@@ -42,6 +42,15 @@ class CategoryRoomRequest extends FormRequest
         $currentAction = $this->route()->getActionMethod();
         switch ($this->method()):
             case 'POST':
+                if ($currentAction == 'find') {
+                    $rules = [
+                        'check_in' => 'required',
+                        'check_out' => 'required',
+                        'id_hotel' => 'required|integer',
+                        'number_people' => 'required|integer',
+                        'total_room' => 'required|integer',
+                    ];
+                }
                 break;
 
             case 'PUT':

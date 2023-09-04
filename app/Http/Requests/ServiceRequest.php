@@ -30,8 +30,8 @@ class ServiceRequest extends FormRequest
             'name' => 'required',
             'quantity' => 'required',
             'price' => 'required',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:204',
             'description' => 'required',
-            'image' => 'required|mimes:jpg,jpeg,png',
         ];
         // lấy ra tên phương thức cần sử lý
         $currentAction = $this->route()->getActionMethod();
