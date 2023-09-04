@@ -97,4 +97,13 @@ class ComfortController extends Controller
             'message' => 'Room not found',
         ], 404);
     }
+    public function comfort_cate($id)
+    {
+        $comforts = Comfort::select('comforts.*',
+        )
+        ->join('comfort_details','comforts.id','=','comfort_details.id_comfort')
+        ->join('category_rooms','comfort_details.id_cate_room','=','category_rooms.id')
+        ->where('id_cate_room',$id)->get();
+        return response()->json($comforts);
+    }
 }

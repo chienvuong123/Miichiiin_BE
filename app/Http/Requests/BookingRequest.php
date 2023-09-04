@@ -44,6 +44,20 @@ class BookingRequest extends FormRequest
         $currentAction = $this->route()->getActionMethod();
         switch ($this->method()):
             case 'POST':
+                if ($currentAction == 'store') {
+                        $rules = [
+                            'check_in' => 'required|date|after:' . Carbon::now(),
+                            'check_out' => 'required|date|after:check_in',
+                            'people_quantity' => 'required|integer | min : 0',
+                            'total_amount' => 'required|integer | min : 0',
+                            'cccd' => 'required',
+                            'nationality' => 'required',
+                            'email' => 'required|email|unique:users,email',
+                             'name' => 'required',
+                            'message' => 'required',
+                            'phone' => 'required | regex:/^([0-9\s\-\+\(\)]*)$/',
+                        ];
+                }
                 break;
 
             case 'PUT':

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryRoomRequest;
 use App\Models\categoryRoom;
+use App\Models\image;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -16,6 +17,14 @@ class CateRoomController extends Controller
     public function index()
     {
         $categoryRoom = categoryRoom::all();
+        foreach ($categoryRoom as $key => $listImage) {
+            $image = image::select('images.image')
+            ->leftJoin('image_details', 'images.id', '=', 'image_details.id_image')
+            ->leftJoin('category_rooms', 'image_details.id_cate', '=', 'category_rooms.id')
+            ->where('category_rooms.id', '=',$listImage->id)
+            ->get();
+            $categoryRoom[$key]['imageUrl'] = $image;
+        }
         return response()->json($categoryRoom);
     }
 
@@ -39,15 +48,11 @@ class CateRoomController extends Controller
             'hotels.name as nameHotel',
             DB::raw('COUNT(DISTINCT rooms.id) as total_rooms'),
             DB::raw('COUNT(DISTINCT comforts.id) as total_comfort'),
-            DB::raw('CONCAT("[", GROUP_CONCAT(DISTINCT CONCAT(images.image)), "]") as image_urls')
         )
         ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
         ->leftJoin('hotels', 'hotels.id', '=', 'rooms.id_hotel')
         ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
         ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
-        ->leftJoin('image_details', 'image_details.id_cate', '=', 'category_rooms.id')
-        ->leftJoin('images', 'images.id', '=', 'image_details.id_image')
-
         ->where('category_rooms.id', '=', $id)
         ->groupBy(
             'category_rooms.id',
@@ -66,6 +71,14 @@ class CateRoomController extends Controller
             'hotels.name'
         )
         ->get();
+        foreach ($rooms as $key => $listImage) {
+            $image = image::select('images.image')
+            ->leftJoin('image_details', 'images.id', '=', 'image_details.id_image')
+            ->leftJoin('category_rooms', 'image_details.id_cate', '=', 'category_rooms.id')
+            ->where('category_rooms.id', '=',$listImage->id)
+            ->get();
+            $rooms[$key]['imageUrl'] = $image;
+        }
 
         return response()->json($rooms);
     }
@@ -140,14 +153,11 @@ class CateRoomController extends Controller
             'hotels.name as nameHotel',
             DB::raw('COUNT(DISTINCT rooms.id) as Total_rooms'),
             DB::raw('COUNT(DISTINCT comforts.id) as Total_comfort'),
-            DB::raw('CONCAT("[", GROUP_CONCAT(DISTINCT CONCAT(images.image)), "]") as image_urls')
         )
             ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
             ->leftJoin('hotels', 'hotels.id', '=', 'rooms.id_hotel')
             ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
             ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
-            ->leftJoin('image_details', 'image_details.id_cate', '=', 'category_rooms.id')
-            ->leftJoin('images', 'images.id', '=', 'image_details.id_image')
             ->leftJoin('booking_details', 'booking_details.id_room', '=', 'rooms.id')
             ->leftJoin('bookings', 'bookings.id', '=', 'booking_details.id_booking')
             ->where('hotels.id', '=', $id)
@@ -166,8 +176,8 @@ class CateRoomController extends Controller
             ->groupBy(
                 'category_rooms.id',
                 'category_rooms.name',
-                'category_rooms.description',
                 'category_rooms.image',
+                'category_rooms.description',
                 'category_rooms.short_description',
                 'category_rooms.quantity_of_people',
                 'category_rooms.price',
@@ -182,6 +192,14 @@ class CateRoomController extends Controller
             ->having('Total_rooms', '>=', $number_room)
             ->having('category_rooms.quantity_of_people', '>=', $number_of_people)
             ->get();
+            foreach ($rooms as $key => $listImage) {
+                $image = image::select('images.image')
+                ->leftJoin('image_details', 'images.id', '=', 'image_details.id_image')
+                ->leftJoin('category_rooms', 'image_details.id_cate', '=', 'category_rooms.id')
+                ->where('category_rooms.id', '=',$listImage->id)
+                ->get();
+                $rooms[$key]['imageUrl'] = $image;
+            }
         return response()->json($rooms);
     }
 
