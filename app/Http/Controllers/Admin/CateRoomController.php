@@ -4,8 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryRoomRequest;
+use App\Models\booking;
+use App\Models\bookingDetail;
 use App\Models\categoryRoom;
+use App\Models\hotel;
 use App\Models\image;
+use App\Models\room;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -19,10 +23,10 @@ class CateRoomController extends Controller
         $categoryRoom = categoryRoom::all();
         foreach ($categoryRoom as $key => $listImage) {
             $image = image::select('images.image')
-            ->leftJoin('image_details', 'images.id', '=', 'image_details.id_image')
-            ->leftJoin('category_rooms', 'image_details.id_cate', '=', 'category_rooms.id')
-            ->where('category_rooms.id', '=',$listImage->id)
-            ->get();
+                ->leftJoin('image_details', 'images.id', '=', 'image_details.id_image')
+                ->leftJoin('category_rooms', 'image_details.id_cate', '=', 'category_rooms.id')
+                ->where('category_rooms.id', '=', $listImage->id)
+                ->get();
             $categoryRoom[$key]['imageUrl'] = $image;
         }
         return response()->json($categoryRoom);
@@ -31,6 +35,7 @@ class CateRoomController extends Controller
 
     public function detail_list_cate($id)
     {
+        $status = 1;
         $rooms = CategoryRoom::select(
             'category_rooms.id',
             'category_rooms.name',
@@ -49,12 +54,53 @@ class CateRoomController extends Controller
             DB::raw('COUNT(DISTINCT rooms.id) as total_rooms'),
             DB::raw('COUNT(DISTINCT comforts.id) as total_comfort'),
         )
-        ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
-        ->leftJoin('hotels', 'hotels.id', '=', 'rooms.id_hotel')
-        ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
-        ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
-        ->where('category_rooms.id', '=', $id)
-        ->groupBy(
+            ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
+            ->leftJoin('hotels', 'hotels.id', '=', 'rooms.id_hotel')
+            ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
+            ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
+            ->where('category_rooms.id', '=', $id)
+            ->where('category_rooms.status', '=', $status)
+            ->groupBy(
+                'category_rooms.id',
+                'category_rooms.name',
+                'category_rooms.description',
+                'category_rooms.image',
+                'category_rooms.short_description',
+                'category_rooms.quantity_of_people',
+                'category_rooms.price',
+                'category_rooms.acreage',
+                'category_rooms.floor',
+                'category_rooms.likes',
+                'category_rooms.views',
+                'category_rooms.created_at',
+                'category_rooms.updated_at',
+                'hotels.name'
+            )
+            ->get();
+        foreach ($rooms as $key => $listImage) {
+            $image = image::select('images.image')
+                ->leftJoin('image_details', 'images.id', '=', 'image_details.id_image')
+                ->leftJoin('category_rooms', 'image_details.id_cate', '=', 'category_rooms.id')
+                ->where('category_rooms.id', '=', $listImage->id)
+                ->get();
+            $rooms[$key]['imageUrl'] = $image;
+        }
+
+        return response()->json($rooms);
+    }
+    public function list_cate($id, $check_in = null, $check_out = null, $number_people = null, $total_room = null)
+    {
+        $status = 1;
+        $startDate = isset($check_in) ? Carbon::parse($check_in) : Carbon::now();
+
+        $endDate = isset($check_out) ? Carbon::parse($check_out) : $startDate->copy()->addDays(3)->setTime(12, 0);
+
+        $number_of_people = $number_people ?? 1;
+        $number_room = $total_room ?? 1;
+
+
+        // Lấy danh sách tất cả các loại phòng
+        $list_category = CategoryRoom::select(
             'category_rooms.id',
             'category_rooms.name',
             'category_rooms.description',
@@ -68,74 +114,83 @@ class CateRoomController extends Controller
             'category_rooms.views',
             'category_rooms.created_at',
             'category_rooms.updated_at',
-            'hotels.name'
+            'hotels.name as nameHotel',
+            DB::raw('COUNT(DISTINCT comforts.id) as Total_comfort')
         )
-        ->get();
-        foreach ($rooms as $key => $listImage) {
-            $image = image::select('images.image')
-            ->leftJoin('image_details', 'images.id', '=', 'image_details.id_image')
-            ->leftJoin('category_rooms', 'image_details.id_cate', '=', 'category_rooms.id')
-            ->where('category_rooms.id', '=',$listImage->id)
+            ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
+            ->leftJoin('hotels', 'hotels.id', '=', 'rooms.id_hotel')
+            ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
+            ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
+            ->leftJoin('booking_details', 'booking_details.id_room', '=', 'rooms.id')
+            ->leftJoin('bookings', 'bookings.id', '=', 'booking_details.id_booking')
+            ->where('hotels.id', '=', $id)
+            ->where('category_rooms.status', '=', $status)
+            ->groupBy(
+                'category_rooms.id',
+                'category_rooms.name',
+                'category_rooms.image',
+                'category_rooms.description',
+                'category_rooms.short_description',
+                'category_rooms.quantity_of_people',
+                'category_rooms.price',
+                'category_rooms.acreage',
+                'category_rooms.floor',
+                'category_rooms.likes',
+                'category_rooms.views',
+                'category_rooms.created_at',
+                'category_rooms.updated_at',
+                'hotels.name'
+            )
+            ->having('category_rooms.quantity_of_people', '>=', $number_of_people)
             ->get();
-            $rooms[$key]['imageUrl'] = $image;
+
+        // Lặp qua từng loại phòng
+        foreach ($list_category as $category) {
+            $categoryId = $category->id;
+
+            // Lấy danh sách các phòng thuộc loại phòng hiện tại
+            $rooms = Room::where('id_cate', $categoryId)
+            ->where('id_hotel', $id)
+            ->get();
+
+        $bookedRooms = BookingDetail::whereHas('bookings', function ($query) use ($startDate, $endDate) {
+                $query->where(function ($query) use ($startDate, $endDate) {
+                    $query->where('check_in', '>=', $startDate)
+                        ->where('check_out', '<=', $endDate);
+                });
+            })
+            ->where('id_room', '!=', null)
+            ->where('id_cate', $categoryId)
+            ->distinct('id_room') // Chỉ tính các phòng duy nhất
+            ->count();
+
+        $availableRoomCount = count($rooms) - $bookedRooms;
+
+        $category->total_rooms_available = $availableRoomCount;
         }
-
-        return response()->json($rooms);
+        foreach ($list_category as $key => $listImage) {
+            $image = Image::select('images.image')
+                ->leftJoin('image_details', 'images.id', '=', 'image_details.id_image')
+                ->leftJoin('category_rooms', 'image_details.id_cate', '=', 'category_rooms.id')
+                ->where('category_rooms.id', '=', $listImage->id)
+                ->get();
+                $list_category[$key]['imageUrl'] = $image;
+        }
+        // Hiển thị kết quả
+        return response()->json($list_category);
     }
-    public function list_cate($id, $check_in = null, $check_out = null,$number_people = null,$total_room = null)
+
+
+    public function find(CategoryRoomRequest $request)
     {
-        $startDate = $check_in ?? Carbon::now();
-        $endDate =  $check_out ?? $startDate->addDays(3)->setTime(12, 0);
+        $status = 1;
+        $startDate = isset($request['check_in']) ? Carbon::parse($request['check_in']) : Carbon::now();
 
-        $number_of_people = $number_people ?? 1;
-        $number_room = $total_room ?? 1;
+        $endDate = isset($request['check_out']) ? Carbon::parse($request['check_out']) : $startDate->copy()->addDays(3)->setTime(12, 0);
 
-        // $rooms = CategoryRoom::select(
-        //     'category_rooms.id',
-        //     'category_rooms.name',
-        //     'category_rooms.description',
-        //     'category_rooms.image',
-        //     'category_rooms.short_description',
-        //     'category_rooms.quantity_of_people',
-        //     'category_rooms.price',
-        //     'category_rooms.acreage',
-        //     'category_rooms.floor',
-        //     'category_rooms.likes',
-        //     'category_rooms.views',
-        //     'category_rooms.created_at',
-        //     'category_rooms.updated_at',
-        //     'hotels.name as nameHotel',
-        //     DB::raw('COUNT(DISTINCT Rooms.id) as Total_rooms'),
-        //     DB::raw('COUNT(DISTINCT Comforts.id) as Total_comfort'),
-        //     DB::raw('CONCAT("[", GROUP_CONCAT(DISTINCT CONCAT(images.image)), "]") as image_urls')
-        // )
-        //     ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
-        //     ->leftJoin('hotels', 'hotels.id', '=', 'rooms.id_hotel')
-        //     ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
-        //     ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
-        //     ->leftJoin('image_details', 'image_details.id_cate', '=', 'category_rooms.id')
-        //     ->leftJoin('images', 'images.id', '=', 'image_details.id_image')
-        //     ->where('hotels.id', '=', $id)
-        //     ->where('category_rooms.status', '=', '1')
-        //     ->groupBy(
-        //         'category_rooms.id',
-        //         'category_rooms.name',
-        //         'category_rooms.description',
-        //         'category_rooms.image',
-        //         'category_rooms.short_description',
-        //         'category_rooms.quantity_of_people',
-        //         'category_rooms.price',
-        //         'category_rooms.acreage',
-        //         'category_rooms.floor',
-        //         'category_rooms.likes',
-        //         'category_rooms.views',
-        //         'category_rooms.created_at',
-        //         'category_rooms.updated_at',
-        //         'hotels.name'
-        //     )
-        //     ->having('Total_rooms', '>', 0)
-        //     ->get();
-
+        $number_of_people = $request['number_people'] ?? 1;
+        $number_room = $request['total_room'] ?? 1;
+        $id = $request['id_hotel'];
         $rooms = CategoryRoom::select(
             'category_rooms.id',
             'category_rooms.name',
@@ -152,7 +207,7 @@ class CateRoomController extends Controller
             'category_rooms.updated_at',
             'hotels.name as nameHotel',
             DB::raw('COUNT(DISTINCT rooms.id) as Total_rooms'),
-            DB::raw('COUNT(DISTINCT comforts.id) as Total_comfort'),
+            DB::raw('COUNT(DISTINCT comforts.id) as Total_comfort')
         )
             ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
             ->leftJoin('hotels', 'hotels.id', '=', 'rooms.id_hotel')
@@ -161,16 +216,14 @@ class CateRoomController extends Controller
             ->leftJoin('booking_details', 'booking_details.id_room', '=', 'rooms.id')
             ->leftJoin('bookings', 'bookings.id', '=', 'booking_details.id_booking')
             ->where('hotels.id', '=', $id)
-            ->where('category_rooms.status', '=', '1')
+            ->where('category_rooms.status', '=', $status)
             ->where(function ($query) use ($startDate, $endDate) {
-                $query->where(
-                    function ($q) use ($startDate, $endDate) {
-                            $q->where('bookings.check_in', '>=', $endDate)
-                             ->orWhere('bookings.check_out', '<=', $startDate)
-                             ->where('bookings.status','!=',"2")
-                             ->where('bookings.status','!=',"3");
-                        }
-                )
+                $query->where(function ($q) use ($startDate, $endDate) {
+                    $q->where('bookings.check_in', '>=', $endDate)
+                        ->orWhere('bookings.check_out', '<=', $startDate)
+                        ->where('bookings.status', '!=', "2")
+                        ->where('bookings.status', '!=', "3");
+                })
                     ->orWhereNull('booking_details.id_room');
             })
             ->groupBy(
@@ -189,133 +242,21 @@ class CateRoomController extends Controller
                 'category_rooms.updated_at',
                 'hotels.name'
             )
-            ->having('Total_rooms', '>=', $number_room)
             ->having('category_rooms.quantity_of_people', '>=', $number_of_people)
+            ->having('Total_rooms', '>=', $number_room)
             ->get();
-            foreach ($rooms as $key => $listImage) {
-                $image = image::select('images.image')
+
+        foreach ($rooms as $key => $listImage) {
+            $image = Image::select('images.image')
                 ->leftJoin('image_details', 'images.id', '=', 'image_details.id_image')
                 ->leftJoin('category_rooms', 'image_details.id_cate', '=', 'category_rooms.id')
-                ->where('category_rooms.id', '=',$listImage->id)
+                ->where('category_rooms.id', '=', $listImage->id)
                 ->get();
-                $rooms[$key]['imageUrl'] = $image;
-            }
+            $rooms[$key]['imageUrl'] = $image;
+        }
+
         return response()->json($rooms);
     }
-
-
-
-    // public function find($id,$start,$end)
-    // {
-    //     dd($start);
-    //     $check_in = $start ?? "";
-    //     $check_out =$end ?? "";
-    //     // $rooms = CategoryRoom::select(
-    //     //     'category_rooms.id',
-    //     //     'category_rooms.name',
-    //     //     'category_rooms.description',
-    //     //     'category_rooms.image',
-    //     //     'category_rooms.short_description',
-    //     //     'category_rooms.quantity_of_people',
-    //     //     'category_rooms.price',
-    //     //     'category_rooms.acreage',
-    //     //     'category_rooms.floor',
-    //     //     'category_rooms.likes',
-    //     //     'category_rooms.views',
-    //     //     'category_rooms.created_at',
-    //     //     'category_rooms.updated_at',
-    //     //     'hotels.name as nameHotel',
-    //     //     DB::raw('COUNT(DISTINCT Rooms.id) as Total_rooms'),
-    //     //     DB::raw('COUNT(DISTINCT Comforts.id) as Total_comfort'),
-    //     //     DB::raw('CONCAT("[", GROUP_CONCAT(DISTINCT CONCAT(images.image)), "]") as image_urls')
-    //     // )
-    //     //     ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
-    //     //     ->leftJoin('hotels', 'hotels.id', '=', 'rooms.id_hotel')
-    //     //     ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
-    //     //     ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
-    //     //     ->leftJoin('image_details', 'image_details.id_cate', '=', 'category_rooms.id')
-    //     //     ->leftJoin('images', 'images.id', '=', 'image_details.id_image')
-    //     //     ->where('hotels.id', '=', $id)
-    //     //     ->where('category_rooms.status', '=', '1')
-    //     //     ->groupBy(
-    //     //         'category_rooms.id',
-    //     //         'category_rooms.name',
-    //     //         'category_rooms.description',
-    //     //         'category_rooms.image',
-    //     //         'category_rooms.short_description',
-    //     //         'category_rooms.quantity_of_people',
-    //     //         'category_rooms.price',
-    //     //         'category_rooms.acreage',
-    //     //         'category_rooms.floor',
-    //     //         'category_rooms.likes',
-    //     //         'category_rooms.views',
-    //     //         'category_rooms.created_at',
-    //     //         'category_rooms.updated_at',
-    //     //         'hotels.name'
-    //     //     )
-    //     //     ->having('Total_rooms', '>', 0)
-    //     //     ->get();
-
-    //     $rooms = CategoryRoom::select(
-    //         'category_rooms.id',
-    //         'category_rooms.name',
-    //         'category_rooms.description',
-    //         'category_rooms.image',
-    //         'category_rooms.short_description',
-    //         'category_rooms.quantity_of_people',
-    //         'category_rooms.price',
-    //         'category_rooms.acreage',
-    //         'category_rooms.floor',
-    //         'category_rooms.likes',
-    //         'category_rooms.views',
-    //         'category_rooms.created_at',
-    //         'category_rooms.updated_at',
-    //         'hotels.name as nameHotel',
-    //         DB::raw('COUNT(DISTINCT rooms.id) as Total_rooms'),
-    //         DB::raw('COUNT(DISTINCT comforts.id) as Total_comfort'),
-    //         DB::raw('CONCAT("[", GROUP_CONCAT(DISTINCT CONCAT(images.image)), "]") as image_urls')
-    //     )
-    //         ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
-    //         ->leftJoin('hotels', 'hotels.id', '=', 'rooms.id_hotel')
-    //         ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
-    //         ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
-    //         ->leftJoin('image_details', 'image_details.id_cate', '=', 'category_rooms.id')
-    //         ->leftJoin('images', 'images.id', '=', 'image_details.id_image')
-    //         ->leftJoin('booking_details', 'booking_details.id_room', '=', 'rooms.id')
-    //         ->leftJoin('bookings', 'bookings.id', '=', 'booking_details.id_booking')
-    //         ->where('hotels.id', '=', $id)
-    //         ->where('category_rooms.status', '=', '1')
-    //         ->where(function ($query) use ($startDate, $endDate) {
-    //             $query->where(
-    //                 function ($q) use ($startDate, $endDate) {
-    //                         $q->where('bookings.check_in', '>=', $endDate)
-    //                          ->orWhere('bookings.check_out', '<=', $startDate)
-    //                          ->where('bookings.status','!=',"2")
-    //                          ->where('bookings.status','!=',"3");
-    //                     }
-    //             )
-    //                 ->orWhereNull('booking_details.id_room');
-    //         })
-    //         ->groupBy(
-    //             'category_rooms.id',
-    //             'category_rooms.name',
-    //             'category_rooms.description',
-    //             'category_rooms.image',
-    //             'category_rooms.short_description',
-    //             'category_rooms.quantity_of_people',
-    //             'category_rooms.price',
-    //             'category_rooms.acreage',
-    //             'category_rooms.floor',
-    //             'category_rooms.likes',
-    //             'category_rooms.views',
-    //             'category_rooms.created_at',
-    //             'category_rooms.updated_at',
-    //             'hotels.name'
-    //         )
-    //         ->having('Total_rooms', '>', $number_of_people)
-    //         ->get();
-    //     return response()->json($rooms);
-    // }
 
     public function show($id)
     {
