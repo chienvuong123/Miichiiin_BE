@@ -101,7 +101,6 @@ class BookingController extends Controller
         if ($booking->id) {
             $cart = $request->cart;
             $promotion = $request->promotion ?? null;
-
             $booking_d_record = [];
             $j = 0;
             for ($i = 0; $i < count($cart); $i++) {
@@ -133,7 +132,7 @@ class BookingController extends Controller
                     ];
                 }
             }
-
+ 
             bookingDetail::insert($booking_d_record);
 
             return response()->json([

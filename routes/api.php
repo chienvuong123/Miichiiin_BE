@@ -147,6 +147,7 @@ Route::prefix('users')->group(function () {
     // hiển thị tất cả services cả hệ thống
     // hiển thị khách sạn theo id (detail_hotel)
     Route::get('/hotel/{id}', [hotelController::class, 'detail_hotel_user']);
+
     Route::get('/services', [ServiceController::class, 'index']);
     // hiển thị services theo id_hotel
     Route::get('/services/hotels={id}', [ServiceController::class, 'list_services_hotel']);
@@ -161,5 +162,9 @@ Route::prefix('users')->group(function () {
     Route::get('/booking/{id}', [BookingController::class, 'booking_list']);
     // hiển thị booking_detail theo id_user
     Route::get('/bookingDetail/{id}', [BookingDetailController::class, 'booking_detail_list']);
+
+    // hiển thị comfort theo loại phòng
+    Route::get('/comfort/cate={id}', [ComfortController::class, 'comfort_cate']);
+
 });
 // hiển thị voucher

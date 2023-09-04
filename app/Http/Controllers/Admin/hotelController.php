@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\HotelRequest;
 use App\Models\hotel;
+use App\Models\image;
 use App\Models\room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,11 +15,8 @@ class hotelController extends Controller
     //
     public function index()
     {
-        $hotels = Hotel::select('hotels.*', 'cities.name as name_cities',
-        DB::raw('CONCAT("[", GROUP_CONCAT(DISTINCT CONCAT(images.image)), "]") as image_urls'))
+        $hotels = Hotel::select('hotels.*', 'cities.name as name_cities')
         ->leftJoin('cities', 'hotels.id_city', '=', 'cities.id')
-        ->leftJoin('image_details', 'hotels.id', '=', 'image_details.id_hotel')
-        ->leftJoin('images', 'image_details.id_image', '=', 'images.id')
         ->groupBy(
             'hotels.id',
             'hotels.name',
@@ -34,9 +32,16 @@ class hotelController extends Controller
             'hotels.created_at',
             'hotels.updated_at',
             'cities.name',
-            'images.image'
         )
         ->get();
+        foreach ($hotels as $key => $listImage) {
+            $image = image::select('images.image')
+            ->leftJoin('image_details', 'images.id', '=', 'image_details.id_image')
+            ->leftJoin('hotels', 'image_details.id_hotel', '=', 'hotels.id')
+            ->where('hotels.id', '=',$listImage->id)
+            ->get();
+        $hotels[$key]['image'] = $image;
+        }
         return response()->json($hotels);
     }
     public function home_user()
@@ -44,16 +49,12 @@ class hotelController extends Controller
         $hotels = Hotel::select(
             'hotels.*',
             'cities.name as city_name',
-            'images.image',
             DB::raw('COUNT(DISTINCT rooms.id) as total_rooms'),
             DB::raw('COUNT(DISTINCT category_rooms.id) as total_categories'),
             DB::raw('COUNT(DISTINCT comforts.id) as total_comforts'),
             DB::raw('COUNT(DISTINCT rates.content) as total_rating_content'),
             DB::raw('COUNT(DISTINCT services.id) as total_services'),
-            DB::raw('CONCAT("[", GROUP_CONCAT(DISTINCT CONCAT(images.image)), "]") as image_urls')
         )
-            ->leftJoin('image_details', 'hotels.id', '=', 'image_details.id_hotel')
-            ->leftJoin('images', 'image_details.id_image', '=', 'images.id')
             ->leftJoin('cities', 'hotels.id_city', '=', 'cities.id')
             ->leftJoin('rooms', 'hotels.id', '=', 'rooms.id_hotel')
             ->leftJoin('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id')
@@ -77,7 +78,6 @@ class hotelController extends Controller
                 'hotels.created_at',
                 'hotels.updated_at',
                 'cities.name',
-                'images.image'
             )
             ->distinct()
             ->get()
@@ -86,6 +86,14 @@ class hotelController extends Controller
                 return $group->first();
             })
             ->values();
+            foreach ($hotels as $key => $listImage) {
+                $image = image::select('images.image')
+                ->leftJoin('image_details', 'images.id', '=', 'image_details.id_image')
+                ->leftJoin('hotels', 'image_details.id_hotel', '=', 'hotels.id')
+                ->where('hotels.id', '=',$listImage->id)
+                ->get();
+            $hotels[$key]['image'] = $image;
+            }
 
         return response()->json($hotels);
     }
@@ -94,16 +102,12 @@ class hotelController extends Controller
         $hotels = Hotel::select(
             'hotels.*',
             'cities.name as city_name',
-            'images.image',
-            DB::raw('(SELECT COUNT(*) FROM rooms WHERE rooms.id_hotel = hotels.id AND rooms.status = 1) as total_rooms'),
+            DB::raw('COUNT(DISTINCT rooms.id) as total_rooms'),
             DB::raw('COUNT(DISTINCT category_rooms.id) as total_categories'),
             DB::raw('COUNT(DISTINCT comforts.id) as total_comforts'),
             DB::raw('COUNT(DISTINCT rates.content) as total_rating_content'),
             DB::raw('COUNT(DISTINCT services.id) as total_services'),
-            DB::raw('CONCAT("[", GROUP_CONCAT(DISTINCT CONCAT(images.image)), "]") as image_urls')
         )
-            ->leftJoin('image_details', 'hotels.id', '=', 'image_details.id_hotel')
-            ->leftJoin('images', 'image_details.id_image', '=', 'images.id')
             ->leftJoin('cities', 'hotels.id_city', '=', 'cities.id')
             ->leftJoin('rooms', 'hotels.id', '=', 'rooms.id_hotel')
             ->leftJoin('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id')
@@ -119,15 +123,14 @@ class hotelController extends Controller
                 'hotels.quantity_of_room',
                 'hotels.id_city',
                 'hotels.star',
+                'hotels.address',
                 'hotels.phone',
                 'hotels.email',
-                'hotels.address',
                 'hotels.status',
                 'hotels.quantity_floor',
                 'hotels.created_at',
                 'hotels.updated_at',
                 'cities.name',
-                'images.image'
             )
             ->where('id_city', '=', $id)
             ->distinct()
@@ -137,6 +140,14 @@ class hotelController extends Controller
                 return $group->first();
             })
             ->values();
+            foreach ($hotels as $key => $listImage) {
+                $image = image::select('images.image')
+                ->leftJoin('image_details', 'images.id', '=', 'image_details.id_image')
+                ->leftJoin('hotels', 'image_details.id_hotel', '=', 'hotels.id')
+                ->where('hotels.id', '=',$listImage->id)
+                ->get();
+            $hotels[$key]['image'] = $image;
+            }
 
         return response()->json($hotels);
     }
@@ -146,16 +157,12 @@ class hotelController extends Controller
         $hotels = Hotel::select(
             'hotels.*',
             'cities.name as city_name',
-            'images.image',
             DB::raw('COUNT(DISTINCT rooms.id) as total_rooms'),
             DB::raw('COUNT(DISTINCT category_rooms.id) as total_categories'),
             DB::raw('COUNT(DISTINCT comforts.id) as total_comforts'),
             DB::raw('COUNT(DISTINCT rates.content) as total_rating_content'),
             DB::raw('COUNT(DISTINCT services.id) as total_services'),
-            DB::raw('CONCAT("[", GROUP_CONCAT(DISTINCT CONCAT(images.image)), "]") as image_urls')
         )
-            ->leftJoin('image_details', 'hotels.id', '=', 'image_details.id_hotel')
-            ->leftJoin('images', 'image_details.id_image', '=', 'images.id')
             ->leftJoin('cities', 'hotels.id_city', '=', 'cities.id')
             ->leftJoin('rooms', 'hotels.id', '=', 'rooms.id_hotel')
             ->leftJoin('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id')
@@ -171,6 +178,7 @@ class hotelController extends Controller
                 'hotels.quantity_of_room',
                 'hotels.id_city',
                 'hotels.star',
+                'hotels.address',
                 'hotels.phone',
                 'hotels.email',
                 'hotels.status',
@@ -178,9 +186,8 @@ class hotelController extends Controller
                 'hotels.created_at',
                 'hotels.updated_at',
                 'cities.name',
-                'images.image'
             )
-            ->where('hotels.id','=',$id)
+            ->where('hotels.id', '=', $id)
             ->distinct()
             ->get()
             ->groupBy('id')
@@ -188,6 +195,14 @@ class hotelController extends Controller
                 return $group->first();
             })
             ->values();
+            foreach ($hotels as $key => $listImage) {
+                $image = image::select('images.image')
+                ->leftJoin('image_details', 'images.id', '=', 'image_details.id_image')
+                ->leftJoin('hotels', 'image_details.id_hotel', '=', 'hotels.id')
+                ->where('hotels.id', '=',$listImage->id)
+                ->get();
+            $hotels[$key]['image'] = $image;
+            }
 
         return response()->json($hotels);
     }

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->dateTime('check_out')->nullable();
             $table->integer('people_quantity')->nullable();
             $table->integer('total_amount')->nullable();
-            $table->integer('status')->nullable();
+            $table->integer('status')->default(0);
             $table->string('nationality')->nullable();
             $table->string('cccd')->nullable();
             $table->string('message')->nullable();
