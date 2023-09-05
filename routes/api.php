@@ -69,8 +69,11 @@ Route::prefix('admin')->group(function () {
     Route::prefix('category')->group(function () {
         Route::put('{id}/status', [CateRoomController::class, 'updateState_cate']);
         Route::post('/find', [CateRoomController::class, 'find_of_name']);
-
     });
+    // thong 'kee =>
+    Route::get('/statistical', [CateRoomController::class, 'statistical']);
+    Route::get('/statistical_year', [CateRoomController::class, 'statistical_year']);
+    Route::get('/statistical_room_checkin/{check_in}/{check_out}', [CateRoomController::class, 'statistical_room_checkin']);
 
     // CITY
     Route::resource('city', CityController::class);

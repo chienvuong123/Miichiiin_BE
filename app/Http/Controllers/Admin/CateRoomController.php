@@ -150,23 +150,23 @@ class CateRoomController extends Controller
 
             // Lấy danh sách các phòng thuộc loại phòng hiện tại
             $rooms = Room::where('id_cate', $categoryId)
-            ->where('id_hotel', $id)
-            ->get();
+                ->where('id_hotel', $id)
+                ->get();
 
-        $bookedRooms = BookingDetail::whereHas('bookings', function ($query) use ($startDate, $endDate) {
+            $bookedRooms = BookingDetail::whereHas('bookings', function ($query) use ($startDate, $endDate) {
                 $query->where(function ($query) use ($startDate, $endDate) {
                     $query->where('check_in', '>=', $startDate)
                         ->where('check_out', '<=', $endDate);
                 });
             })
-            ->where('id_room', '!=', null)
-            ->where('id_cate', $categoryId)
-            ->distinct('id_room') // Chỉ tính các phòng duy nhất
-            ->count();
+                ->where('id_room', '!=', null)
+                ->where('id_cate', $categoryId)
+                ->distinct('id_room') // Chỉ tính các phòng duy nhất
+                ->count();
 
-        $availableRoomCount = count($rooms) - $bookedRooms;
+            $availableRoomCount = count($rooms) - $bookedRooms;
 
-        $category->total_rooms_available = $availableRoomCount;
+            $category->total_rooms_available = $availableRoomCount;
         }
         foreach ($list_category as $key => $listImage) {
             $image = Image::select('images.image')
@@ -174,7 +174,7 @@ class CateRoomController extends Controller
                 ->leftJoin('category_rooms', 'image_details.id_cate', '=', 'category_rooms.id')
                 ->where('category_rooms.id', '=', $listImage->id)
                 ->get();
-                $list_category[$key]['imageUrl'] = $image;
+            $list_category[$key]['imageUrl'] = $image;
         }
         // Hiển thị kết quả
         return response()->json($list_category);
@@ -363,5 +363,77 @@ class CateRoomController extends Controller
                 'message' => 'No search parameter provided',
             ], 400);
         }
+    }
+    public function statistical()
+    {
+        // thống kê trong từng tháng các phòng được đặt số lần alf
+
+        //     $roomCountsByMonth = DB::table('bookings')
+        //     ->join('booking_details', 'bookings.id', '=', 'booking_details.id_booking')
+        //     ->select(DB::raw('MONTH(bookings.check_in) as month'), 'booking_details.id_room', DB::raw('COUNT(DISTINCT booking_details.id_booking) as total'))
+        //     ->groupBy('month', 'booking_details.id_room')
+        //     ->orderBy('month')
+        //     ->get();
+
+        // $countsByMonth = [];
+        // foreach ($roomCountsByMonth as $roomCount) {
+        //     $month = $roomCount->month;
+        //     $roomId = $roomCount->id_room;
+        //     $total = $roomCount->total;
+
+        //     if (!isset($countsByMonth[$month])) {
+        //         $countsByMonth[$month] = [];
+        //     }
+
+        //     $countsByMonth[$month][$roomId] = $total;
+        // }
+        $roomCountsByMonth = DB::table('bookings')
+            ->join('booking_details', 'bookings.id', '=', 'booking_details.id_booking')
+            ->select(DB::raw('MONTH(bookings.check_in) as month'), DB::raw('COUNT(DISTINCT booking_details.id_room) as total'))
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
+        $countsByMonth = [];
+        foreach ($roomCountsByMonth as $roomCount) {
+            $month = $roomCount->month;
+            $total = $roomCount->total;
+            $countsByMonth[$month] = $total;
+        }
+        return response()->json([
+            'roomCountsByMonth' => $roomCountsByMonth,
+        ]);
+    }
+    public function statistical_year()
+    {
+        $roomCountsByMonth = DB::table('bookings')
+            ->join('booking_details', 'bookings.id', '=', 'booking_details.id_booking')
+            ->select(DB::raw('Year(bookings.check_in) as Year'), DB::raw('COUNT(DISTINCT booking_details.id_room) as total'))
+            ->groupBy('Year')
+            ->orderBy('Year')
+            ->get();
+
+        $countsByMonth = [];
+        foreach ($roomCountsByMonth as $roomCount) {
+            $Year = $roomCount->Year;
+            $total = $roomCount->total;
+            $countsByMonth[$Year] = $total;
+        }
+        return response()->json([
+            'roomCountsByMonth' => $roomCountsByMonth,
+        ]);
+    }
+    public function statistical_room_checkin($check_in,$check_out)
+    {
+        $roomCounts = DB::table('bookings')
+        ->join('booking_details', 'bookings.id', '=', 'booking_details.id_booking')
+        ->whereBetween('bookings.check_in', [$check_in, $check_out])
+        ->select(DB::raw('COUNT( booking_details.id_room) as total'))
+        ->first();
+
+    $totalRooms = $roomCounts->total;
+        return response()->json([
+            'roomCountsByMonth' => $roomCounts,
+        ]);
     }
 }
