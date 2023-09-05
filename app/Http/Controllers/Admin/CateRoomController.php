@@ -338,7 +338,30 @@ class CateRoomController extends Controller
             ]);
         }
         return response()->json([
-            'message' => 'Room not found',
+            'message' => 'categoryRoom not found',
         ], 404);
+    }
+    public function find_of_name(CategoryRoomRequest $request)
+    {
+        $find = $request->input('find');
+
+        if ($find) {
+            $categoryRooms = CategoryRoom::where('name', 'LIKE', '%' . $find . '%')->get();
+
+            if ($categoryRooms->count() > 0) {
+                return response()->json([
+                    'message' => 'categoryRoom found',
+                    'categoryRoom' => $categoryRooms,
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'No categoryRoom found',
+                ], 404);
+            }
+        } else {
+            return response()->json([
+                'message' => 'No search parameter provided',
+            ], 400);
+        }
     }
 }

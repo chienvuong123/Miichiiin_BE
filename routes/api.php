@@ -68,6 +68,8 @@ Route::prefix('admin')->group(function () {
     Route::resource('category', CateRoomController::class);
     Route::prefix('category')->group(function () {
         Route::put('{id}/status', [CateRoomController::class, 'updateState_cate']);
+        Route::post('/find', [CateRoomController::class, 'find_of_name']);
+
     });
 
     // CITY
