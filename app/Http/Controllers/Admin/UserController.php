@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Http;
 use Laravel\Passport\Token;
 use Laravel\Passport\TokenRepository;
 use Laravel\Socialite\Facades\Socialite;
@@ -173,32 +174,7 @@ class UserController extends Controller
 
     return response()->json($yearlyStatistics);
     }
-    public function loginGoogle(UserRequest $request)
-    {
-        return Socialite::driver('google')->redirect();
-    }
-    public function LoginGoogleCallBack(UserRequest $request)
-    {
-        $user = Socialite::driver('google')->user();
-        $users = User::where('google_id', $user->getId())->first();
-        if(!$users){
-            $useradd = User::create([
-                'name' => $user->getName(),
-                'image' => $user->getAvatar(),
-                'email' => $user->getEmail(),
-                'google_id' => $user->getId()
-            ]);
 
-            Auth::login($useradd);
-            return redirect()->route('trangchu');
-
-        }else{
-            Auth::login($users);
-
-            return redirect()->route('trangchu');
-
-        }
-    }
 
     //   public function LoginFace(UserRequest $request)
     // {
@@ -225,6 +201,79 @@ class UserController extends Controller
 
             return redirect()->route('trangchu');
 
+        }
+    }
+    public function loginGoogle(Request $request)
+    {
+        $idToken = $request->input('idToken');
+
+        // Gửi yêu cầu xác thực đến Google API
+        $response = Http::post('https://www.googleapis.com/oauth2/v3/tokeninfo', [
+            'id_token' => $idToken,
+        ]);
+
+        if ($response->successful()) {
+            $userInfo = $response->json();
+
+            // Xác thực thành công, tạo hoặc cập nhật người dùng trong hệ thống của bạn
+            // $userInfo chứa thông tin người dùng từ Google
+
+            // Xác thực Passport thông qua email người dùng
+            $user = User::where('email', $userInfo['email'])->first();
+            if (!$user) {
+                // Nếu người dùng chưa tồn tại, bạn có thể tạo mới tài khoản ở đây
+                $user = User::create([
+                    'email' => $userInfo['email'],
+                    // Thêm các trường thông tin người dùng khác
+                ]);
+            }
+
+            // Tạo token xác thực Passport cho người dùng
+            $token = $user->createToken('GoogleToken')->accessToken;
+
+            return response()->json([
+                'accessToken' => $token,
+            ]);
+        } else {
+            // Xử lý lỗi xác thực từ Google
+            return response()->json([
+                'error' => 'Authentication failed.',
+            ], 401);
+        }
+    }
+    public function loginFacebook(Request $request)
+    {
+        $accessToken = $request->input('accessToken');
+
+        // Gửi yêu cầu xác thực đến Facebook API
+        $response = Http::get("https://graph.facebook.com/v12.0/me?fields=id,name,email&access_token={$accessToken}");
+
+        if ($response->successful()) {
+            $userInfo = $response->json();
+
+            // Xác thực thành công, tạo hoặc cập nhật người dùng trong hệ thống của bạn
+            // $userInfo chứa thông tin người dùng từ Facebook
+            // Xác thực Passport thông qua email người dùng
+            $user = User::where('name', $userInfo['name'])->first();
+            if (!$user) {
+                // Nếu người dùng chưa tồn tại, bạn có thể tạo mới tài khoản ở đây
+                $user = User::create([
+                    'name' => $userInfo['name'],
+                    // Thêm các trường thông tin người dùng khác
+                ]);
+            }
+
+            // Tạo token xác thực Passport cho người dùng
+            $token = $user->createToken('FacebookToken')->accessToken;
+
+            return response()->json([
+                'accessToken' => $token,
+            ]);
+        } else {
+            // Xử lý lỗi xác thực từ Facebook
+            return response()->json([
+                'error' => 'Authentication failed.',
+            ], 401);
         }
     }
 }

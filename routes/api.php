@@ -156,6 +156,8 @@ Route::prefix('admin')->group(function () {
 Route::post('login', [UserController::class, 'login'])->name('login');
 Route::post('register', [UserController::class, 'register'])->name('register');
 Route::post('logout', [UserController::class, 'logout'])->name('logout');
+Route::post('loginGoogle', [UserController::class, 'loginGoogle'])->name('loginGoogle');
+Route::post('loginFacebook', [UserController::class, 'loginFacebook'])->name('loginFacebook');
 
 //
 Route::middleware('auth:api')->prefix('users')->group(function () {
