@@ -135,4 +135,58 @@ class UserController extends Controller
 
     return response()->json($yearlyStatistics);
     }
+    public function loginGoogle(UserRequest $request)
+    {
+        return Socialite::driver('google')->redirect();
+    }
+    public function LoginGoogleCallBack(UserRequest $request)
+    {
+        $user = Socialite::driver('google')->user();
+        $users = User::where('google_id', $user->getId())->first();
+        if(!$users){
+            $useradd = User::create([
+                'name' => $user->getName(),
+                'image' => $user->getAvatar(),
+                'email' => $user->getEmail(),
+                'google_id' => $user->getId()
+            ]);
+
+            Auth::login($useradd);
+            return redirect()->route('trangchu');
+
+        }else{
+            Auth::login($users);
+
+            return redirect()->route('trangchu');
+
+        }
+    }
+
+    //   public function LoginFace(UserRequest $request)
+    // {
+
+    //     return Socialite::driver('facebook')->redirect();
+    // }
+    public function LoginFaceCallBack(UserRequest $request)
+    {
+        $user = Socialite::driver('facebook')->user();
+        $users = User::where('facebook_id', $user->getId())->first();
+        if(!$users){
+            $useradd = User::create([
+                'facebook_id' => $user->getId(),
+                'name' => $user->getName(),
+                'image' => $user->getAvatar(),
+                'email' => $user->getEmail(),
+            ]);
+            Auth::login($useradd);
+
+            return redirect()->route('trangchu');
+
+        }else{
+            Auth::login($users);
+
+            return redirect()->route('trangchu');
+
+        }
+    }
 }
