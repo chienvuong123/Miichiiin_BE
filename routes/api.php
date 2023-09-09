@@ -46,7 +46,6 @@ Route::prefix('admin')->group(function () {
     Route::resource('users', UserController::class)->except(['create', 'edit']);
     Route::prefix('users')->group(function () {
         Route::put('{id}/status', [UserController::class, 'updateState_user']);
-
     });
     Route::get('/statistical_user_month', [UserController::class, 'statistical_user_month']);
     Route::get('/statistical_user_year', [UserController::class, 'statistical_user_year']);
@@ -154,38 +153,46 @@ Route::prefix('admin')->group(function () {
 
 
 //Login
-Route::post('login', [UserController::class, 'login']);
+Route::post('login', [UserController::class, 'login'])->name('login');
+Route::post('register', [UserController::class, 'register'])->name('register');
+Route::post('logout', [UserController::class, 'logout'])->name('logout');
 
 //
-Route::prefix('users')->group(function () {
-    // hiển thị thông tin hotel trang home_user
+Route::middleware('auth:api')->prefix('users')->group(function () {
+    // Các routes cần xác thực token
     Route::get('hotel', [hotelController::class, 'home_user']);
-    // hiển thị khách sạn theo thành phố
     Route::get('/hotel/city={id}', [hotelController::class, 'home_city']);
-    // hiển thị tất cả services cả hệ thống
-    // hiển thị khách sạn theo id (detail_hotel)
-    Route::get('/hotel/{id}', [hotelController::class, 'detail_hotel_user']);
 
-    Route::get('/services', [ServiceController::class, 'index']);
-    // hiển thị services theo id_hotel
-    Route::get('/services/hotels={id}', [ServiceController::class, 'list_services_hotel']);
-    // hiển thị comment theo id_cate
-    Route::get('/comment/id_cate={id}', [RateController::class, 'comment_cate']);
-    // hiển thị cate_room theo id
-    Route::get('/cateRoom/{id}', [CateRoomController::class, 'detail_list_cate']);
-        // hiển thị cate_room theo hotel
-    Route::get('/listRoom/hotels={id}/{check_in?}/{check_out?}/{number_people?}/{total_room?}',
-     [CateRoomController::class, 'list_cate']);
-
-     Route::post('/find',
-     [CateRoomController::class, 'find']);
-    // hiển thị booking theo id_user
-    Route::get('/booking/{id}', [BookingController::class, 'booking_list']);
-    // hiển thị booking_detail theo id_user
-    Route::get('/bookingDetail/{id}', [BookingDetailController::class, 'booking_detail_list']);
-
-    // hiển thị comfort theo loại phòng
-    Route::get('/comfort/cate={id}', [ComfortController::class, 'comfort_cate']);
-
+    // ...
 });
+// hiển thị thông tin hotel trang home_user
+// hiển thị khách sạn theo thành phố
+// hiển thị tất cả services cả hệ thống
+// hiển thị khách sạn theo id (detail_hotel)
+Route::get('/hotel/{id}', [hotelController::class, 'detail_hotel_user']);
+
+Route::get('/services', [ServiceController::class, 'index']);
+// hiển thị services theo id_hotel
+Route::get('/services/hotels={id}', [ServiceController::class, 'list_services_hotel']);
+// hiển thị comment theo id_cate
+Route::get('/comment/id_cate={id}', [RateController::class, 'comment_cate']);
+// hiển thị cate_room theo id
+Route::get('/cateRoom/{id}', [CateRoomController::class, 'detail_list_cate']);
+// hiển thị cate_room theo hotel
+Route::get(
+    '/listRoom/hotels={id}/{check_in?}/{check_out?}/{number_people?}/{total_room?}',
+    [CateRoomController::class, 'list_cate']
+);
+
+Route::post(
+    '/find',
+    [CateRoomController::class, 'find']
+);
+// hiển thị booking theo id_user
+Route::get('/booking/{id}', [BookingController::class, 'booking_list']);
+// hiển thị booking_detail theo id_user
+Route::get('/bookingDetail/{id}', [BookingDetailController::class, 'booking_detail_list']);
+
+// hiển thị comfort theo loại phòng
+Route::get('/comfort/cate={id}', [ComfortController::class, 'comfort_cate']);
 // hiển thị voucher

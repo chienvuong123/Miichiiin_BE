@@ -45,6 +45,17 @@ class UserRequest extends FormRequest
                         'password' => 'required',
                     ];
                 }
+                if ($currentAction == 'register') {
+                    $rules = [
+                        'email' => 'required|email|unique:users,email',
+                        'password' => 'required',
+                    ];
+                }
+                break;
+                if ($currentAction == 'logout') {
+                    $rules = [
+                    ];
+                }
                 break;
 
             case 'PUT':

@@ -8,8 +8,13 @@ use App\Models\User;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+
+use Laravel\Passport\Token;
+use Laravel\Passport\TokenRepository;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\SocialiteServiceProvider;
+use Laravel\Passport\HasApiTokens;
 
 class UserController extends Controller
 {
@@ -80,13 +85,46 @@ class UserController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            // $tokenResult = $user->createToken('Personal Access Token');
-            // return response()->json(['token' => $tokenResult], 200);
+            $credentials = $request->only('email', 'password');
+
+            if (Auth::attempt($credentials)) {
+                $user = Auth::user();
+                $token = $user->createToken('token')->accessToken;
+                return response()->json(['token' => $token,
+                'user' => $user], 200);
+            }
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
 
         return response()->json(['error' => 'Unauthorized'], 401);
     }
+
+    public function register(UserRequest $request)
+    {
+        $credentials = $request->only('email', 'password');
+
+        $user = User::create($credentials);
+
+        if ($user) {
+            $token = $user->createToken('token')->accessToken;
+            return response()->json(['token' => $token, 'user' => $user], 200);
+        }
+
+        return response()->json(['error' => 'Registration failed'], 500);
+    }
+
+    public function logout(Request $request)
+    {
+        $user = Auth::user();
+        $user->tokens()->each(function (Token $token) {
+            $token->revoke();
+        return response()->json(['message' => 'Logged out successfully']);
+
+        });
+        return response()->json(['message' => 'Logged out Faild']);
+
+    }
+
     public function updateState_user(UserRequest $request, $id)
     {
         $locked = $request->input('status');
