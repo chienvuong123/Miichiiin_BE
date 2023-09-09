@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('content')->nullable();
             $table->float('rating')->nullable();
             $table->string('status')->default(1);
+            $table->softDeletes(); // add
+
             $table->timestamps();
         });
     }

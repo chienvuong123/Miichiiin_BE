@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->string('description')->nullable();
             $table->integer('quantity')->nullable();
+            $table->softDeletes(); // add
             $table->integer('price')->nullable();
             $table->string('image')->nullable();
             $table->integer('status')->default(1);

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('price')->nullable();
             $table->integer('acreage')->nullable();
             $table->integer('floor')->nullable();
+            $table->softDeletes(); // add
             $table->integer('status')->default(1);
             $table->integer('likes')->nullable();
             $table->integer('views')->nullable();

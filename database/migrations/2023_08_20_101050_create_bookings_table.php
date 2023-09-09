@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('message')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
+            $table->softDeletes(); // add
             $table->string('name')->nullable();
             $table->integer('id_user')->nullable();
             $table->timestamps();

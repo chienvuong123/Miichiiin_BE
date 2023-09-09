@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->integer('id_hotel');
             $table->integer('id_service');
+            $table->softDeletes(); // add
+
             $table->timestamps();
         });
     }

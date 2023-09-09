@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('id_hotel')->nullable();
             $table->integer('status')->nullable();
             $table->integer('id_cate')->nullable();
+            $table->softDeletes(); // add
             $table->timestamps();
         });
     }
