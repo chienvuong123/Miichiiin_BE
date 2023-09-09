@@ -7,9 +7,6 @@ use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Laravel\Socialite\Facades\Socialite;
-use Laravel\Socialite\SocialiteServiceProvider;
 
 class UserController extends Controller
 {
@@ -81,11 +78,10 @@ class UserController extends Controller
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
-            $tokenResult = $user->createToken('Personal Access Token');
-            return response()->json(['token' => $tokenResult], 200);
+            return response()->json(['user' => $user], 200);
+        } else {
+            return response()->json(['message' => 'Đăng nhập thất bại'], 401);
         }
-
-        return response()->json(['error' => 'Unauthorized'], 401);
     }
     public function updateState_user(UserRequest $request, $id)
     {
@@ -103,36 +99,5 @@ class UserController extends Controller
         return response()->json([
             'message' => 'Room not found',
         ], 404);
-    }
-    public function statistical_user_month()
-    {
-        $monthlyStatistics = [];
-
-        for ($month = 1; $month <= 12; $month++) {
-            $userCount = User::whereMonth('created_at', $month)->count();
-            $monthlyStatistics[] = [
-                'month' => $month,
-                'user_count' => $userCount,
-            ];
-        }
-
-        return response()->json($monthlyStatistics);
-    }
-    public function statistical_user_year()
-    {
-        $yearlyStatistics = [];
-
-    $currentYear = date('Y');
-    $startYear = $currentYear - 10; // Thống kê trong vòng 10 năm
-
-    for ($year = $startYear; $year <= $currentYear; $year++) {
-        $userCount = User::whereYear('created_at', $year)->count();
-        $yearlyStatistics[] = [
-            'year' => $year,
-            'user_count' => $userCount,
-        ];
-    }
-
-    return response()->json($yearlyStatistics);
     }
 }

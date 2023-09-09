@@ -51,13 +51,7 @@ class CategoryRoomRequest extends FormRequest
                         'total_room' => 'required|integer',
                     ];
                 }
-                if ($currentAction == 'find_of_name') {
-                    $rules = [
-                        'find' => 'required',
-                    ];
-                }
                 break;
-
 
             case 'PUT':
             case 'PATCH':
