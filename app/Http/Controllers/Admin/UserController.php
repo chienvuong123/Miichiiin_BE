@@ -81,8 +81,8 @@ class UserController extends Controller
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
-            $tokenResult = $user->createToken('Personal Access Token');
-            return response()->json(['token' => $tokenResult], 200);
+            // $tokenResult = $user->createToken('Personal Access Token');
+            // return response()->json(['token' => $tokenResult], 200);
         }
 
         return response()->json(['error' => 'Unauthorized'], 401);
