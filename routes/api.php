@@ -46,7 +46,11 @@ Route::prefix('admin')->group(function () {
     Route::resource('users', UserController::class)->except(['create', 'edit']);
     Route::prefix('users')->group(function () {
         Route::put('{id}/status', [UserController::class, 'updateState_user']);
+
     });
+    Route::get('/statistical_user_month', [UserController::class, 'statistical_user_month']);
+    Route::get('/statistical_user_year', [UserController::class, 'statistical_user_year']);
+
     // ADMIN
     Route::resource('admins', AdminController::class)->except(['create', 'edit']);
     Route::prefix('admins')->group(function () {
@@ -68,7 +72,21 @@ Route::prefix('admin')->group(function () {
     Route::resource('category', CateRoomController::class);
     Route::prefix('category')->group(function () {
         Route::put('{id}/status', [CateRoomController::class, 'updateState_cate']);
+        Route::post('/find', [CateRoomController::class, 'find_of_name']);
     });
+    // thong 'kee =>
+    Route::get('/statistical', [CateRoomController::class, 'statistical']);
+    Route::get('/statistical_year', [CateRoomController::class, 'statistical_year']);
+    Route::get('/statistical_room_checkin/{check_in}/{check_out}', [CateRoomController::class, 'statistical_room_checkin']);
+
+    Route::get('/statistical_total_amount', [CateRoomController::class, 'statistical_total_amount']);
+    Route::get('/statistical_total_amount_month', [CateRoomController::class, 'statistical_total_amount_month']);
+
+
+
+    Route::get('/statistical_cate', [CateRoomController::class, 'statistical_cate']);
+    Route::get('/statistical_CateRoom_year', [CateRoomController::class, 'statistical_CateRoom_year']);
+    Route::get('/statistical_cateRoom_checkin/{check_in}/{check_out}', [CateRoomController::class, 'statistical_cateRoom_checkin']);
 
     // CITY
     Route::resource('city', CityController::class);
