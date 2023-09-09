@@ -16,31 +16,32 @@ class hotelController extends Controller
     public function index()
     {
         $hotels = Hotel::select('hotels.*', 'cities.name as name_cities')
-        ->leftJoin('cities', 'hotels.id_city', '=', 'cities.id')
-        ->groupBy(
-            'hotels.id',
-            'hotels.name',
-            'hotels.description',
-            'hotels.quantity_of_room',
-            'hotels.id_city',
-            'hotels.star',
-            'hotels.phone',
-            'hotels.address',
-            'hotels.email',
-            'hotels.status',
-            'hotels.quantity_floor',
-            'hotels.created_at',
-            'hotels.updated_at',
-            'cities.name',
-        )
-        ->get();
+            ->leftJoin('cities', 'hotels.id_city', '=', 'cities.id')
+            ->groupBy(
+                'hotels.id',
+                'hotels.name',
+                'hotels.description',
+                'hotels.quantity_of_room',
+                'hotels.id_city',
+                'hotels.star',
+                'hotels.phone',
+                'hotels.address',
+                'hotels.email',
+                'hotels.status',
+                'hotels.deleted_at',
+                'hotels.quantity_floor',
+                'hotels.created_at',
+                'hotels.updated_at',
+                'cities.name',
+            )
+            ->get();
         foreach ($hotels as $key => $listImage) {
             $image = image::select('images.image')
-            ->leftJoin('image_details', 'images.id', '=', 'image_details.id_image')
-            ->leftJoin('hotels', 'image_details.id_hotel', '=', 'hotels.id')
-            ->where('hotels.id', '=',$listImage->id)
-            ->get();
-        $hotels[$key]['image'] = $image;
+                ->leftJoin('image_details', 'images.id', '=', 'image_details.id_image')
+                ->leftJoin('hotels', 'image_details.id_hotel', '=', 'hotels.id')
+                ->where('hotels.id', '=', $listImage->id)
+                ->get();
+            $hotels[$key]['image'] = $image;
         }
         return response()->json($hotels);
     }
@@ -71,6 +72,8 @@ class hotelController extends Controller
                 'hotels.id_city',
                 'hotels.star',
                 'hotels.address',
+                'hotels.deleted_at',
+
                 'hotels.phone',
                 'hotels.email',
                 'hotels.status',
@@ -86,14 +89,14 @@ class hotelController extends Controller
                 return $group->first();
             })
             ->values();
-            foreach ($hotels as $key => $listImage) {
-                $image = image::select('images.image')
+        foreach ($hotels as $key => $listImage) {
+            $image = image::select('images.image')
                 ->leftJoin('image_details', 'images.id', '=', 'image_details.id_image')
                 ->leftJoin('hotels', 'image_details.id_hotel', '=', 'hotels.id')
-                ->where('hotels.id', '=',$listImage->id)
+                ->where('hotels.id', '=', $listImage->id)
                 ->get();
             $hotels[$key]['image'] = $image;
-            }
+        }
 
         return response()->json($hotels);
     }
@@ -123,6 +126,7 @@ class hotelController extends Controller
                 'hotels.quantity_of_room',
                 'hotels.id_city',
                 'hotels.star',
+                'hotels.deleted_at',
                 'hotels.address',
                 'hotels.phone',
                 'hotels.email',
@@ -140,14 +144,14 @@ class hotelController extends Controller
                 return $group->first();
             })
             ->values();
-            foreach ($hotels as $key => $listImage) {
-                $image = image::select('images.image')
+        foreach ($hotels as $key => $listImage) {
+            $image = image::select('images.image')
                 ->leftJoin('image_details', 'images.id', '=', 'image_details.id_image')
                 ->leftJoin('hotels', 'image_details.id_hotel', '=', 'hotels.id')
-                ->where('hotels.id', '=',$listImage->id)
+                ->where('hotels.id', '=', $listImage->id)
                 ->get();
             $hotels[$key]['image'] = $image;
-            }
+        }
 
         return response()->json($hotels);
     }
@@ -180,6 +184,7 @@ class hotelController extends Controller
                 'hotels.star',
                 'hotels.address',
                 'hotels.phone',
+                'hotels.deleted_at',
                 'hotels.email',
                 'hotels.status',
                 'hotels.quantity_floor',
@@ -195,14 +200,14 @@ class hotelController extends Controller
                 return $group->first();
             })
             ->values();
-            foreach ($hotels as $key => $listImage) {
-                $image = image::select('images.image')
+        foreach ($hotels as $key => $listImage) {
+            $image = image::select('images.image')
                 ->leftJoin('image_details', 'images.id', '=', 'image_details.id_image')
                 ->leftJoin('hotels', 'image_details.id_hotel', '=', 'hotels.id')
-                ->where('hotels.id', '=',$listImage->id)
+                ->where('hotels.id', '=', $listImage->id)
                 ->get();
             $hotels[$key]['image'] = $image;
-            }
+        }
 
         return response()->json($hotels);
     }

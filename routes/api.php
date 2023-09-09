@@ -165,8 +165,10 @@ Route::middleware('auth:api')->prefix('users')->group(function () {
     Route::get('hotel', [hotelController::class, 'home_user']);
     Route::get('/hotel/city={id}', [hotelController::class, 'home_city']);
 
+
     // ...
 });
+
 // hiển thị thông tin hotel trang home_user
 // hiển thị khách sạn theo thành phố
 // hiển thị tất cả services cả hệ thống
