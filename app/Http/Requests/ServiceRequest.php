@@ -30,7 +30,7 @@ class ServiceRequest extends FormRequest
             'name' => 'required',
             'quantity' => 'required',
             'price' => 'required',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:204',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif',
             'description' => 'required',
         ];
         // lấy ra tên phương thức cần sử lý
@@ -42,7 +42,7 @@ class ServiceRequest extends FormRequest
             case 'PUT':
             case 'PATCH':
                 if ($currentAction == 'update') {
-                    $rules['image'] = 'mimes:jpg,jpeg,png,webp|max:2048';
+                    $rules['image'] = 'mimes:jpg,jpeg,png,webp';
                 }
                 if ($currentAction == 'updateState_services') {
                     $rules = [
