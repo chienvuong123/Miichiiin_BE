@@ -31,8 +31,10 @@ class UserRequest extends FormRequest
             'email' => 'required|email|unique:users,email',
             'password' => 'required',
             'image' => 'required|mimes:jpg,jpeg,png',
-            'phone' => 'required',
             'address' => 'required',
+            'gender' => 'required',
+            'description' => 'required',
+            'phone' => 'required | regex:/^([0-9\s\-\+\(\)]*)$/',
             'date' => 'required|date|before:' . Carbon::now(),
         ];
         // lấy ra tên phương thức cần sử lý
