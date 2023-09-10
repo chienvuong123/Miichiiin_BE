@@ -200,3 +200,6 @@ Route::get('/bookingDetail/{id}', [BookingDetailController::class, 'booking_deta
 // hiển thị comfort theo loại phòng
 Route::get('/comfort/cate={id}', [ComfortController::class, 'comfort_cate']);
 // hiển thị voucher
+
+Route::post('/store_image_cate/{id}', [hotelController::class, 'store_image_cate']);
+

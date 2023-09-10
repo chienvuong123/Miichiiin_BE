@@ -9,11 +9,14 @@ use App\Models\bookingDetail;
 use App\Models\categoryRoom;
 use App\Models\hotel;
 use App\Models\image;
+use App\Models\imageDetail;
 use App\Models\room;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+
 
 class CateRoomController extends Controller
 {
@@ -267,12 +270,38 @@ class CateRoomController extends Controller
     {
         // nếu như tồn tại file sẽ upload file
         $params = $request->except('_token');
-        $params['image'] = upload_file('image', $request->file('image'));
+        $uploadedImage = Cloudinary::upload($params['image']->getRealPath());
+        $params['image'] = $uploadedImage->getSecurePath();
         $categoryRoom  = categoryRoom::create($params);
         if ($categoryRoom->id) {
             return response()->json([
                 'message' => $categoryRoom,
                 'status' => 200
+            ]);
+        }
+    }
+    public function store_image_cate(CategoryRoomRequest $request,$id)
+    {
+        $params = $request->except('_token');
+        $cate = hotel::find($id);
+        if ($cate) {
+            foreach ($request->file('images') as $image) {
+                // Tải lên ảnh mới
+                $uploadedImage = Cloudinary::upload($image->getRealPath());
+
+                // Tạo bản ghi mới trong bảng `images`
+                $imageRecord = new Image();
+                $imageRecord->image = $uploadedImage->getSecurePath();
+                $imageRecord->save();
+                // Lưu thông tin hình ảnh vào bảng `image_details`
+                $imageDetail = new imageDetail();
+                $imageDetail->id_cate = $cate->id;
+                $imageDetail->id_image = $imageRecord->id;
+                $imageDetail->alt = 'Alt text for the image'; // Thay thế bằng alt text thích hợp
+                $imageDetail->save();
+            }
+            return response()->json([
+                'status' => "Add Ảnh Thành Công"
             ]);
         }
     }
@@ -283,14 +312,14 @@ class CateRoomController extends Controller
     {
         $categoryRoom = categoryRoom::find($id);
         $params = $request->except('_token');
+        $oldImg = $params['image'];
 
         if ($request->hasFile('image') && $request->file('image')) {
-            $del = delete_file($request->image);
-            if ($del) {
-                $params['image'] = upload_file('image', $request->file('image'));
+            if ($oldImg) {
+                Cloudinary::destroy($oldImg);
             }
-        } else {
-            $params['image'] = $categoryRoom->image;
+            $uploadedImage = Cloudinary::upload($request->image->getRealPath());
+            $params['image'] = $uploadedImage->getSecurePath();
         }
         if ($categoryRoom) {
             $categoryRoom->update($params);
@@ -315,7 +344,10 @@ class CateRoomController extends Controller
     {
         $categoryRoom = categoryRoom::find($id);
         if ($categoryRoom) {
-            $del = delete_file($categoryRoom->image);
+            $oldImg = $categoryRoom->image;
+            if ($oldImg) {
+                Cloudinary::destroy($oldImg);
+            }
             $categoryRoom->delete();
             return response()->json([
                 'message' => "Delete success",

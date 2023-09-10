@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -35,7 +36,8 @@ class UserController extends Controller
         $user = new User();
         $user->fill($request->except(['re_password', '_token']));
 
-        $user->image = upload_file('image', $request->file('image'));
+        $uploadedImage = Cloudinary::upload($request->image->getRealPath());
+        $user->image = $uploadedImage->getSecurePath();
         $user->save();
 
         return response()->json($user);
@@ -61,8 +63,11 @@ class UserController extends Controller
         $user->fill($request->except(['re_password', '_token']));
 
         if ($request->file('image')) {
-            $user->image = upload_file('image', $request->file('image'));
-            delete_file($oldImg);
+            if ($oldImg) {
+                Cloudinary::destroy($oldImg);
+            }
+            $uploadedImage = Cloudinary::upload($request->image->getRealPath());
+            $user->image = $uploadedImage->getSecurePath();
         }
 
         $user->save();
@@ -76,8 +81,14 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         $user = User::query()->find($id);
+        $oldImg = $user->image;
+
+        if($user){
+            if ($oldImg) {
+                Cloudinary::destroy($oldImg);
+            }
         $user->delete();
-        delete_file($user->image);
+        }
         return response()->json(Response::HTTP_OK);
     }
     public function login(UserRequest $request)

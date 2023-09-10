@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ServiceRequest;
 use App\Models\Service;
 use App\Models\ServiceDetail;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -37,6 +38,8 @@ class ServiceController extends Controller
 
         $service->fill($request->except('_token'));
 
+        $uploadedImage = Cloudinary::upload($request->image->getRealPath());
+        $service->image = $uploadedImage->getSecurePath();
         $service->save();
 
         return response()->json($service);
@@ -64,9 +67,17 @@ class ServiceController extends Controller
     public function update(Request $request, string $id)
     {
         $service = Service::query()->find($id);
+        $oldImg = $service->image;
 
         $service->fill($request->except('_token'));
 
+        if ($request->hasFile('image') && $request->file('image')) {
+            if ($oldImg) {
+                Cloudinary::destroy($oldImg);
+            }
+            $uploadedImage = Cloudinary::upload($request->image->getRealPath());
+            $service->image = $uploadedImage->getSecurePath();
+        }
         $service->save();
 
         return response()->json($service);
@@ -78,7 +89,16 @@ class ServiceController extends Controller
     public function destroy(string $id)
     {
         $service = Service::query()->find($id);
+        $oldImg = $service->image;
+
+        if($service){
+            if ($oldImg) {
+                Cloudinary::destroy($oldImg);
+            }
         $service->delete();
+
+        }
+
         return response()->json([
             "message" => "Delete success",
             "status" => 200

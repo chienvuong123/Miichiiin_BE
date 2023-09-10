@@ -22,7 +22,6 @@ class imageDetailFactory extends Factory
             "id_rooms" => fake()->numberBetween(),
             "id_cate" => fake()->numberBetween(),
             "id_image" => fake()->numberBetween(),
-            "id_services" => fake()->numberBetween(),
         ];
     }
 }

@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\HotelRequest;
 use App\Models\hotel;
 use App\Models\image;
+use App\Models\imageDetail;
 use App\Models\room;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -221,6 +223,24 @@ class hotelController extends Controller
         // nếu như tồn tại file sẽ upload file
         $params = $request->except('_token');
         $hotel  = hotel::create($params);
+        if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $image) {
+                    // Tải lên ảnh mới
+                    $uploadedImage = Cloudinary::upload($image->getRealPath());
+
+                    // Tạo bản ghi mới trong bảng `images`
+                    $imageRecord = new Image();
+                    $imageRecord->image = $uploadedImage->getSecurePath();
+                    $imageRecord->save();
+                    // Lưu thông tin hình ảnh vào bảng `image_details`
+                    $imageDetail = new imageDetail();
+                    $imageDetail->id_hotel = $hotel->id;
+                    $imageDetail->id_image = $imageRecord->id;
+                    $imageDetail->alt = 'Alt text for the image'; // Thay thế bằng alt text thích hợp
+                    $imageDetail->save();
+                }
+        }
+
         if ($hotel->id) {
             return response()->json([
                 'message' => $hotel,
@@ -236,6 +256,21 @@ class hotelController extends Controller
         $params = $request->except('_token');
         $hotel = hotel::find($id);
         if ($hotel) {
+            foreach ($request->file('images') as $image) {
+                // Tải lên ảnh mới
+                $uploadedImage = Cloudinary::upload($image->getRealPath());
+
+                // Tạo bản ghi mới trong bảng `images`
+                $imageRecord = new Image();
+                $imageRecord->image = $uploadedImage->getSecurePath();
+                $imageRecord->save();
+                // Lưu thông tin hình ảnh vào bảng `image_details`
+                $imageDetail = new imageDetail();
+                $imageDetail->id_hotel = $hotel->id;
+                $imageDetail->id_image = $imageRecord->id;
+                $imageDetail->alt = 'Alt text for the image'; // Thay thế bằng alt text thích hợp
+                $imageDetail->save();
+            }
             $hotel->update($params);
             return response()->json([
                 'message' => $hotel,
