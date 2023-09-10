@@ -36,6 +36,10 @@ class UserController extends Controller
         $user = new User();
         $user->fill($request->except(['re_password', '_token']));
 
+        if ($request->has('password')) {
+            $user->password = bcrypt($request->password);
+        }
+
         $uploadedImage = Cloudinary::upload($request->image->getRealPath());
         $user->image = $uploadedImage->getSecurePath();
         $user->save();
@@ -113,6 +117,7 @@ class UserController extends Controller
     public function register(UserRequest $request)
     {
         $credentials = $request->only('email', 'password');
+        $credentials['password'] = bcrypt($credentials['password']);
 
         $user = User::create($credentials);
 
