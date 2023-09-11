@@ -26,6 +26,8 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'image' => fake()->imageUrl(),
             'description' => fake()->text(20),
+            "cccd" => fake()->text(20),
+            "nationality" => fake()->address(),
             'phone' => fake()->phoneNumber(),
             'address' => fake()->address(),
             'status' => fake()->numberBetween(1),

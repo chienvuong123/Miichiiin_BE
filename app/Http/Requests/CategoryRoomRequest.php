@@ -28,7 +28,7 @@ class CategoryRoomRequest extends FormRequest
         $rules = [
             'name' => 'required',
             'description' => 'required',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:204',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif',
             'floor' => 'required|integer',
             'likes' => 'required|integer',
             'status' => 'required|integer',
@@ -42,10 +42,26 @@ class CategoryRoomRequest extends FormRequest
         $currentAction = $this->route()->getActionMethod();
         switch ($this->method()):
             case 'POST':
+                if ($currentAction == 'find') {
+                    $rules = [
+                        'check_in' => 'required',
+                        'check_out' => 'required',
+                        'id_hotel' => 'required|integer',
+                        'number_people' => 'required|integer',
+                        'total_room' => 'required|integer',
+                    ];
+
+                }
+                if ($currentAction == 'store_image_cate') {
+                    $rules = [];
+                }
                 break;
 
             case 'PUT':
             case 'PATCH':
+                if ($currentAction == 'update') {
+                    $rules['image'] = 'mimes:jpg,jpeg,png,webp';
+                }
                 if ($currentAction == 'updateState_cate') {
                     $rules = [
                         'status' => 'required',

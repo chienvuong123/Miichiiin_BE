@@ -19,8 +19,8 @@ class categoryRoomFactory extends Factory
         return [
             //
             'name'=>fake()->name(),
-            'description'=>fake()->text(),
-            'short_description'=>fake()->text(),
+            'description'=>fake()->text(20),
+            'short_description'=>fake()->text(20),
             'image'=>fake()->imageUrl(),
             "price" => fake()->numberBetween(),
             "acreage" => fake()->numberBetween(),

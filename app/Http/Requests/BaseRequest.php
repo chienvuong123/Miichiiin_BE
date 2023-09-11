@@ -34,9 +34,11 @@ trait BaseRequest {
         return [
             'name.required' => 'Tên Không Được Để Trống',
             'email.required' => 'Email không được để trống',
+            'email.unique' => 'Email không được Trùng',
             'password.required' => 'Mật khẩu ko được để trống',
             'image.required' => 'Ảnh không được để trống',
             'image.mimes' => 'Ảnh không đúng định dạng',
+            'date.before' => 'ngày sinh không được sau hiện tại',
             'cate_room.required' => 'Không được để trống danh mục phòng',
 
             // booking Detail
@@ -44,6 +46,8 @@ trait BaseRequest {
             'id_room.required' => 'Mã Phòng Không Được Để Trống',
             'id_booking.required' => 'Mã Booking Không Được Để Trống',
             'id_services.required' => 'Dịch Vụ Không Được Để Trống',
+            'nationality.required' => 'Quốc tịch không được để trống',
+            'cccd.required' => 'CCCD không được để trống',
             'id_promotions.integer' => 'Mã Hóa Đơn Là Số',
             'id_room.integer' => 'Mã Phòng Là Số',
             'id_booking.integer' => 'Mã Booking Là Số',
@@ -52,9 +56,11 @@ trait BaseRequest {
             // Booking
             'check_in.required' => 'Check_in Không Được Để Trống',
             'check_in.after' => 'Check_in Không Được Nhỏ Hơn Hiện tại',
-            'check_out.after' => 'check_out > Check_in',
+            'check_out.after' => 'check_out  phải sau ngày Check_in',
             'check_out.required' => 'Check_out Không Được Để Trống',
             'people_quantity.required' => ' Không Được Để Trống',
+            'people_quantity.integer' => 'Phải Là kiểu số',
+            'total_amount.integer' => 'Cần nhập số',
             'total_amount.required' => ' Không Được Để Trống',
             'phone.regex' => 'Số Sai Định Dạng',
             'phone.required' => 'Số Điện thoại Không Được Để Trống',
@@ -67,6 +73,9 @@ trait BaseRequest {
             'status.required' => 'Trạng Thái Không Được Để Trống',
             'quantity_floor.required' => 'Số Lượng Tầng Không Được Để Trống',
             'quantity_of_room.required' => 'Số Lượng Phòng Không Được Để Trống',
+            'price.required' => 'Giá Không Được Để Trống',
+            'acreage.required' => 'Diện Tích Không được Để Trống',
+            'floor.required' => 'Tầng Để Trống',
 
             //city
 

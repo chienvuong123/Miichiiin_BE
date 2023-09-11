@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
+            $table->softDeletes(); // add
             $table->integer('status')->default(1);
             $table->integer('gender')->nullable();
             $table->date('date')->nullable();

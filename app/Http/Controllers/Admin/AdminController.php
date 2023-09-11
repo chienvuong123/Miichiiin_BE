@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminRequest;
 use App\Models\Admin;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -36,7 +37,8 @@ class AdminController extends Controller
 
         $admin->fill($request->except(['re_password']));
 
-        $admin->image = upload_file('image', $request->file('image'));
+        $uploadedImage = Cloudinary::upload($request->image->getRealPath());
+        $admin->image = $uploadedImage->getSecurePath();
         $admin->save();
 
         return response()->json($admin);
@@ -70,8 +72,11 @@ class AdminController extends Controller
         $admin->fill($request->except(['re_password', '_token']));
 
         if ($request->file('image')) {
-            $admin->image = upload_file('image', $request->file('image'));
-            delete_file($oldImg);
+            if ($oldImg) {
+                Cloudinary::destroy($oldImg);
+            }
+            $uploadedImage = Cloudinary::upload($request->image->getRealPath());
+            $admin->image = $uploadedImage->getSecurePath();
         }
 
         $admin->save();
@@ -85,6 +90,10 @@ class AdminController extends Controller
     public function destroy(string $id)
     {
         $admin = Admin::query()->find($id);
+        $oldImg = $admin->image;
+        if ($oldImg) {
+            Cloudinary::destroy($oldImg);
+        }
         $admin->delete();
         delete_file($admin->image);
         return response()->json(Response::HTTP_OK);

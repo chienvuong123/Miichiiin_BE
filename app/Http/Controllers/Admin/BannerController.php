@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
 
 class BannerController extends Controller
@@ -32,10 +33,9 @@ class BannerController extends Controller
     {
         $banner = new Banner();
         $banner->fill($request->except(['re_password', '_token']));
-
-        $banner->image = upload_file('image', $request->file('image'));
+        $uploadedImage = Cloudinary::upload($request->image->getRealPath());
+        $banner->image = $uploadedImage->getSecurePath();
         $banner->save();
-
         return response()->json($banner);
     }
 
@@ -63,12 +63,13 @@ class BannerController extends Controller
     {
         $banner = Banner::query()->find($id);
         $oldImg = $banner->image;
-
         $banner->fill($request->except(['re_password', '_token']));
-
         if ($request->file('image')) {
-            $banner->image = upload_file('image', $request->file('image'));
-            delete_file($oldImg);
+            if ($oldImg) {
+                Cloudinary::destroy($oldImg);
+            }
+            $uploadedImage = Cloudinary::upload($request->image->getRealPath());
+            $banner->image = $uploadedImage->getSecurePath();
         }
 
         $banner->save();
@@ -82,6 +83,10 @@ class BannerController extends Controller
     public function destroy(string $id)
     {
         $banner = Banner::query()->find($id);
+        $oldImg = $banner->image;
+        if ($oldImg) {
+            Cloudinary::destroy($oldImg);
+        }
         $banner->delete();
         return response()->json([
             "message" => "Delete success",

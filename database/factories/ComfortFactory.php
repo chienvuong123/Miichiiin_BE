@@ -18,7 +18,8 @@ class ComfortFactory extends Factory
     {
         return [
             'name' => fake()->text(50),
-            'description' => fake()->text(50)
+            'description' => fake()->text(50),
+            'alt' => fake()->text(50)
         ];
     }
 }

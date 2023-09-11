@@ -21,6 +21,7 @@ class ServiceFactory extends Factory
             'name' => fake()->text(20),
             'description' => fake()->text(20),
             'quantity' => fake()->numerify(),
+            'image' => fake()->imageUrl(),
             'price' => fake()->numerify(),
             'status' => fake()->numberBetween(1,2),
         ];
