@@ -55,6 +55,8 @@ Route::prefix('admin')->group(function () {
     Route::prefix('admins')->group(function () {
         Route::put('{id}/status', [AdminController::class, 'updateState_admin']);
     });
+    Route::post('login', [AdminController::class, 'login']);
+
     // HOTEL
     Route::resource('hotel', hotelController::class);
     Route::prefix('hotel')->group(function () {

@@ -18,7 +18,7 @@ class PermissionFactory extends Factory
     {
         return [
             'name' => fake()->text(30),
-            'description' => fake()->text(50),
+            'guard_name' => fake()->text('web')
         ];
     }
 }

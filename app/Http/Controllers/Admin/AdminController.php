@@ -8,6 +8,7 @@ use App\Models\Admin;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -26,6 +27,22 @@ class AdminController extends Controller
     public function create()
     {
         //
+    }
+
+    public function login(Request $request)
+    {
+        $credentials = $request->only(['email', 'password']);
+//        dd($credentials);
+//        dd(Auth::guard('admins')->user());
+        if (Auth::guard('admins')->attempt($credentials)) {
+//            dd(Auth::guard('admins'));
+            $admin = Auth::guard('admins')->user();
+            $token = $admin->createToken('token')->accessToken;
+
+            return response()->json(['token' => $token], 200);
+        }
+
+        return response()->json(['message' => 'Unauthorized'], 401);
     }
 
     /**
