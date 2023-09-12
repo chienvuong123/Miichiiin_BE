@@ -26,6 +26,7 @@ class categoryRoomFactory extends Factory
             "acreage" => fake()->numberBetween(),
             "floor" => fake()->numberBetween(),
             "likes" => fake()->numberBetween(),
+            "status" => fake()->numberBetween(0,1),
             "views" => fake()->numberBetween(),
             "quantity_of_people" => fake()->numberBetween(),
         ];

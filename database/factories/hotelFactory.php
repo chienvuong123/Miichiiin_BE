@@ -21,7 +21,7 @@ class hotelFactory extends Factory
             "name" => fake()->name(),
             "description" => fake()->text(20),
             "star" => fake()->numberBetween(0,5),
-            "status" => fake()->numberBetween(1),
+            "status" => fake()->numberBetween(0,1),
             "email" => fake()->unique()->email(),
             "address" => fake()->address(),
             "phone" => fake()->phoneNumber(),

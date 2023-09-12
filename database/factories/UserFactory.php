@@ -30,7 +30,7 @@ class UserFactory extends Factory
             "nationality" => fake()->address(),
             'phone' => fake()->phoneNumber(),
             'address' => fake()->address(),
-            'status' => fake()->numberBetween(1),
+            'status' => fake()->numberBetween(0,1),
             'gender' => fake()->numberBetween(0,2),
             'date' => fake()->date
         ];
