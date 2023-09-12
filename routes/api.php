@@ -64,7 +64,7 @@ Route::prefix('admin')->group(function () {
     // ROOM
     Route::resource('room', roomsController::class);
     Route::prefix('room')->group(function () {
-        Route::get('cate_room/{id}', [roomsController::class, 'room_cate']);
+        Route::get('/cate_room/{id}', [roomsController::class, 'room_cate']);
         Route::put('{id}/status', [roomsController::class, 'updateState']);
     });
     // CATEGORY
@@ -165,7 +165,6 @@ Route::middleware('auth:api')->prefix('users')->group(function () {
     Route::get('hotel', [hotelController::class, 'home_user']);
     Route::get('/hotel/city={id}', [hotelController::class, 'home_city']);
 
-
     // ...
 });
 
@@ -202,4 +201,6 @@ Route::get('/comfort/cate={id}', [ComfortController::class, 'comfort_cate']);
 // hiển thị voucher
 
 Route::post('/store_image_cate/{id}', [hotelController::class, 'store_image_cate']);
+
+Route::get('/voucher', [VoucherController::class, 'list_vourcher']);
 

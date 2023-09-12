@@ -14,4 +14,8 @@ class city extends Model
         "id",
         "name",
     ];
+    public function scopeActiveCategoryRooms($query)
+    {
+        return $query->where('city.status', 1);
+    }
 }

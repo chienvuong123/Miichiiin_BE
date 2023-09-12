@@ -26,4 +26,13 @@ class booking extends Model
         "email",
         "id_user",
     ];
+
+    public function scopeActive($query)
+    {
+        return $query->whereNotIn('bookings.status', [2, 3]);
+    }
+    public function bookingDetails()
+    {
+        return $this->hasMany(BookingDetail::class, 'id_booking');
+    }
 }

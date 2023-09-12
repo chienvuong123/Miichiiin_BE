@@ -12,10 +12,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Laravel\Passport\Token;
-use Laravel\Passport\TokenRepository;
-use Laravel\Socialite\Facades\Socialite;
-use Laravel\Socialite\SocialiteServiceProvider;
-use Laravel\Passport\HasApiTokens;
 
 class UserController extends Controller
 {

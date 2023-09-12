@@ -20,7 +20,7 @@ class VoucherController extends Controller
     }
     public function list_vourcher()
     {
-        $voucher = Voucher::orderByDesc('created_at')->get();
+        $voucher = Voucher::orderByDesc('created_at')->active()->get();
         return response()->json($voucher);
     }
     /**

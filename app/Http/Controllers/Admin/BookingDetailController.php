@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BookingRequest;
 use App\Models\bookingDetail;
-use Illuminate\Http\Request;
 
 class BookingDetailController extends Controller
 {

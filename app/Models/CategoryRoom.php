@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class categoryRoom extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
     protected $table = 'category_rooms';
     protected $fillable = [
         "id",
@@ -25,4 +25,23 @@ class categoryRoom extends Model
         "id_cate",
         "quantity_of_people",
     ];
+    public function scopeActiveCategoryRooms($query)
+    {
+        return $query->where('category_rooms.status', 1);
+    }
+
+    public function bookingDetails()
+    {
+        return $this->hasMany(BookingDetail::class, 'id_cate');
+    }
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class, 'id_cate');
+    }
+    // public function scopeActiveBookings($query)
+    // {
+    //     return $query->whereHas('bookings', function ($query) {
+    //         $query->whereNotIn('status', [2, 3]);
+    //     });
+    // }
 }

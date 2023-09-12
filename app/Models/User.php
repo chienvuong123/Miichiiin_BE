@@ -35,6 +35,10 @@ class User extends Authenticatable
     public function AauthAcessToken(){
         return $this->hasMany('\App\OauthAccessToken');
     }
+    public function scopeActive($query)
+    {
+        return $query->where('users.status', 1);
+    }
     /**
      * The attributes that should be hidden for serialization.
      *

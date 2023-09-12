@@ -11,6 +11,9 @@ class Rate extends Model
     use HasFactory,SoftDeletes;
     protected $table = 'rates';
 
-
+    public function scopeActiveCategoryRooms($query)
+    {
+        return $query->where('rates.status', 1);
+    }
     protected $fillable = ['id_user', 'id_category', 'content', 'rating', 'status'];
 }

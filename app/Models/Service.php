@@ -18,4 +18,8 @@ class Service extends Model
         'price',
         'status'
     ];
+    public function scopeActive($query)
+    {
+        return $query->where('services.status', 1);
+    }
 }
