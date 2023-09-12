@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Requests\CityRequest;
 use App\Models\city;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 
 class CityController extends Controller
 {

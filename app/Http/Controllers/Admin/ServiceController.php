@@ -106,10 +106,11 @@ class ServiceController extends Controller
     }
     public function list_services_hotel($id)
     {
-        $service = ServiceDetail::
-        leftJoin('services', 'service_details.id_service', '=', 'services.id')
+        $service = Service::
+        leftJoin('service_details', 'service_details.id_service', '=', 'services.id')
         ->leftJoin('hotels', 'hotels.id', '=', 'service_details.id_hotel')
         ->select('service_details.id_hotel', 'services.*')
+        ->active()
         ->where('service_details.id_hotel', "=",$id)
         ->distinct()
         ->get();

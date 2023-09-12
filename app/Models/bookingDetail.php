@@ -21,4 +21,11 @@ class bookingDetail extends Model
     {
         return $this->belongsTo(Booking::class, 'id_booking');
     }
+
+
+    // Define the relationship with CategoryRoom model
+    public function categoryRoom()
+    {
+        return $this->belongsTo(CategoryRoom::class, 'id_cate');
+    }
 }

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ComfortRequest;
 use App\Models\Comfort;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class ComfortController extends Controller
@@ -103,7 +102,10 @@ class ComfortController extends Controller
         )
         ->join('comfort_details','comforts.id','=','comfort_details.id_comfort')
         ->join('category_rooms','comfort_details.id_cate_room','=','category_rooms.id')
-        ->where('id_cate_room',$id)->get();
+        ->where('id_cate_room',$id)
+        ->where('comforts.status',"=",1)
+
+        ->get();
         return response()->json($comforts);
     }
 }

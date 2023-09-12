@@ -13,8 +13,6 @@ use App\Models\imageDetail;
 use App\Models\room;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 
@@ -94,10 +92,8 @@ class CateRoomController extends Controller
     public function list_cate($id, $check_in = null, $check_out = null, $number_people = null, $total_room = null)
     {
         $status = 1;
-        $startDate = isset($check_in) ? Carbon::parse($check_in) : Carbon::now();
-
-        $endDate = isset($check_out) ? Carbon::parse($check_out) : $startDate->copy()->addDays(3)->setTime(12, 0);
-
+        $startDate = isset($check_in) ? Carbon::parse($check_in) : Carbon::now()->setTime(0, 0);
+        $endDate = isset($check_out) ? Carbon::parse($check_out) : $startDate->copy()->addDays(3)->setTime(0, 0);
         $number_of_people = $number_people ?? 1;
         $number_room = $total_room ?? 1;
 
@@ -146,7 +142,6 @@ class CateRoomController extends Controller
             )
             ->having('category_rooms.quantity_of_people', '>=', $number_of_people)
             ->get();
-
         // Lặp qua từng loại phòng
         foreach ($list_category as $category) {
             $categoryId = $category->id;
@@ -159,9 +154,12 @@ class CateRoomController extends Controller
             $bookedRooms = BookingDetail::whereHas('bookings', function ($query) use ($startDate, $endDate) {
                 $query->where(function ($query) use ($startDate, $endDate) {
                     $query->where('check_in', '>=', $startDate)
+                        ->whereNotIn('bookings.status', [2, 3])
                         ->where('check_out', '<=', $endDate);
-                });
+                })
+                ->orWhereNull('booking_details.id_room');
             })
+
                 ->where('id_room', '!=', null)
                 ->where('id_cate', $categoryId)
                 ->distinct('id_room') // Chỉ tính các phòng duy nhất
@@ -188,9 +186,7 @@ class CateRoomController extends Controller
     {
         $status = 1;
         $startDate = isset($request['check_in']) ? Carbon::parse($request['check_in']) : Carbon::now();
-
         $endDate = isset($request['check_out']) ? Carbon::parse($request['check_out']) : $startDate->copy()->addDays(3)->setTime(12, 0);
-
         $number_of_people = $request['number_people'] ?? 1;
         $number_room = $request['total_room'] ?? 1;
         $id = $request['id_hotel'];
@@ -247,7 +243,7 @@ class CateRoomController extends Controller
             )
             ->having('category_rooms.quantity_of_people', '>=', $number_of_people)
             ->having('Total_rooms', '>=', $number_room)
-            ->get();
+            ->orderBy('category_rooms.quantity_of_people')->get();
 
         foreach ($rooms as $key => $listImage) {
             $image = Image::select('images.image')
@@ -280,7 +276,7 @@ class CateRoomController extends Controller
             ]);
         }
     }
-    public function store_image_cate(CategoryRoomRequest $request,$id)
+    public function store_image_cate(CategoryRoomRequest $request, $id)
     {
         $params = $request->except('_token');
         $cate = hotel::find($id);
@@ -373,29 +369,7 @@ class CateRoomController extends Controller
             'message' => 'categoryRoom not found',
         ], 404);
     }
-    public function find_of_name(CategoryRoomRequest $request)
-    {
-        $find = $request->input('find');
 
-        if ($find) {
-            $categoryRooms = CategoryRoom::where('name', 'LIKE', '%' . $find . '%')->get();
-
-            if ($categoryRooms->count() > 0) {
-                return response()->json([
-                    'message' => 'categoryRoom found',
-                    'categoryRoom' => $categoryRooms,
-                ]);
-            } else {
-                return response()->json([
-                    'message' => 'No categoryRoom found',
-                ], 404);
-            }
-        } else {
-            return response()->json([
-                'message' => 'No search parameter provided',
-            ], 400);
-        }
-    }
     public function statistical()
     {
         // thống kê trong từng tháng các phòng được đặt số lần alf

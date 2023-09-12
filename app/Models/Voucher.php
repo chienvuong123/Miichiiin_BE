@@ -9,6 +9,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Voucher extends Model
 {
     use HasFactory,SoftDeletes;
+    public function scopeActive($query)
+    {
+        return $query->where('vouchers.status', 1);
+    }
 
     protected $fillable = [
         'name',

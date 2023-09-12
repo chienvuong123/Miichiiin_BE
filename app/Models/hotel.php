@@ -8,7 +8,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class hotel extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
+    public function scopeActive($query)
+    {
+        return $query->where('hotels.status', 1);
+    }
     protected $table = 'hotels';
     protected $fillable = [
         "id",

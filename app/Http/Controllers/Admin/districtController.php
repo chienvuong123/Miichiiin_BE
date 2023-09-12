@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DistrictRequest;
 use App\Models\district;
-use Illuminate\Http\Request;
 
 class districtController extends Controller
 {

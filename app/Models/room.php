@@ -16,4 +16,8 @@ class room extends Model
         "status",
         "id_hotel",
     ];
+    public function scopeActive($query)
+    {
+        return $query->where('rooms.status', 1);
+    }
 }

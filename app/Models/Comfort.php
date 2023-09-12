@@ -11,5 +11,10 @@ class Comfort extends Model
     use HasFactory,SoftDeletes;
     protected $table = 'comforts';
 
+
     protected $fillable = ['name', 'description','status','alt'];
+    public function scopeActiveCategoryRooms($query)
+    {
+        return $query->where('comforts.status', 1);
+    }
 }

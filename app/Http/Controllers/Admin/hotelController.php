@@ -9,7 +9,6 @@ use App\Models\image;
 use App\Models\imageDetail;
 use App\Models\room;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class hotelController extends Controller
@@ -75,7 +74,6 @@ class hotelController extends Controller
                 'hotels.star',
                 'hotels.address',
                 'hotels.deleted_at',
-
                 'hotels.phone',
                 'hotels.email',
                 'hotels.status',
@@ -85,6 +83,7 @@ class hotelController extends Controller
                 'cities.name',
             )
             ->distinct()
+            ->active()
             ->get()
             ->groupBy('id')
             ->map(function ($group) {
@@ -195,6 +194,7 @@ class hotelController extends Controller
                 'cities.name',
             )
             ->where('hotels.id', '=', $id)
+            ->active()
             ->distinct()
             ->get()
             ->groupBy('id')

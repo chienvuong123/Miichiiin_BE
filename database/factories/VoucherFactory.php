@@ -21,9 +21,9 @@ class VoucherFactory extends Factory
             'slug' => fake()->text(10),
             'image' => fake()->imageUrl,
             'quantity' => fake()->numberBetween(0,10),
-            'discount' => fake()->numerify,
-            'start_at' => fake()->dateTime,
-            'expire_at' => fake()->dateTime,
+            'discount' => fake()->numerify(),
+            'start_at' => fake()->dateTime(),
+            'expire_at' => fake()->dateTime(),
             'status' => fake()->numberBetween(1,3),
             'meta' => fake()->text(50),
             'description' => fake()->text(50)

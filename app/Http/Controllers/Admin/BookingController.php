@@ -10,10 +10,8 @@ use App\Models\Service;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BookingRequest;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class BookingController extends Controller
 {
@@ -24,6 +22,7 @@ class BookingController extends Controller
         // get all booking
         $booking = booking::select('bookings.*', 'users.name as name_user',)
         ->leftJoin('users', 'bookings.id_user', '=', 'users.id')
+        ->active()
         ->get();
         return response()->json($booking);
     }
@@ -132,7 +131,7 @@ class BookingController extends Controller
                     ];
                 }
             }
- 
+
             bookingDetail::insert($booking_d_record);
 
             return response()->json([

@@ -21,7 +21,7 @@ class RateFactory extends Factory
             'id_category' => fake()->numberBetween(1,5),
             'content' => fake()->text(50),
             'rating' => fake()->randomFloat(2,0,10),
-            'status' => fake()->numberBetween(1)
+            'status' => fake()->numberBetween(0,1)
         ];
     }
 }

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('star')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
-            $table->integer('status')->nullable();
+            $table->integer('status')->default(1);
             $table->softDeletes(); // add
             $table->integer('quantity_floor')->nullable();
             $table->timestamps();

@@ -93,6 +93,7 @@ class RateController extends Controller
             ->join('category_rooms', 'rates.id_category', '=', 'category_rooms.id')
             ->join('users', 'users.id', '=', 'rates.id_user')
             ->where('category_rooms.id', $id)
+            ->where('rates.status',"=", 1)
             ->get();
 
         // sau khi mình gửi cho bên front thông tin comment
