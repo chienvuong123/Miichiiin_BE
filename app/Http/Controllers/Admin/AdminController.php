@@ -8,6 +8,8 @@ use App\Models\Admin;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -26,6 +28,21 @@ class AdminController extends Controller
     public function create()
     {
         //
+    }
+
+    public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
+
+        $admin = Admin::where('email', $credentials['email'])->first();
+
+        if (Hash::check($credentials['password'], $admin->password)) {
+            $admin = Auth::guard('admins')->getProvider()->retrieveByCredentials($credentials);
+            $token = $admin->createToken('adminToken', ['admins'])->accessToken;
+            return response()->json(['token' => $token]);
+        }
+
+        return response()->json(['error' => 'Unauthorized'], 401);
     }
 
     /**

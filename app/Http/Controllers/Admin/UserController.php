@@ -8,9 +8,9 @@ use App\Models\User;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Laravel\Passport\Passport;
 use Laravel\Passport\Token;
 
 class UserController extends Controller

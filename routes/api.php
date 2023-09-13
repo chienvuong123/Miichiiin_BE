@@ -41,8 +41,8 @@ use Illuminate\Support\Facades\Route;
 // });
 
 //
-
-Route::prefix('admin')->group(function () {
+Route::post('auth/admin/login', [AdminController::class, 'login']);
+Route::middleware('admin')->prefix('admin')->group(function () {
     Route::resource('users', UserController::class)->except(['create', 'edit']);
     Route::prefix('users')->group(function () {
         Route::put('{id}/status', [UserController::class, 'updateState_user']);
@@ -55,6 +55,8 @@ Route::prefix('admin')->group(function () {
     Route::prefix('admins')->group(function () {
         Route::put('{id}/status', [AdminController::class, 'updateState_admin']);
     });
+
+
     // HOTEL
     Route::resource('hotel', hotelController::class);
     Route::prefix('hotel')->group(function () {
@@ -80,8 +82,6 @@ Route::prefix('admin')->group(function () {
 
     Route::get('/statistical_total_amount', [CateRoomController::class, 'statistical_total_amount']);
     Route::get('/statistical_total_amount_month', [CateRoomController::class, 'statistical_total_amount_month']);
-
-
 
     Route::get('/statistical_cate', [CateRoomController::class, 'statistical_cate']);
     Route::get('/statistical_CateRoom_year', [CateRoomController::class, 'statistical_CateRoom_year']);
