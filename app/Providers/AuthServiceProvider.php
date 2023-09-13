@@ -24,8 +24,8 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Passport::tokensCan([
-            'users'=>'users',
-            'admins'=>'admins'
+            'admins' => 'For Admins',
+            'users' => 'For User'
         ]);
     }
 }

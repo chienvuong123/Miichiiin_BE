@@ -22,7 +22,7 @@ class AdminFactory extends Factory
             'id_role' => fake()-> numberBetween(0,2),
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'password' => Hash::make('123456'), // password
+            'password' => Hash::make("123456"), // password
             'remember_token' => Str::random(10),
             'image' => fake()->imageUrl,
             'description' => fake()->text(20),
