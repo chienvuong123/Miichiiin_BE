@@ -187,8 +187,8 @@ Route::get(
     [CateRoomController::class, 'list_cate']
 );
 
-Route::post(
-    '/find',
+Route::get(
+    '/find/hotels={id}/{check_in?}/{check_out?}/{number_people?}/{total_room?}',
     [CateRoomController::class, 'find']
 );
 // hiển thị booking theo id_user
@@ -200,7 +200,7 @@ Route::get('/bookingDetail/{id}', [BookingDetailController::class, 'booking_deta
 Route::get('/comfort/cate={id}', [ComfortController::class, 'comfort_cate']);
 // hiển thị voucher
 
-Route::post('/store_image_cate/{id}', [hotelController::class, 'store_image_cate']);
+Route::get('/store_image_cate/{id}', [hotelController::class, 'store_image_cate']);
 
 Route::get('/voucher', [VoucherController::class, 'list_vourcher']);
 

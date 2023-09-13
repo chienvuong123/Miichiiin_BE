@@ -154,8 +154,9 @@ class CateRoomController extends Controller
             $bookedRooms = BookingDetail::whereHas('bookings', function ($query) use ($startDate, $endDate) {
                 $query->where(function ($query) use ($startDate, $endDate) {
                     $query->where('check_in', '>=', $startDate)
-                        ->whereNotIn('bookings.status', [2, 3])
-                        ->where('check_out', '<=', $endDate);
+
+                        ->where('check_out', '<=', $endDate)
+                        ->whereNotIn('bookings.status', [2, 3]);
                 })
                 ->orWhereNull('booking_details.id_room');
             })
@@ -182,14 +183,15 @@ class CateRoomController extends Controller
     }
 
 
-    public function find(CategoryRoomRequest $request)
+    public function find($id, $check_in = null, $check_out = null, $number_people = null, $total_room = null)
     {
         $status = 1;
-        $startDate = isset($request['check_in']) ? Carbon::parse($request['check_in']) : Carbon::now();
-        $endDate = isset($request['check_out']) ? Carbon::parse($request['check_out']) : $startDate->copy()->addDays(3)->setTime(12, 0);
-        $number_of_people = $request['number_people'] ?? 1;
-        $number_room = $request['total_room'] ?? 1;
-        $id = $request['id_hotel'];
+        $status = 1;
+        $startDate = isset($check_in) ? Carbon::parse($check_in) : Carbon::now()->setTime(0, 0);
+        $endDate = isset($check_out) ? Carbon::parse($check_out) : $startDate->copy()->addDays(3)->setTime(0, 0);
+        $number_of_people = $number_people ?? 1;
+        $number_room = $total_room ?? 1;
+
         $rooms = CategoryRoom::select(
             'category_rooms.id',
             'category_rooms.name',
@@ -220,8 +222,7 @@ class CateRoomController extends Controller
                 $query->where(function ($q) use ($startDate, $endDate) {
                     $q->where('bookings.check_in', '>=', $endDate)
                         ->orWhere('bookings.check_out', '<=', $startDate)
-                        ->where('bookings.status', '!=', "2")
-                        ->where('bookings.status', '!=', "3");
+                        ->whereNotIn('bookings.status', [2, 3]);
                 })
                     ->orWhereNull('booking_details.id_room');
             })
