@@ -35,6 +35,9 @@ class AdminController extends Controller
         $credentials = $request->only('email', 'password');
 
         $admin = Admin::where('email', $credentials['email'])->first();
+        if ($admin == null) {
+            return \response()->json(['message' => 'wrong email']);
+        }
 
         if (Hash::check($credentials['password'], $admin->password)) {
             $admin = Auth::guard('admins')->getProvider()->retrieveByCredentials($credentials);
@@ -42,7 +45,7 @@ class AdminController extends Controller
             return response()->json(['token' => $token]);
         }
 
-        return response()->json(['error' => 'Unauthorized'], 401);
+        return response()->json(['message' => 'wrong password']);
     }
 
     /**
@@ -52,11 +55,23 @@ class AdminController extends Controller
     {
         $admin = new Admin();
 
+        $ad = Auth::guard('admins')->user();
+        $role_of_admin = $ad->roles;
+
         $admin->fill($request->except(['re_password']));
 
         $uploadedImage = Cloudinary::upload($request->image->getRealPath());
         $admin->image = $uploadedImage->getSecurePath();
         $admin->save();
+
+        switch ($role_of_admin) {
+            case 'chain owner':
+                $admin->assignRole('hotel owner');
+                break;
+            case 'hotel owner':
+                $admin->assignRole('staff');
+                break;
+        }
 
         return response()->json($admin);
     }

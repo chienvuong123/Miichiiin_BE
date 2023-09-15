@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RoleRequest;
-use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use App\Models\Admin;
 
 class RoleControler extends Controller
 {
@@ -25,6 +28,18 @@ class RoleControler extends Controller
     public function create()
     {
         //
+    }
+
+    public function assign_permission (Request $request)
+    {
+        $role = Role::query()->find($request->id_role);
+        $permissions = Permission::whereIn('id', $request->list_permissions)->get();
+
+        foreach ($permissions as $permission) {
+            $role->givePermissionTo($permission);
+        }
+
+        return response()->json(Response::HTTP_OK);
     }
 
     /**

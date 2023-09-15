@@ -42,8 +42,9 @@ use Illuminate\Support\Facades\Route;
 
 //
 Route::post('auth/admin/login', [AdminController::class, 'login']);
+
 Route::middleware('admin')->prefix('admin')->group(function () {
-    Route::resource('users', UserController::class)->except(['create', 'edit']);
+    Route::middleware('role:writer,admins')->resource('users', UserController::class)->except(['create', 'edit']);
     Route::prefix('users')->group(function () {
         Route::put('{id}/status', [UserController::class, 'updateState_user']);
     });
@@ -143,6 +144,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     });
     // ROLE
     Route::resource('roles', RoleControler::class)->except(['create', 'edit']);
+    Route::post('assign_permission', [RoleControler::class, 'assign_permission']);
     Route::prefix('roles')->group(function () {
         Route::put('{id}/status', [RoleControler::class, 'updateState_role']);
     });

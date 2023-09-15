@@ -16,6 +16,11 @@ class AuthAdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        $admin = Auth::guard('admins')->user();
+        if ($admin == null) {
+            return \response()->json(403);
+        }
+
         if (Auth::guard('admins')->user()->tokenCan('admins')) {
             return $next($request);
         }
