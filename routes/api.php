@@ -41,6 +41,8 @@ use Illuminate\Support\Facades\Route;
 // });
 
 //
+Route::resource('room', roomsController::class);
+
 Route::post('auth/admin/login', [AdminController::class, 'login']);
 Route::middleware('admin')->prefix('admin')->group(function () {
     Route::resource('users', UserController::class)->except(['create', 'edit']);
@@ -64,7 +66,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     });
 
     // ROOM
-    Route::resource('room', roomsController::class);
     Route::prefix('room')->group(function () {
         Route::get('/cate_room/{id}', [roomsController::class, 'room_cate']);
         Route::put('{id}/status', [roomsController::class, 'updateState']);

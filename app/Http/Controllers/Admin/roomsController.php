@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RoomRequest;
 use App\Models\room;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
 
 class roomsController extends Controller
@@ -29,8 +30,11 @@ class roomsController extends Controller
     }
     public function show($id)
     {
-        $room = room::find($id);
-        return response()->json($room);
+        $key = 'hotel_' . $id;
+        $hotel = Cache::remember($key, 5, function () use ($id) {
+            return room::find($id);
+        });
+        return response()->json($hotel);
     }
     public function store(RoomRequest $request)
     {
@@ -50,6 +54,8 @@ class roomsController extends Controller
     public function update(RoomRequest $request, $id)
     {
         $params = $request->except('_token');
+        $key = 'hotel_' . $id;
+        Cache::forget($key); // Xóa bỏ cache của khách sạn đã được cập nhật
         $room = room::find($id);
         if ($room) {
             $room->update($params);
