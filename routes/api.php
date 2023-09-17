@@ -36,66 +36,107 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
-//
-Route::resource('room', roomsController::class);
-
 Route::post('auth/admin/login', [AdminController::class, 'login']);
 
 Route::middleware('admin')->prefix('admin')->group(function () {
-    Route::middleware('role:writer,admins')->resource('users', UserController::class)->except(['create', 'edit']);
-    Route::prefix('users')->group(function () {
-        Route::put('{id}/status', [UserController::class, 'updateState_user']);
+    // Chain owner role
+    Route::middleware('role:chain owner,admins')->group(function () {
+        // BANNER
+        Route::resource('banners', BannerController::class)->except(['create', 'edit']);
+
+        // VOUCHER
+        Route::resource('vouchers', VoucherController::class)->except(['create', 'edit']);
+        Route::prefix('vouchers')->group(function () {
+            Route::put('{id}/status', [VoucherController::class, 'updateState_voucher']);
+        });
+
+        // CITY
+        Route::resource('city', CityController::class);
+
+        // DISTRICT
+        Route::resource('district', districtController::class);
+        Route::prefix('district')->group(function () {
+            Route::put('{id}/status', [districtController::class, 'updateState_district']);
+        });
+
+        // HOTEL
+        Route::resource('hotel', hotelController::class);
+        Route::prefix('hotel')->group(function () {
+            Route::put('{id}/status', [hotelController::class, 'updateState_hotel']);
+        });
     });
-    Route::get('/statistical_user_month', [UserController::class, 'statistical_user_month']);
-    Route::get('/statistical_user_year', [UserController::class, 'statistical_user_year']);
 
-    // ADMIN
-    Route::resource('admins', AdminController::class)->except(['create', 'edit']);
-    Route::prefix('admins')->group(function () {
-        Route::put('{id}/status', [AdminController::class, 'updateState_admin']);
+    // Hotel owner role
+    Route::middleware('role:hotel owner,admins')->group(function () {
+        // ROOM
+        Route::resource('room', roomsController::class);
+        Route::prefix('room')->group(function () {
+            Route::get('/cate_room/{id}', [roomsController::class, 'room_cate']);
+            Route::put('{id}/status', [roomsController::class, 'updateState']);
+        });
+
+        // CATEGORY
+        Route::resource('category', CateRoomController::class);
+        Route::prefix('category')->group(function () {
+            Route::put('{id}/status', [CateRoomController::class, 'updateState_cate']);
+            Route::post('/find', [CateRoomController::class, 'find_of_name']);
+        });
+
+        // SERVICE
+        Route::resource('services', ServiceController::class)->except(['create', 'edit']);
+        Route::prefix('services')->group(function () {
+            Route::put('{id}/status', [ServiceController::class, 'updateState_services']);
+        });
+        Route::resource('service_detail', ServiceDetailController::class)->except(['create', 'edit']);
+
+        // COMFORT
+        Route::resource('comforts', ComfortController::class)->except(['create', 'edit']);
+        Route::prefix('comforts')->group(function () {
+            Route::put('{id}/status', [ComfortController::class, 'updateState_comfort']);
+        });
+
+        // RATE
+        Route::resource('rates', RateController::class)->except(['create', 'edit']);
+        Route::prefix('rates')->group(function () {
+            Route::put('{id}/status', [RateController::class, 'updateState_rate']);
+        });
     });
 
+    // Staff role
+    Route::middleware('role:staff,admins')->group(function () {
 
-    // HOTEL
-    Route::resource('hotel', hotelController::class);
-    Route::prefix('hotel')->group(function () {
-        Route::put('{id}/status', [hotelController::class, 'updateState_hotel']);
     });
 
-    // ROOM
-    Route::prefix('room')->group(function () {
-        Route::get('/cate_room/{id}', [roomsController::class, 'room_cate']);
-        Route::put('{id}/status', [roomsController::class, 'updateState']);
+    // 2 Role chain owner and hotel owner
+    Route::group(['middleware' => ['role:chain owner|hotel owner,admins']] ,function () {
+        // ADMIN
+        Route::resource('admins', AdminController::class)->except(['create', 'edit']);
+        Route::prefix('admins')->group(function () {
+            Route::put('{id}/status', [AdminController::class, 'updateState_admin']);
+        });
+
+        // thong 'kee =>
+        Route::get('/statistical', [CateRoomController::class, 'statistical']);
+        Route::get('/statistical_year', [CateRoomController::class, 'statistical_year']);
+        Route::get('/statistical_room_checkin/{check_in}/{check_out}', [CateRoomController::class, 'statistical_room_checkin']);
+
+        Route::get('/statistical_total_amount', [CateRoomController::class, 'statistical_total_amount']);
+        Route::get('/statistical_total_amount_month', [CateRoomController::class, 'statistical_total_amount_month']);
+
+        Route::get('/statistical_cate', [CateRoomController::class, 'statistical_cate']);
+        Route::get('/statistical_CateRoom_year', [CateRoomController::class, 'statistical_CateRoom_year']);
+        Route::get('/statistical_cateRoom_checkin/{check_in}/{check_out}', [CateRoomController::class, 'statistical_cateRoom_checkin']);
     });
-    // CATEGORY
-    Route::resource('category', CateRoomController::class);
-    Route::prefix('category')->group(function () {
-        Route::put('{id}/status', [CateRoomController::class, 'updateState_cate']);
-        Route::post('/find', [CateRoomController::class, 'find_of_name']);
-    });
-    // thong 'kee =>
-    Route::get('/statistical', [CateRoomController::class, 'statistical']);
-    Route::get('/statistical_year', [CateRoomController::class, 'statistical_year']);
-    Route::get('/statistical_room_checkin/{check_in}/{check_out}', [CateRoomController::class, 'statistical_room_checkin']);
 
-    Route::get('/statistical_total_amount', [CateRoomController::class, 'statistical_total_amount']);
-    Route::get('/statistical_total_amount_month', [CateRoomController::class, 'statistical_total_amount_month']);
-
-    Route::get('/statistical_cate', [CateRoomController::class, 'statistical_cate']);
-    Route::get('/statistical_CateRoom_year', [CateRoomController::class, 'statistical_CateRoom_year']);
-    Route::get('/statistical_cateRoom_checkin/{check_in}/{check_out}', [CateRoomController::class, 'statistical_cateRoom_checkin']);
-
-    // CITY
-    Route::resource('city', CityController::class);
-
-    // DISTRICT
-    Route::resource('district', districtController::class);
-    Route::prefix('district')->group(function () {
-        Route::put('{id}/status', [districtController::class, 'updateState_district']);
+    // 2 Role hotel owner and staff
+    Route::group(['middleware' => ['role:hotel owner|staff,admins']], function () {
+        // USER
+        Route::resource('users', UserController::class)->except(['create', 'edit']);
+        Route::prefix('users')->group(function () {
+            Route::put('{id}/status', [UserController::class, 'updateState_user']);
+            Route::get('/statistical_user_month', [UserController::class, 'statistical_user_month']);
+            Route::get('/statistical_user_year', [UserController::class, 'statistical_user_year']);
+        });
     });
 
     // BOOKING
@@ -103,6 +144,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::prefix('bookings')->group(function () {
         Route::put('{id}/status', [BookingController::class, 'updateState_booking']);
     });
+
     // BOOKING DETAIL
     Route::resource('bookingdetail', BookingDetailController::class);
 
@@ -113,24 +155,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::resource('image', ImageController::class);
     Route::resource('comfortDetail', ComfortDetailController::class);
 
-    // SERVICE
-    Route::resource('services', ServiceController::class)->except(['create', 'edit']);
-    Route::prefix('services')->group(function () {
-        Route::put('{id}/status', [ServiceController::class, 'updateState_services']);
-    });
-    Route::resource('service_detail', ServiceDetailController::class)->except(['create', 'edit']);
-
-    // COMFORT
-    Route::resource('comforts', ComfortController::class)->except(['create', 'edit']);
-    Route::prefix('comforts')->group(function () {
-        Route::put('{id}/status', [ComfortController::class, 'updateState_comfort']);
-    });
-    // RATE
-    Route::resource('rates', RateController::class)->except(['create', 'edit']);
-    Route::prefix('rates')->group(function () {
-        Route::put('{id}/status', [RateController::class, 'updateState_rate']);
-    });
-
     // PERMISSION
     Route::resource('permissions', PermissionController::class)->except(['create', 'edit']);
     Route::prefix('permissions')->group(function () {
@@ -138,19 +162,12 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     });
     Route::resource('permission_detail', PermissionDetailController::class)->except(['create', 'edit']);
 
-    // VOUCHER
-    Route::resource('vouchers', VoucherController::class)->except(['create', 'edit']);
-    Route::prefix('vouchers')->group(function () {
-        Route::put('{id}/status', [VoucherController::class, 'updateState_voucher']);
-    });
     // ROLE
     Route::resource('roles', RoleControler::class)->except(['create', 'edit']);
     Route::post('assign_permission', [RoleControler::class, 'assign_permission']);
     Route::prefix('roles')->group(function () {
         Route::put('{id}/status', [RoleControler::class, 'updateState_role']);
     });
-    // BANNER
-    Route::resource('banners', BannerController::class)->except(['create', 'edit']);
 });
 // USER
 

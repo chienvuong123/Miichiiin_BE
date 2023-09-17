@@ -42,7 +42,16 @@ class AdminController extends Controller
         if (Hash::check($credentials['password'], $admin->password)) {
             $admin = Auth::guard('admins')->getProvider()->retrieveByCredentials($credentials);
             $token = $admin->createToken('adminToken', ['admins'])->accessToken;
-            return response()->json(['token' => $token]);
+            $role = $admin->getRoleNames();
+            return response()->json([
+                'token' => $token,
+                'admin' => [
+                    'id' => $admin->id,
+                    'name' => $admin->name,
+                    'image' => $admin->image,
+                    'role' => $role[0]
+                ]
+            ]);
         }
 
         return response()->json(['message' => 'wrong password']);
@@ -56,15 +65,19 @@ class AdminController extends Controller
         $admin = new Admin();
 
         $ad = Auth::guard('admins')->user();
-        $role_of_admin = $ad->roles;
+        $role_of_admin = $ad->getRoleNames();
 
-        $admin->fill($request->except(['re_password']));
+        if ($request->has('password')) {
+            $admin->password = bcrypt($request->password);
+        }
+
+        $admin->fill($request->except(['password']));
 
         $uploadedImage = Cloudinary::upload($request->image->getRealPath());
         $admin->image = $uploadedImage->getSecurePath();
         $admin->save();
 
-        switch ($role_of_admin) {
+        switch ($role_of_admin[0]) {
             case 'chain owner':
                 $admin->assignRole('hotel owner');
                 break;

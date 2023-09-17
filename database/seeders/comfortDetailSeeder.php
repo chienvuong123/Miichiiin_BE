@@ -14,6 +14,6 @@ class comfortDetailSeeder extends Seeder
     public function run(): void
     {
         //
-        comfortDetail::factory(20)->create();
+        comfortDetail::factory(10)->create();
     }
 }

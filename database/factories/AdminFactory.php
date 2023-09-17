@@ -20,6 +20,7 @@ class AdminFactory extends Factory
     {
         return [
             'name' => fake()->name(),
+            'id_hotel' => fake()->numberBetween(0,9),
             'email' => fake()->unique()->safeEmail(),
             'password' => Hash::make("123456"), // password
             'remember_token' => Str::random(10),
