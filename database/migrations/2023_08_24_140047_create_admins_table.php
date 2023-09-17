@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('admins', function (Blueprint $table) {
             $table->id();
-            $table->integer('id_role');
+            $table->integer('id_hotel')->nullable();
             $table->string('name')->nullable();
             $table->string('email')->unique()->nullable();
             $table->string('password')->nullable();
@@ -21,11 +21,11 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
-            $table->softDeletes(); // add
             $table->integer('status')->default(1);
             $table->integer('gender')->nullable();
             $table->date('date')->nullable();
             $table->rememberToken();
+            $table->softDeletes(); // add
             $table->timestamps();
         });
     }

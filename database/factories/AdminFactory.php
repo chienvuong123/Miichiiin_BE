@@ -19,8 +19,8 @@ class AdminFactory extends Factory
     public function definition(): array
     {
         return [
-            'id_role' => fake()-> numberBetween(0,2),
             'name' => fake()->name(),
+            'id_hotel' => fake()->numberBetween(0,9),
             'email' => fake()->unique()->safeEmail(),
             'password' => Hash::make("123456"), // password
             'remember_token' => Str::random(10),

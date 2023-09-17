@@ -13,6 +13,6 @@ class ComfortSeeder extends Seeder
      */
     public function run(): void
     {
-        Comfort::factory(20)->create();
+        Comfort::factory(10)->create();
     }
 }

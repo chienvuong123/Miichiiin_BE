@@ -18,7 +18,6 @@ class RoleFactory extends Factory
     {
         return [
             'name' => fake()->text(50),
-            'description' => fake()->text(50)
         ];
     }
 }
