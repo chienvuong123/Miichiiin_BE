@@ -25,7 +25,6 @@ class RoleRequest extends FormRequest
         // tạo ra 1 mảng
         $rules = [
             'name' => 'required',
-            'description' => 'required',
         ];
         // lấy ra tên phương thức cần sử lý
         $currentAction = $this->route()->getActionMethod();

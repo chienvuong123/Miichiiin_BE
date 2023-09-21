@@ -49,7 +49,7 @@ class AdminController extends Controller
                     'id' => $admin->id,
                     'name' => $admin->name,
                     'image' => $admin->image,
-                    'role' => $role[0]
+//                    'role' => $role[0]
                 ]
             ]);
         }

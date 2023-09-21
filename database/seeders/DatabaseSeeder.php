@@ -40,7 +40,11 @@ class DatabaseSeeder extends Seeder
             comfortDetailSeeder::class,
             RateSeeder::class,
             VoucherSeeder::class,
-            BannerSeeder::class
+            BannerSeeder::class,
+            RoleSeeder::class,
+            PermissionSeeder::class,
+            AssignRoleSeeder::class,
+            AssignPermissionSeeder::class
         ]);
     }
 }
