@@ -13,6 +13,29 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        Role::factory(20)->create();
+        $rows_in_role = [
+            [
+                'name' => 'chain owner',
+                'guard_name' => 'admins',
+                'level' => 3,
+                'updated_at' => now(),
+                'created_at' => now()
+            ],
+            [
+                'name' => 'hotel owner',
+                'guard_name' => 'admins',
+                'level' => 2,
+                'updated_at' => now(),
+                'created_at' => now()
+            ],
+            [
+                'name' => 'staff',
+                'guard_name' => 'admins',
+                'level' => 1,
+                'updated_at' => now(),
+                'created_at' => now()
+            ],
+        ];
+        Role::insert($rows_in_role);
     }
 }

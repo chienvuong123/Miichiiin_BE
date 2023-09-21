@@ -35,11 +35,12 @@ class RoleControler extends Controller
         $role = Role::query()->find($request->id_role);
         $permissions = Permission::whereIn('id', $request->list_permissions)->get();
 
-        foreach ($permissions as $permission) {
-            $role->givePermissionTo($permission);
-        }
+        $role->syncPermissions($permissions);
 
-        return response()->json(Response::HTTP_OK);
+        return response()->json([
+            "role_name" => $role->name,
+            "permissions"  => $permissions
+        ]);
     }
 
     /**
