@@ -19,10 +19,10 @@ class AdminFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+            'name' => 'admin',
             'id_hotel' => fake()->numberBetween(0,9),
-            'email' => fake()->unique()->safeEmail(),
-            'password' => Hash::make("123456"), // password
+            'email' => 'admin@michimail.com',
+            'password' => Hash::make("admin"), // password
             'remember_token' => Str::random(10),
             'image' => fake()->imageUrl,
             'description' => fake()->text(20),

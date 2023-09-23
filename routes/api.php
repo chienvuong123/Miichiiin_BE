@@ -37,112 +37,184 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('auth/admin/login', [AdminController::class, 'login']);
-
+Route::post('assign_permission', [RoleControler::class, 'assign_permission']);
 Route::middleware('admin')->prefix('admin')->group(function () {
-    // Chain owner role
-    Route::middleware('role:chain owner,admins')->group(function () {
-        // BANNER
-        Route::resource('banners', BannerController::class)->except(['create', 'edit']);
-
-        // VOUCHER
-        Route::resource('vouchers', VoucherController::class)->except(['create', 'edit']);
-        Route::prefix('vouchers')->group(function () {
-            Route::put('{id}/status', [VoucherController::class, 'updateState_voucher']);
+    // BANNER
+    Route::middleware('permission:get banner,admins')->group(function () {
+        Route::get('banners', [BannerController::class, 'index']);
+        Route::prefix('banner')->group(function () {
+            Route::get('/{id}', [BannerController::class, 'show']);
+            Route::middleware('permission:add banner,admins')->post('/', [BannerController::class, 'store']);
+            Route::middleware('permission:update banner,admins')->put('/{id}', [BannerController::class, 'update']);
+            Route::middleware('permission:delete banner,admins')->delete('/{id}', [BannerController::class, 'destroy']);
         });
+    });
+//        Route::resource('banners', BannerController::class)->except(['create', 'edit']);
 
-        // CITY
-        Route::resource('city', CityController::class);
-
-        // DISTRICT
-        Route::resource('district', districtController::class);
-        Route::prefix('district')->group(function () {
-            Route::put('{id}/status', [districtController::class, 'updateState_district']);
+    // VOUCHER
+    Route::middleware('permission:get voucher,admins')->group(function () {
+        Route::get('vouchers', [VoucherController::class, 'index']);
+//            Route::resource('vouchers', VoucherController::class)->except(['create', 'edit']);
+        Route::prefix('voucher')->group(function () {
+            Route::get('/{id}', [VoucherController::class, 'show']);
+            Route::middleware('permission:add voucher,admins')->post('/', [VoucherController::class, 'store']);
+            Route::middleware('permission:update voucher,admins')->put('/{id}', [VoucherController::class, 'update']);
+            Route::middleware('permission:delete voucher,admins')->delete('/{id}', [VoucherController::class, 'destroy']);
+            Route::middleware('permission:update voucher,admins')->put('{id}/status', [VoucherController::class, 'updateState_voucher']);
         });
+    });
 
-        // HOTEL
-        Route::resource('hotel', hotelController::class);
+    // CITY
+    Route::resource('city', CityController::class);
+
+    // DISTRICT
+    Route::resource('district', districtController::class);
+    Route::prefix('district')->group(function () {
+        Route::put('{id}/status', [districtController::class, 'updateState_district']);
+    });
+
+    // HOTEL
+    Route::middleware('permission:get hotel,admins')->group(function () {
+        Route::get('hotels', [hotelController::class, 'index']);
+//        Route::resource('hotel', hotelController::class);
         Route::prefix('hotel')->group(function () {
-            Route::put('{id}/status', [hotelController::class, 'updateState_hotel']);
+            Route::get('/{id}', [hotelController::class, 'show']);
+            Route::middleware('permission:add hotel,admins')->post('/', [hotelController::class, 'store']);
+            Route::middleware('permission:update hotel,admins')->put('/{id}', [hotelController::class, 'update']);
+            Route::middleware('permission:delete hotel,admins')->delete('/{id}', [hotelController::class, 'destroy']);
+
+            Route::middleware('permission:update hotel,admins')->put('{id}/status', [hotelController::class, 'updateState_hotel']);
         });
     });
 
-    // Hotel owner role
-    Route::middleware('role:hotel owner,admins')->group(function () {
-        // ROOM
-        Route::resource('room', roomsController::class);
+    // ROOM
+    Route::middleware('permission:get room,admins')->group(function () {
+        Route::get('rooms', [roomsController::class, 'index']);
+//        Route::resource('room', roomsController::class);
         Route::prefix('room')->group(function () {
+            Route::get('/{id}', [roomsController::class, 'show']);
+            Route::middleware('permission:add room,admins')->post('/', [roomsController::class, 'store']);
+            Route::middleware('permission:update room,admins')->put('/{id}', [roomsController::class, 'update']);
+            Route::middleware('permission:delete room,admins')->delete('/{id}', [roomsController::class, 'destroy']);
+
             Route::get('/cate_room/{id}', [roomsController::class, 'room_cate']);
-            Route::put('{id}/status', [roomsController::class, 'updateState']);
+            Route::middleware('permission:update room,admins')->put('{id}/status', [roomsController::class, 'updateState']);
         });
+    });
 
-        // CATEGORY
-        Route::resource('category', CateRoomController::class);
+    // CATEGORY
+    Route::middleware('permission:get category,admins')->group(function () {
+        Route::get('categories', [CateRoomController::class, 'index']);
+//        Route::resource('category', CateRoomController::class);
         Route::prefix('category')->group(function () {
-            Route::put('{id}/status', [CateRoomController::class, 'updateState_cate']);
-            Route::post('/find', [CateRoomController::class, 'find_of_name']);
-        });
+            Route::get('/{id}', [CateRoomController::class, 'show']);
+            Route::middleware('permission:add category,admins')->post('', [CateRoomController::class, 'store']);
+            Route::middleware('permission:update category,admins')->put('/{id}', [CateRoomController::class, 'update']);
+            Route::middleware('permission:delete category,admins')->delete('/{id}', [CateRoomController::class, 'destroy']);
 
-        // SERVICE
-        Route::resource('services', ServiceController::class)->except(['create', 'edit']);
-        Route::prefix('services')->group(function () {
-            Route::put('{id}/status', [ServiceController::class, 'updateState_services']);
-        });
-        Route::resource('service_detail', ServiceDetailController::class)->except(['create', 'edit']);
-
-        // COMFORT
-        Route::resource('comforts', ComfortController::class)->except(['create', 'edit']);
-        Route::prefix('comforts')->group(function () {
-            Route::put('{id}/status', [ComfortController::class, 'updateState_comfort']);
-        });
-
-        // RATE
-        Route::resource('rates', RateController::class)->except(['create', 'edit']);
-        Route::prefix('rates')->group(function () {
-            Route::put('{id}/status', [RateController::class, 'updateState_rate']);
+            Route::middleware('permission:update category,admins')->put('{id}/status', [CateRoomController::class, 'updateState_cate']);
         });
     });
 
-    // Staff role
-    Route::middleware('role:staff,admins')->group(function () {
+    // SERVICE
+    Route::middleware('permission:get service,admins')->group(function () {
+        Route::get('services', [ServiceController::class, 'index']);
+//        Route::resource('services', ServiceController::class)->except(['create', 'edit']);
+        Route::prefix('service')->group(function () {
+            Route::get('/{id}', [ServiceController::class, 'show']);
+            Route::middleware('permission:add service,admins')->post('/', [ServiceController::class, 'store']);
+            Route::middleware('permission:update service,admins')->put('/{id}', [ServiceController::class, 'update']);
+            Route::middleware('permission:delete service,admins')->delete('/{id}', [ServiceController::class, 'destroy']);
 
-    });
-
-    // 2 Role chain owner and hotel owner
-    Route::group(['middleware' => ['role:chain owner|hotel owner,admins']] ,function () {
-        // ADMIN
-        Route::resource('admins', AdminController::class)->except(['create', 'edit']);
-        Route::prefix('admins')->group(function () {
-            Route::put('{id}/status', [AdminController::class, 'updateState_admin']);
+            Route::middleware('permission:update service,admins')->put('{id}/status', [ServiceController::class, 'updateState_services']);
         });
-
-        // thong 'kee =>
-        Route::get('/statistical', [CateRoomController::class, 'statistical']);
-        Route::get('/statistical_year', [CateRoomController::class, 'statistical_year']);
-        Route::get('/statistical_room_checkin/{check_in}/{check_out}', [CateRoomController::class, 'statistical_room_checkin']);
-
-        Route::get('/statistical_total_amount', [CateRoomController::class, 'statistical_total_amount']);
-        Route::get('/statistical_total_amount_month', [CateRoomController::class, 'statistical_total_amount_month']);
-
-        Route::get('/statistical_cate', [CateRoomController::class, 'statistical_cate']);
-        Route::get('/statistical_CateRoom_year', [CateRoomController::class, 'statistical_CateRoom_year']);
-        Route::get('/statistical_cateRoom_checkin/{check_in}/{check_out}', [CateRoomController::class, 'statistical_cateRoom_checkin']);
     });
 
-    // 2 Role hotel owner and staff
-    Route::group(['middleware' => ['role:hotel owner|staff,admins']], function () {
-        // USER
-        Route::resource('users', UserController::class)->except(['create', 'edit']);
-        Route::prefix('users')->group(function () {
-            Route::put('{id}/status', [UserController::class, 'updateState_user']);
+    Route::resource('service_detail', ServiceDetailController::class)->except(['create', 'edit']);
+
+    // COMFORT
+    Route::middleware('permission:get comfort,admins')->group(function () {
+        Route::get('comforts', [ComfortController::class, 'index']);
+//        Route::resource('comforts', ComfortController::class)->except(['create', 'edit']);
+        Route::prefix('comfort')->group(function () {
+            Route::get('/{id}', [ComfortController::class, 'show']);
+            Route::middleware('permission:add comfort,admins')->post('/', [ComfortController::class, 'store']);
+            Route::middleware('permission:update comfort,admins')->put('/{id}', [ComfortController::class, 'update']);
+            Route::middleware('permission:delete comfort,admins')->delete('/{id}', [ComfortController::class, 'destroy']);
+
+            Route::middleware('permission:update comfort,admins')->put('{id}/status', [ComfortController::class, 'updateState_comfort']);
+        });
+    });
+
+    // RATE
+    Route::middleware('permission:get rate,admins')->group(function () {
+        Route::get('rates', [RateController::class, 'index']);
+//        Route::resource('rates', RateController::class)->except(['create', 'edit']);
+        Route::prefix('rate')->group(function () {
+            Route::get('/{id}', [RateController::class, 'show']);
+            Route::middleware('permission:add rate,admins')->post('/', [RateController::class, 'store']);
+            Route::middleware('permission:update rate,admins')->put('/{id}', [RateController::class, 'update']);
+            Route::middleware('permission:delete rate,admins')->delete('/{id}', [RateController::class, 'destroy']);
+
+            Route::middleware('permission:update rate,admins')->put('{id}/status', [RateController::class, 'updateState_rate']);
+        });
+    });
+
+    // ADMIN
+    Route::middleware('permission:get admin,admins')->group(function () {
+        Route::get('admins', [AdminController::class, 'index']);
+//        Route::resource('admins', AdminController::class)->except(['create', 'edit']);
+        Route::prefix('admin')->group(function () {
+            Route::get('/{id}', [AdminController::class, 'show']);
+            Route::middleware('permission:add admin,admins')->post('/', [AdminController::class, 'store']);
+            Route::middleware('permission:update admin,admins')->put('/{id}', [AdminController::class, 'update']);
+            Route::middleware('permission:delete admin,admins')->delete('/{id}', [AdminController::class, 'destroy']);
+
+            Route::middleware('permission:update admin,admins')->put('{id}/status', [AdminController::class, 'updateState_admin']);
+        });
+    });
+
+    // PHÂN QUYỀN SAU
+    // thong 'kee =>
+    Route::get('/statistical', [CateRoomController::class, 'statistical']);
+    Route::get('/statistical_year', [CateRoomController::class, 'statistical_year']);
+    Route::get('/statistical_room_checkin/{check_in}/{check_out}', [CateRoomController::class, 'statistical_room_checkin']);
+
+    Route::get('/statistical_total_amount', [CateRoomController::class, 'statistical_total_amount']);
+    Route::get('/statistical_total_amount_month', [CateRoomController::class, 'statistical_total_amount_month']);
+
+    Route::get('/statistical_cate', [CateRoomController::class, 'statistical_cate']);
+    Route::get('/statistical_CateRoom_year', [CateRoomController::class, 'statistical_CateRoom_year']);
+    Route::get('/statistical_cateRoom_checkin/{check_in}/{check_out}', [CateRoomController::class, 'statistical_cateRoom_checkin']);
+    // PHÂN QUYỀN SAU
+
+    // USER
+    Route::middleware('permission:get user,admins')->group(function () {
+        Route::get('users', [UserController::class, 'index']);
+//        Route::resource('users', UserController::class)->except(['create', 'edit']);
+        Route::prefix('user')->group(function () {
+            Route::get('/{id}', [UserController::class, 'show']);
+            Route::middleware('permission:add user,admins')->post('/', [UserController::class, 'store']);
+            Route::middleware('permission:update user,admins')->put('/{id}', [UserController::class, 'update']);
+            Route::middleware('permission:delete user,admins')->delete('/{id}', [UserController::class, 'destroy']);
+
+            Route::middleware('permission:update user,admins')->put('{id}/status', [UserController::class, 'updateState_user']);
             Route::get('/statistical_user_month', [UserController::class, 'statistical_user_month']);
             Route::get('/statistical_user_year', [UserController::class, 'statistical_user_year']);
         });
     });
 
     // BOOKING
-    Route::resource('bookings', BookingController::class);
-    Route::prefix('bookings')->group(function () {
-        Route::put('{id}/status', [BookingController::class, 'updateState_booking']);
+    Route::middleware('permission:get booking,admins')->group(function () {
+        Route::get('bookings', [BookingController::class, 'index']);
+        Route::prefix('booking')->group(function () {
+            Route::get('/{id}', [BookingController::class, 'show']);
+            Route::middleware('permission:add booking,admins')->post('/', [BookingController::class, 'store']);
+            Route::middleware('permission:update booking,admins')->put('/{id}', [BookingController::class, 'update']);
+            Route::middleware('permission:delete booking,admins')->delete('/{id}', [BookingController::class, 'destroy']);
+            Route::middleware('permission:update booking,admins')->put('{id}/status', [BookingController::class, 'updateState_booking']);
+        });
+//        Route::resource('bookings', BookingController::class);
     });
 
     // BOOKING DETAIL
@@ -152,24 +224,50 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::resource('imageDetail', ImageDetailController::class);
 
     // IMAGE
-    Route::resource('image', ImageController::class);
+    Route::middleware('permission:get image,admins')->group(function () {
+        Route::get('images', [ImageController::class, 'index']);
+        Route::prefix('image')->group(function () {
+            Route::get('/{id}', [ImageController::class, 'show']);
+            Route::middleware('permission:add image,admins')->post('/', [ImageController::class, 'store']);
+            Route::middleware('permission:update image,admins')->put('/{id}', [ImageController::class, 'update']);
+            Route::middleware('permission:delete image,admins')->delete('/{id}', [ImageController::class, 'destroy']);
+        });
+//        Route::resource('image', ImageController::class);
+    });
+
     Route::resource('comfortDetail', ComfortDetailController::class);
 
     // PERMISSION
-    Route::prefix('permissions')->group(function () {
-        Route::put('{id}/status', [PermissionController::class, 'updateState_permission']);
+
+    Route::middleware('permission:get permission,admins')->group(function () {
+        Route::get('permissions', [PermissionController::class, 'index']);
+//        Route::resource('permissions', PermissionController::class)->except(['create', 'edit']);
+        Route::prefix('permission')->group(function () {
+            Route::get('/{id}', [PermissionController::class, 'show']);
+            Route::middleware('permission:add permission,admins')->post('/', [PermissionController::class, 'store']);
+            Route::middleware('permission:update permission,admins')->put('/{id}', [PermissionController::class, 'update']);
+            Route::middleware('permission:delete permission,admins')->delete('/{id}', [PermissionController::class, 'destroy']);
+            Route::middleware('permission:update permission,admins')->put('{id}/status', [PermissionController::class, 'updateState_permission']);
+        });
     });
+
     Route::resource('permission_detail', PermissionDetailController::class)->except(['create', 'edit']);
 
     // ROLE
-    Route::resource('roles', RoleControler::class)->except(['create', 'edit']);
-    Route::post('assign_permission', [RoleControler::class, 'assign_permission']);
-    Route::prefix('roles')->group(function () {
-        Route::put('{id}/status', [RoleControler::class, 'updateState_role']);
+    Route::middleware('permission:get role,admins')->group(function () {
+        Route::get('roles', [VoucherController::class, 'index']);
+//        Route::resource('roles', RoleControler::class)->except(['create', 'edit']);
+//        Route::middleware('permission:assign role,admins')->post('assign_permission', [RoleControler::class, 'assign_permission']);
+        Route::prefix('role')->group(function () {
+            Route::get('/{id}', [VoucherController::class, 'show']);
+            Route::middleware('permission:add role,admins')->post('/', [RoleControler::class, 'store']);
+            Route::middleware('permission:update role,admins')->put('/{id}', [RoleControler::class, 'update']);
+            Route::middleware('permission:delete role,admins')->delete('/{id}', [RoleControler::class, 'destroy']);
+            Route::middleware('permission:update role,admins')->put('{id}/status', [RoleControler::class, 'updateState_role']);
+        });
     });
 });
 // USER
-
 
 //Login
 Route::post('login', [UserController::class, 'login'])->name('login');
