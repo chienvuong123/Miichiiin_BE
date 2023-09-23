@@ -18,13 +18,13 @@ class AuthAdminMiddleware
     {
         $admin = Auth::guard('admins')->user();
         if ($admin == null) {
-            abort(Response::HTTP_FORBIDDEN);
+            abort(Response::HTTP_UNAUTHORIZED);
         }
 
         if (Auth::guard('admins')->user()->tokenCan('admins')) {
             return $next($request);
         }
 
-        abort(Response::HTTP_FORBIDDEN);
+        abort(Response::HTTP_UNAUTHORIZED);
     }
 }

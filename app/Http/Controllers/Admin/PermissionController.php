@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PermissionRequest;
 use App\Models\Permission;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 class PermissionController extends Controller
 {
@@ -15,7 +17,11 @@ class PermissionController extends Controller
      */
     public function index()
     {
-        $permissions = Permission::OrderByDesc('created_at')->get();
+        $my_role = Auth::guard('admins')->user()->getRoleNames();
+        $level_role = Role::query()->select('level')->where('name', $my_role[0])->first();
+        $permissions = Permission::query()->select('id', 'name', 'level')
+            ->where('level', '<', $level_role->level)
+            ->OrderByDesc('created_at')->get();
         return response()->json($permissions);
     }
 
