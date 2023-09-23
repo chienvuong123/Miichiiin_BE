@@ -156,7 +156,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::resource('comfortDetail', ComfortDetailController::class);
 
     // PERMISSION
-    Route::resource('permissions', PermissionController::class)->except(['create', 'edit']);
     Route::prefix('permissions')->group(function () {
         Route::put('{id}/status', [PermissionController::class, 'updateState_permission']);
     });
@@ -226,3 +225,4 @@ Route::get('/store_image_cate/{id}', [hotelController::class, 'store_image_cate'
 
 Route::get('/voucher', [VoucherController::class, 'list_vourcher']);
 
+Route::resource('permissions', PermissionController::class)->except(['create', 'edit']);
