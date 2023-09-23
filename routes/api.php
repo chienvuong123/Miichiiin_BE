@@ -238,6 +238,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::resource('comfortDetail', ComfortDetailController::class);
 
     // PERMISSION
+
     Route::middleware('permission:get permission,admins')->group(function () {
         Route::get('permissions', [PermissionController::class, 'index']);
 //        Route::resource('permissions', PermissionController::class)->except(['create', 'edit']);
@@ -280,13 +281,14 @@ Route::middleware('auth:api')->prefix('users')->group(function () {
     // Các routes cần xác thực token
     Route::get('hotel', [hotelController::class, 'home_user']);
     Route::get('/hotel/city={id}', [hotelController::class, 'home_city']);
-
     // ...
 });
 
 // hiển thị thông tin hotel trang home_user
 // hiển thị khách sạn theo thành phố
 // hiển thị tất cả services cả hệ thống
+
+
 // hiển thị khách sạn theo id (detail_hotel)
 Route::get('/hotel/{id}', [hotelController::class, 'detail_hotel_user']);
 
@@ -302,7 +304,6 @@ Route::get(
     '/listRoom/hotels={id}/{check_in?}/{check_out?}/{number_people?}/{total_room?}',
     [CateRoomController::class, 'list_cate']
 );
-
 Route::get(
     '/find/hotels={id}/{check_in?}/{check_out?}/{number_people?}/{total_room?}',
     [CateRoomController::class, 'find']
@@ -312,11 +313,14 @@ Route::get('/booking/{id}', [BookingController::class, 'booking_list']);
 // hiển thị booking_detail theo id_user
 Route::get('/bookingDetail/{id}', [BookingDetailController::class, 'booking_detail_list']);
 
+
 // hiển thị comfort theo loại phòng
 Route::get('/comfort/cate={id}', [ComfortController::class, 'comfort_cate']);
+
 // hiển thị voucher
 
 Route::get('/store_image_cate/{id}', [hotelController::class, 'store_image_cate']);
 
 Route::get('/voucher', [VoucherController::class, 'list_vourcher']);
 
+Route::resource('permissions', PermissionController::class)->except(['create', 'edit']);
