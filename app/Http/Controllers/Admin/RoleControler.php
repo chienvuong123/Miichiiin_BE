@@ -66,6 +66,8 @@ class RoleControler extends Controller
     public function show(string $id)
     {
         $role = Role::query()->find($id);
+        $permissons = $role->permissions;
+        dd($permissons);
         return response()->json($role);
     }
 
@@ -84,7 +86,8 @@ class RoleControler extends Controller
     {
         $role = Role::query()->find($id);
         $role->fill($request->except('_token'));
-
+        $request['id_role'] = $role->id;
+        $this->assign_permission($request, $request['id_role'], $request->permissions);
         $role->save();
         return response()->json($role);
     }
