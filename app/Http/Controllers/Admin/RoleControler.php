@@ -30,10 +30,12 @@ class RoleControler extends Controller
         //
     }
 
-    public function assign_permission (Request $request)
+    public function assign_permission (Request $request, string $id_role=null, array $permissons=null)
     {
-        $role = Role::query()->find($request->id_role);
-        $permissions = Permission::whereIn('id', $request->list_permissions)->get();
+        $id_role = $id_role ?? $request->id_role;
+        $permissons = $permissons ?? $request->list_permissions;
+        $role = Role::query()->find($id_role);
+        $permissions = Permission::whereIn('id', $permissons)->get();
 
         $role->syncPermissions($permissions);
 
@@ -49,9 +51,12 @@ class RoleControler extends Controller
     public function store(RoleRequest $request)
     {
         $role = new Role();
-        $role->fill($request->except('_token'));
-
+        $role->fill($request->except('_token', 'permissons'));
         $role->save();
+
+        $request['id_role'] = $role->id;
+        $this->assign_permission($request, $request['id_role'], $request->permissions);
+
         return response()->json($role);
     }
 

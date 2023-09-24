@@ -43,17 +43,18 @@ class AdminController extends Controller
             $admin = Auth::guard('admins')->getProvider()->retrieveByCredentials($credentials);
             $token = $admin->createToken('adminToken', ['admins'])->accessToken;
             $role = $admin->getRoleNames();
+            $permissions = $admin->getAllPermissions()->pluck('name');
             return response()->json([
                 'token' => $token,
                 'admin' => [
                     'id' => $admin->id,
                     'name' => $admin->name,
                     'image' => $admin->image,
-//                    'role' => $role[0]
+                    'role' => $role[0],
+                    'permissions' => $permissions
                 ]
             ]);
         }
-
         return response()->json(['message' => 'wrong password']);
     }
 
