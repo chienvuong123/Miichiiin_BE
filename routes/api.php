@@ -255,11 +255,11 @@ Route::middleware('admin')->prefix('admin')->group(function () {
 
     // ROLE
     Route::middleware('permission:get role,admins')->group(function () {
-        Route::get('roles', [VoucherController::class, 'index']);
+        Route::get('roles', [RoleControler::class, 'index']);
 //        Route::resource('roles', RoleControler::class)->except(['create', 'edit']);
 //        Route::middleware('permission:assign role,admins')->post('assign_permission', [RoleControler::class, 'assign_permission']);
         Route::prefix('role')->group(function () {
-            Route::get('/{id}', [VoucherController::class, 'show']);
+            Route::get('/{id}', [RoleControler::class, 'show']);
             Route::middleware('permission:add role,admins')->post('/', [RoleControler::class, 'store']);
             Route::middleware('permission:update role,admins')->put('/{id}', [RoleControler::class, 'update']);
             Route::middleware('permission:delete role,admins')->delete('/{id}', [RoleControler::class, 'destroy']);
