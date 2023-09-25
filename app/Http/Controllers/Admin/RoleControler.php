@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+
 use App\Http\Requests\RoleRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use App\Models\Admin;
 
 class RoleControler extends Controller
 {
@@ -18,7 +17,11 @@ class RoleControler extends Controller
      */
     public function index()
     {
-        $roles = Role::OrderByDesc('created_at')->get();
+        $level_role = get_current_level();
+        $roles = Role::query()
+            ->where('level', '<', $level_role)
+            ->OrderByDesc('created_at')
+            ->get(['id', 'name', 'level', 'updated_at', 'created_at']);
         return response()->json($roles);
     }
 
@@ -52,6 +55,8 @@ class RoleControler extends Controller
     {
         $role = new Role();
         $role->fill($request->except('_token', 'permissons'));
+        $level_role = get_current_level();
+        $role->level = $level_role - 1;
         $role->save();
 
         $request['id_role'] = $role->id;
@@ -65,10 +70,35 @@ class RoleControler extends Controller
      */
     public function show(string $id)
     {
+        // tạo đối tượng của permission
+        $permissons_class = new PermissionController();
+
+        // tìm role theo $id
         $role = Role::query()->find($id);
-        $permissons = $role->permissions;
-        dd($permissons);
-        return response()->json($role);
+        // Các permission mà role đã có
+        $had_permissions = $role->permissions->pluck('id', 'name');
+
+        $response_list = [];
+        $list_id = [];
+        foreach ($had_permissions as $key => $permission) {
+            $list_id[] = $permission;
+            $response_list[] = [
+                'id' => $permission,
+                'name' => $key
+            ];
+        }
+
+        // Các permission mà role chưa có
+        $per = $permissons_class->get_permissions($list_id);
+
+        // Response
+        $response = [
+            "name" => $role->name,
+            "had_permissions" => $response_list,
+            "list_permissions" => $per
+        ];
+
+        return response()->json($response);
     }
 
     /**

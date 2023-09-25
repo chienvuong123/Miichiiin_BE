@@ -17,12 +17,21 @@ class PermissionController extends Controller
      */
     public function index()
     {
+        return response()->json($this->get_permissions());
+    }
+
+    public function get_permissions ($has_permissions = [])
+    {
         $my_role = Auth::guard('admins')->user()->getRoleNames();
-        $level_role = Role::query()->select('level')->where('name', $my_role[0])->first();
-        $permissions = Permission::query()->select('id', 'name', 'level')
-            ->where('level', '<', $level_role->level)
-            ->OrderByDesc('created_at')->get();
-        return response()->json($permissions);
+        $level_role = Role::query()
+            ->where('name', $my_role[0])
+            ->value('level');
+        $permissions = Permission::query()
+            ->whereNotIn('id', $has_permissions)
+            ->where('level', '<', $level_role)
+            ->OrderByDesc('created_at')
+            ->get(['id', 'name']);
+        return $permissions;
     }
 
     /**
