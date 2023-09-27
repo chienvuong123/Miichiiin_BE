@@ -75,11 +75,15 @@ class PermissionSeeder extends Seeder
             [2, 'update role'],
             [2, 'delete role'],
             // PERMISSION
-            // ROLE
             [2, 'get permission'],
             [2, 'add permission'],
             [2, 'update permission'],
             [2, 'delete permission'],
+            // BOOKING
+            [1, 'get booking'],
+            [1, 'add booking'],
+            [1, 'update booking'],
+            [1, 'delete booking'],
         ];
 
         // create row to insert to permission table
