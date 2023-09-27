@@ -18,7 +18,6 @@ class BookingController extends Controller
     //
     public function index()
     {
-
         // get all booking
         $booking = booking::select('bookings.*', 'users.name as name_user',)
         ->leftJoin('users', 'bookings.id_user', '=', 'users.id')
@@ -96,14 +95,44 @@ class BookingController extends Controller
     {
         // Create Booking
         $params = $request->except('_token', 'cart');
+        $check_in = $request->check_in;
+        $check_out = $request->check_out;
+
+        $list_booking = Booking::query()
+            ->select('id')
+            ->where('check_out', '>=', $check_in)
+            ->orWhere('check_in', '<=', $check_out)
+            ->whereIn('status', [2,3])
+            ->get();
+
+        $room_ignore = bookingDetail::query()
+            ->select('id_room')
+            ->whereIn('id_booking', $list_booking)
+            ->distinct()
+            ->get();
+
         $booking  = booking::create($params);
+        $room_detail = [];
+
         if ($booking->id) {
             $cart = $request->cart;
             $promotion = $request->promotion ?? null;
             $booking_d_record = [];
             $j = 0;
             for ($i = 0; $i < count($cart); $i++) {
-                $list_room = room::where('id_cate', $cart[$i]['id_cate'])->orderBy('name')->get();
+                $list_room = room::query()
+                    ->select('id')
+                    ->whereNotIn('id', $room_ignore)
+                    ->where('id_cate', $cart[$i]['id_cate'])
+                    ->orderBy('name')
+                    ->get();
+
+                if ($i == count($list_room)) {
+                    return response()->json([
+                        'message' => "Out of room of category room"
+                    ])->setStatusCode(Response::HTTP_BAD_REQUEST);
+                }
+
                 if (count($booking_d_record) >= 1) {
                     if ($booking_d_record[count($booking_d_record) - 1]['id_cate'] == $cart[$i]['id_cate']) {
                         $j++;
@@ -113,31 +142,34 @@ class BookingController extends Controller
                 if (empty($cart[$i]['services'])) {
                     $booking_d_record[] = [
                         'id_booking' => $booking->id,
-                        'id_room' => $list_room[$j]->getAttributes()['id'],
+                        'id_room' => $list_room[$j]->id,
                         'id_cate' => $cart[$i]['id_cate'],
                         'id_services' => -1,
                         'id_promotions' => $promotion,
                         'created_at' => now()
                     ];
+                    array_push($room_detail, $list_room[$j]->id);
                     continue;
                 }
+
                 foreach ($cart[$i]['services'] as $service) {
                     $booking_d_record[] = [
                         'id_booking' => $booking->id,
-                        'id_room' => $list_room[$j]->getAttributes()['id'],
+                        'id_room' => $list_room[$j]->id,
                         'id_cate' => $cart[$i]['id_cate'],
                         'id_services' => $service,
                         'id_promotions' => $promotion,
                     ];
+                    array_push($room_detail, $list_room[$j]->id);
                 }
             }
 
             bookingDetail::insert($booking_d_record);
 
-            return response()->json([
-                'message' => $booking,
-                'status' => Response::HTTP_CREATED
-            ]);
+            $booking['rooms'] = $room_detail;
+
+            return response()->json($booking)
+                ->setStatusCode(Response::HTTP_CREATED);
         }
     }
     public function create()
