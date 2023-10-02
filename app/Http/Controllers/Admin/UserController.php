@@ -215,6 +215,7 @@ class UserController extends Controller
 
             return response()->json([
                 'accessToken' => $token,
+                'user' => $user,
             ]);
         } else {
             // Xử lý lỗi xác thực từ Google
