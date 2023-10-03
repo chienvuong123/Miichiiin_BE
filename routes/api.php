@@ -179,6 +179,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::get('/statistical', [CateRoomController::class, 'statistical']);
     Route::get('/statistical_year', [CateRoomController::class, 'statistical_year']);
     Route::get('/statistical_room_checkin/{check_in}/{check_out}', [CateRoomController::class, 'statistical_room_checkin']);
+    Route::get('/statictical_total_booking_bettween_year', [CateRoomController::class, 'statictical_total_booking_bettween_year']);
 
     Route::get('/statistical_total_amount', [CateRoomController::class, 'statistical_total_amount']);
     Route::get('/statistical_total_amount_month', [CateRoomController::class, 'statistical_total_amount_month']);
