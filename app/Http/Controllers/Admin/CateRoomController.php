@@ -1023,47 +1023,36 @@ class CateRoomController extends Controller
 
     public function statictical_total_booking_bettween_year(){
         $id_hotels = 10;
-$startDate = date('Y-m-d', strtotime('-10 years'));
-$endDate = date('Y-m-d');
+        $startDate = date('Y-m-d', strtotime('-10 years'));
+        $endDate = date('Y-m-d');
 
-$bookings = DB::table('bookings')
-    ->join('booking_details', 'bookings.id', '=', 'booking_details.id_booking')
-    ->join('rooms', 'booking_details.id_room', '=', 'rooms.id')
-    ->join('hotels', 'rooms.id_hotel', '=', 'hotels.id')
-    ->where('hotels.id', '=', $id_hotels)
-    ->whereBetween('bookings.check_in', [$startDate, $endDate])
-    ->get();
+        $bookings = DB::table('bookings')
+        ->join('booking_details', 'bookings.id', '=', 'booking_details.id_booking')
+        ->join('rooms', 'booking_details.id_room', '=', 'rooms.id')
+        ->join('hotels', 'rooms.id_hotel', '=', 'hotels.id')
+        ->where('hotels.id', '>=', $id_hotels)
+        ->get();
+        $bookingCountsByYear = [];
+        $years = range(date('Y') - 10, date('Y'));
 
-$months = range(1, 12);
-$years = range(date('Y') - 10, date('Y'));
-$bookingCountsByMonth = [];
-
-// Initialize month counts
-foreach ($years as $year) {
-    foreach ($months as $month) {
-        $bookingCountsByMonth[$year][$month] = 0;
-    }
-}
-
-foreach ($bookings as $booking) {
-    $checkInMonth = date('n', strtotime($booking->check_in));
-    $checkInYear = date('Y', strtotime($booking->check_in));
-    $bookingCountsByMonth[$checkInYear][$checkInMonth]++;
-}
-
-// Check and update months with no bookings
-foreach ($years as $year) {
-    foreach ($months as $month) {
-        if (!isset($bookingCountsByMonth[$year][$month])) {
-            $bookingCountsByMonth[$year][$month] = 0;
+        foreach ($years as $year) {
+            $bookingCountsByYear[$year] = 0;
         }
-    }
-}
 
-return response()->json([
-    'booking_counts_by_month' => $bookingCountsByMonth,
-]);
-    }
+        foreach ($bookings as $booking) {
+            $checkInYear = date('Y', strtotime($booking->check_in));
+            $bookingCountsByYear[$checkInYear]++;
+        }
+
+        $bookingCounts = [];
+        foreach ($bookingCountsByYear as $year => $count) {
+            $bookingCounts[$year] = $count;
+        }
+
+        return response()->json([
+            'booking_counts_by_year' => $bookingCounts,
+        ]);
+        }
   // thống kê booking đặt trong 10 năm trở lại đây của car he thong
 
   public function statictical_total_booking_bettween_year_in_system(){
