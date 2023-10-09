@@ -196,6 +196,9 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::get('/statistical_total_amount_day/{id_hotel}/{month}/{year}', [CateRoomController::class, 'statistical_total_amount_day']);
 
 
+    Route::get('/statistical_rates/{id_hotel}', [CateRoomController::class, 'statistical_rates']);
+
+
 
     // test
     // thống kê loại phòng đặt trong 12 tháng của năm của tất cả

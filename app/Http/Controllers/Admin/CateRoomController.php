@@ -1090,4 +1090,41 @@ class CateRoomController extends Controller
             'room_counts' => $roomCounts,
         ]);
     }
+    public function statistical_rates($id_hotel)
+    {
+        $rates = DB::table('rates')
+        ->join('rooms', 'rooms.id_cate', '=', 'rates.id_category')
+        ->join('category_rooms', 'category_rooms.id', '=', 'rooms.id_cate')
+        ->where('rooms.id_hotel', $id_hotel)
+        ->select('rooms.id_cate', 'category_rooms.name', 'rates.rating')
+        ->get();
+
+    $roomAverages = [];
+
+    foreach ($rates as $rate) {
+        $roomType = $rate->id_cate;
+        $roomTypeName = $rate->name;
+        $rating = $rate->rating;
+
+        if (!isset($roomAverages[$roomType])) {
+            $roomAverages[$roomType] = [
+                'room_type' => $roomTypeName,
+                'total_rating' => $rating,
+                'comment_count' => 1,
+                'average_rating' => $rating
+            ];
+        } else {
+            $roomAverages[$roomType]['total_rating'] += $rating;
+            $roomAverages[$roomType]['comment_count']++;
+            $roomAverages[$roomType]['average_rating'] = $roomAverages[$roomType]['total_rating'] / $roomAverages[$roomType]['comment_count'];
+        }
+    }
+
+    // Chỉnh lại chỉ mục của mảng
+    $roomAverages = array_values($roomAverages);
+
+    return response()->json([
+        'rating_comment' => $roomAverages,
+    ]);
 }
+} 
