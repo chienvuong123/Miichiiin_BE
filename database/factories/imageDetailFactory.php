@@ -18,10 +18,10 @@ class imageDetailFactory extends Factory
     {
         return [
             //
-            "id_hotel" => fake()->numberBetween(),
-            "id_rooms" => fake()->numberBetween(),
-            "id_cate" => fake()->numberBetween(),
-            "id_image" => fake()->numberBetween(),
+            "id_hotel" => fake()->numberBetween(1,10),
+            "id_rooms" => fake()->numberBetween(1,10),
+            "id_cate" => fake()->numberBetween(1,10),
+            "id_image" => fake()->numberBetween(1,10),
         ];
     }
 }

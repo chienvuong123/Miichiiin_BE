@@ -49,12 +49,10 @@ Route::middleware('admin')->prefix('admin')->group(function () {
             Route::middleware('permission:delete banner,admins')->delete('/{id}', [BannerController::class, 'destroy']);
         });
     });
-//        Route::resource('banners', BannerController::class)->except(['create', 'edit']);
 
     // VOUCHER
     Route::middleware('permission:get voucher,admins')->group(function () {
         Route::get('vouchers', [VoucherController::class, 'index']);
-//            Route::resource('vouchers', VoucherController::class)->except(['create', 'edit']);
         Route::prefix('voucher')->group(function () {
             Route::get('/{id}', [VoucherController::class, 'show']);
             Route::middleware('permission:add voucher,admins')->post('/', [VoucherController::class, 'store']);
@@ -76,7 +74,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     // HOTEL
     Route::middleware('permission:get hotel,admins')->group(function () {
         Route::get('hotels', [hotelController::class, 'index']);
-//        Route::resource('hotel', hotelController::class);
         Route::prefix('hotel')->group(function () {
             Route::get('/{id}', [hotelController::class, 'show']);
             Route::middleware('permission:add hotel,admins')->post('/', [hotelController::class, 'store']);
@@ -90,7 +87,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     // ROOM
     Route::middleware('permission:get room,admins')->group(function () {
         Route::get('rooms', [roomsController::class, 'index']);
-//        Route::resource('room', roomsController::class);
         Route::prefix('room')->group(function () {
             Route::get('/{id}', [roomsController::class, 'show']);
             Route::middleware('permission:add room,admins')->post('/', [roomsController::class, 'store']);
@@ -105,7 +101,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     // CATEGORY
     Route::middleware('permission:get category,admins')->group(function () {
         Route::get('categories', [CateRoomController::class, 'index']);
-//        Route::resource('category', CateRoomController::class);
         Route::prefix('category')->group(function () {
             Route::get('/{id}', [CateRoomController::class, 'show']);
             Route::middleware('permission:add category,admins')->post('', [CateRoomController::class, 'store']);
@@ -119,7 +114,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     // SERVICE
     Route::middleware('permission:get service,admins')->group(function () {
         Route::get('services', [ServiceController::class, 'index']);
-//        Route::resource('services', ServiceController::class)->except(['create', 'edit']);
         Route::prefix('service')->group(function () {
             Route::get('/{id}', [ServiceController::class, 'show']);
             Route::middleware('permission:add service,admins')->post('/', [ServiceController::class, 'store']);
@@ -135,7 +129,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     // COMFORT
     Route::middleware('permission:get comfort,admins')->group(function () {
         Route::get('comforts', [ComfortController::class, 'index']);
-//        Route::resource('comforts', ComfortController::class)->except(['create', 'edit']);
         Route::prefix('comfort')->group(function () {
             Route::get('/{id}', [ComfortController::class, 'show']);
             Route::middleware('permission:add comfort,admins')->post('/', [ComfortController::class, 'store']);
@@ -149,7 +142,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     // RATE
     Route::middleware('permission:get rate,admins')->group(function () {
         Route::get('rates', [RateController::class, 'index']);
-//        Route::resource('rates', RateController::class)->except(['create', 'edit']);
         Route::prefix('rate')->group(function () {
             Route::get('/{id}', [RateController::class, 'show']);
             Route::middleware('permission:add rate,admins')->post('/', [RateController::class, 'store']);
@@ -163,7 +155,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     // ADMIN
     Route::middleware('permission:get admin,admins')->group(function () {
         Route::get('admins', [AdminController::class, 'index']);
-//        Route::resource('admins', AdminController::class)->except(['create', 'edit']);
         Route::prefix('admin')->group(function () {
             Route::get('/{id}', [AdminController::class, 'show']);
             Route::middleware('permission:add admin,admins')->post('/', [AdminController::class, 'store']);
@@ -191,7 +182,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     // USER
     Route::middleware('permission:get user,admins')->group(function () {
         Route::get('users', [UserController::class, 'index']);
-//        Route::resource('users', UserController::class)->except(['create', 'edit']);
         Route::prefix('user')->group(function () {
             Route::get('/{id}', [UserController::class, 'show']);
             Route::middleware('permission:add user,admins')->post('/', [UserController::class, 'store']);
@@ -214,7 +204,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
             Route::middleware('permission:delete booking,admins')->delete('/{id}', [BookingController::class, 'destroy']);
             Route::middleware('permission:update booking,admins')->put('{id}/status', [BookingController::class, 'updateState_booking']);
         });
-//        Route::resource('bookings', BookingController::class);
     });
 
     // BOOKING DETAIL
@@ -232,7 +221,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
             Route::middleware('permission:update image,admins')->put('/{id}', [ImageController::class, 'update']);
             Route::middleware('permission:delete image,admins')->delete('/{id}', [ImageController::class, 'destroy']);
         });
-//        Route::resource('image', ImageController::class);
     });
 
     Route::resource('comfortDetail', ComfortDetailController::class);
@@ -241,7 +229,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
 
     Route::middleware('permission:get permission,admins')->group(function () {
         Route::get('permissions', [PermissionController::class, 'index']);
-//        Route::resource('permissions', PermissionController::class)->except(['create', 'edit']);
         Route::prefix('permission')->group(function () {
             Route::get('/{id}', [PermissionController::class, 'show']);
             Route::middleware('permission:add permission,admins')->post('/', [PermissionController::class, 'store']);
@@ -256,8 +243,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     // ROLE
     Route::middleware('permission:get role,admins')->group(function () {
         Route::get('roles', [RoleControler::class, 'index']);
-//        Route::resource('roles', RoleControler::class)->except(['create', 'edit']);
-//        Route::middleware('permission:assign role,admins')->post('assign_permission', [RoleControler::class, 'assign_permission']);
         Route::prefix('role')->group(function () {
             Route::get('/{id}', [RoleControler::class, 'show']);
             Route::middleware('permission:add role,admins')->post('/', [RoleControler::class, 'store']);
@@ -309,7 +294,7 @@ Route::get(
     [CateRoomController::class, 'find']
 );
 // hiển thị booking theo id_user
-Route::get('/booking/{id}', [BookingController::class, 'booking_list']);
+Route::get('/booking/{id}/profile', [BookingController::class, 'booking_list']);
 // hiển thị booking_detail theo id_user
 Route::get('/bookingDetail/{id}', [BookingDetailController::class, 'booking_detail_list']);
 
