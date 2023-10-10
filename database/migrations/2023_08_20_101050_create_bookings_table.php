@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
+            $table->integer('id_hotel')->nullable();
+            $table->string('slug')->unique();
             $table->dateTime('check_in')->nullable();
             $table->dateTime('check_out')->nullable();
             $table->integer('people_quantity')->nullable();
