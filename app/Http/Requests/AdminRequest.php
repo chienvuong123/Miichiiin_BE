@@ -34,6 +34,7 @@ class AdminRequest extends FormRequest
             'phone' => 'required',
             'address' => 'required',
             'date' => 'required|date|before:' . Carbon::now(),
+            'role' => 'required'
         ];
         // lấy ra tên phương thức cần sử lý
         $currentAction = $this->route()->getActionMethod();
