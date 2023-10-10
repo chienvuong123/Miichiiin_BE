@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('category_rooms', function (Blueprint $table) {
             $table->id();
+            $table->integer('id_hotel')->nullable();
             $table->string('name')->nullable();
             $table->string('description')->nullable();
             $table->string('image')->nullable();
