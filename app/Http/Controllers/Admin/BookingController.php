@@ -182,10 +182,18 @@ class BookingController extends Controller
             ->distinct()
             ->get();
 
+        $cart = $request->cart;
+        if (!isset($cart)) {
+            return response()->json(
+                ['message' => 'Không tìm thấy tham số cart']
+            )->setStatusCode(Response::HTTP_BAD_REQUEST);
+        }
+
+        $cart = collect($cart)->sortBy('id_cate')->values()->all();
+
         $booking  = booking::create($params);
 
         if ($booking->id) {
-            $cart = $request->cart;
             $promotion = $request->promotion ?? null;
             $booking_d_record = [];
             $j = 0;

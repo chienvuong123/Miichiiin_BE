@@ -5,11 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminRequest;
 use App\Models\Admin;
+use App\Models\Role;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Symfony\Component\HttpFoundation\Response;
 
 class AdminController extends Controller
 {
@@ -65,29 +66,33 @@ class AdminController extends Controller
     {
         $admin = new Admin();
 
-        $ad = Auth::guard('admins')->user();
-        $role_of_admin = $ad->getRoleNames();
+        $level_role = get_current_level();
 
+        // MD5 Password
         if ($request->has('password')) {
             $admin->password = bcrypt($request->password);
         }
 
-        $admin->fill($request->except(['password']));
+        // Check role
+        $role = Role::query()
+            ->select('*')
+            ->where('id', $request->role)
+            ->first();
 
+        if ($role->level != $level_role - 1) {
+            return response()->json(
+                ['message' => 'Chức vụ không hợp lệ']
+            )->setStatusCode(Response::HTTP_BAD_REQUEST);
+        }
+
+        // Create account
+        $admin->fill($request->except(['password', 'role']));
         $uploadedImage = Cloudinary::upload($request->image->getRealPath());
         $admin->image = $uploadedImage->getSecurePath();
         $admin->save();
+        $admin->assignRole($role->name);
 
-        switch ($role_of_admin[0]) {
-            case 'chain owner':
-                $admin->assignRole('hotel owner');
-                break;
-            case 'hotel owner':
-                $admin->assignRole('staff');
-                break;
-        }
-
-        return response()->json($admin);
+        return response()->json($admin)->setStatusCode(Response::HTTP_CREATED);
     }
 
     /**
