@@ -19,6 +19,7 @@ class bookingFactory extends Factory
         return [
             //
             "name" => fake()->name(),
+            "slug" => fake()->slug(),
             "check_in" => fake()->dateTime(),
             "check_out" => fake()->dateTime(),
             "people_quantity" => fake()->numberBetween(),
