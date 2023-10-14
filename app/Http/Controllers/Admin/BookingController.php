@@ -14,6 +14,7 @@ use App\Models\Service;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BookingRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class BookingController extends Controller
@@ -165,7 +166,12 @@ class BookingController extends Controller
     public function store(BookingRequest $request)
     {
         // Create Booking
-        $params = $request->except('_token', 'cart');
+        $booking = new booking();
+        $booking->fill($request->except('_token', 'cart'));
+
+        $slug = "MiChi-" . strtolower(Str::random(2)) . rand(100, 999);
+        $booking->slug = $slug;
+
         $check_in = $request->check_in;
         $check_out = $request->check_out;
 
@@ -191,7 +197,7 @@ class BookingController extends Controller
 
         $cart = collect($cart)->sortBy('id_cate')->values()->all();
 
-        $booking  = booking::create($params);
+        $booking->save();
 
         if ($booking->id) {
             $promotion = $request->promotion ?? null;
@@ -260,133 +266,64 @@ class BookingController extends Controller
     }
     protected function update(Request $request, $id)
     {
-        $booking_detail = bookingDetail::query()
-                            ->select('*')
-                            ->where('id_booking', $id)
-                            ->get();
-
-        if (count($booking_detail) == 0) {
-            return response()->json(
-                ['message' => "Không tìm thấy đơn đặt phòng"]
-            )->setStatusCode(Response::HTTP_BAD_REQUEST);
-        }
-
+        $booking = booking::query()->find($id);
+        $booking->fill($request->except(['_token', 'cart', 'slug']));
+        $promotion = $request->promotion ?? null;
+        $flag = $request->flag;
         $cart = $request->cart;
 
-        foreach ($booking_detail as $detail) {
-            for ($i = 0; $i < count($cart); $i++) {
-                if ($detail->id_room == $cart[$i]['id_room']) {
-                    if (in_array($detail->id_service, $cart[$i]['services'])) {
-                        $index = array_search($detail->id_room, $cart[$i]['services']);
-                        unset($cart[$i]['services'][$index]);
-                    } else {
-                        bookingDetail::query()
-                            ->select('*')
-                            ->where('id_room', $detail->id_room)
-                            ->where('id_services', $id)
-                            ->delete();
-                    }
-                } else {
+        if ($flag) {
+            $booking_d_record = [];
+            $booking_detail = bookingDetail::query()
+                ->select('*')
+                ->where('id_booking', $id)
+                ->get();
 
-                }
+            if (count($booking_detail) <= 0) {
+                return response()->json(
+                    ['message' => "Không tìm thấy đơn đặt phòng"]
+                )->setStatusCode(Response::HTTP_BAD_REQUEST);
             }
 
-            // thêm service ở đây
+            foreach ($booking_detail as $detail_record) {
+                $detail_record->delete();
+            }
+
+            for ($i = 0; $i < count($cart); $i++) {
+                $id_cate = room::query()
+                    ->select('id_cate')
+                    ->where('id', $cart[$i]['id_room'])
+                    ->pluck('id_cate')
+                    ->first();
+
+                if (empty($cart[$i]['services'])) {
+                    $booking_d_record[] = [
+                        'id_booking' => $booking->id,
+                        'id_room' => $cart[$i]['id_room'],
+                        'id_cate' => $id_cate,
+                        'id_services' => -1,
+                        'id_promotions' => $promotion,
+                        'created_at' => now()
+                    ];
+                    continue;
+                }
+
+                foreach ($cart[$i]['services'] as $service) {
+                    $booking_d_record[] = [
+                        'id_booking' => $booking->id,
+                        'id_room' => $cart[$i]['id_room'],
+                        'id_cate' => $id_cate,
+                        'id_services' => $service,
+                        'id_promotions' => $promotion,
+                    ];
+                }
+            }
+            bookingDetail::insert($booking_d_record);
         }
 
-
-
-
-
-
-
-//        $cart_has = [];
-//        $booking_detail = bookingDetail::query()
-//                            ->select('*')
-//                            ->where('id_booking', $id)
-//                            ->get();
-//        if(count($booking_detail) == 0) {
-//            return response()->json(
-//                ['message' => "Không tìm thấy đơn đặt phòng"]
-//            )->setStatusCode(Response::HTTP_BAD_REQUEST);
-//        }
-//        foreach ($booking_detail as $detail) {
-//            $room = room::query()->select('id')->where('id', $detail->id_room)->first();
-//            $list_service = bookingDetail::query()
-//                            ->where('id_booking', $id)
-//                            ->where('id_room', $room->id)
-//                            ->get()
-//                            ->pluck('id_services');
-//            if (array_key_exists($room->id, $cart_has)) {
-//                continue;
-//            }
-//
-//            $cart_has[$room->id] = [
-//                $room->id => $list_service
-//            ];
-//        }
-//        $params = $request->except('_token', 'cart');
-//        $booking = booking::query()->find($id);
-//        $booking->update($params);
-//        $cart = $request->cart;
-//        $promotion = $request->promotion ?? null;
-//        $booking_d_record = [];
-//        for ($i = 0; $i < count($cart); $i++) {
-//            $room = room::query()
-//                ->select('id', 'id_cate')
-//                ->where('id', $cart[$i]['id_room'])
-//                ->first();
-//
-//
-//            $service_diff = [];
-//            if (array_key_exists($room->id, $cart_has)) {
-//                $service_diff = array_diff($cart[$i]['services'], $cart_has[$room->id]);
-//                if (count($service_diff) == 0) {
-//                    continue;
-//                }
-//            }
-//
-//            if (empty($cart[$i]['services'])) {
-//                $booking_d_record[] = [
-//                    'id_booking' => $booking->id,
-//                    'id_room' => $room->id,
-//                    'id_cate' => $room->id_cate,
-//                    'id_services' => -1,
-//                    'id_promotions' => $promotion,
-//                    'created_at' => now()
-//                ];
-//                continue;
-//            }
-//
-//            foreach ($cart[$i]['services'] as $service) {
-//                $booking_d_record[] = [
-//                    'id_booking' => $booking->id,
-//                    'id_room' => $room->id,
-//                    'id_cate' => $room->id_cate,
-//                    'id_services' => $service,
-//                    'id_promotions' => $promotion,
-//                ];
-//            }
-//        }
-//
-//
-//        foreach ($cart_has as $key => $element) {
-//            foreach ($service_diff as $service) {
-//                if (in_array($service, $element[$key])) {
-//                    continue;
-//                } else {
-//                    bookingDetail::query()
-//                        ->select('*')
-//                        ->where('id_service', $service)
-//                        ->delete();
-//                }
-//            }
-//        }
-//        bookingDetail::query()->insert($booking_d_record);
-//
-//        return response()->json(
-//            ['message' => "Cật nhập thành công"]
-//        )->setStatusCode(Response::HTTP_OK);
+        $booking->save();
+        return response()->json($booking)
+            ->setStatusCode(Response::HTTP_OK);
     }
     public function edit(BookingRequest $request, $id)
     {
