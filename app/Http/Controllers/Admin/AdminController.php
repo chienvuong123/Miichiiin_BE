@@ -19,8 +19,16 @@ class AdminController extends Controller
      */
     public function index()
     {
-        $admins = Admin::orderByDesc('created_at')->get();
-        return response()->json($admins);
+        $admin = Auth::guard('admins')->user();
+        dd($admin->id_hotel);
+        $level_role = get_current_level();
+
+
+        $admins = Admin::query()
+            ->select()
+            ->orderByDesc('created_at')
+            ->get();
+        return response()->json($admins, Response::HTTP_OK);
     }
 
     /**
