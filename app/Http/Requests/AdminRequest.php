@@ -30,7 +30,7 @@ class AdminRequest extends FormRequest
             'name' => 'required',
             'email' => 'required|unique:admins,email',
             'password' => 'required',
-            'image' => 'required|mimes:jpg,jpeg,png|max:2048',
+            // 'image' => 'required|mimes:jpg,jpeg,png|max:2048',
             'phone' => 'required',
             'address' => 'required',
             'date' => 'required|date|before:' . Carbon::now(),
