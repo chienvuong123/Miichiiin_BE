@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 
 use App\Http\Requests\RoleRequest;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Symfony\Component\HttpFoundation\Response;
 
 class RoleControler extends Controller
 {
@@ -22,7 +22,7 @@ class RoleControler extends Controller
             ->where('level', '<', $level_role)
             ->OrderByDesc('created_at')
             ->get(['id', 'name', 'level', 'updated_at', 'created_at']);
-        return response()->json($roles);
+        return response()->json($roles, Response::HTTP_OK);
     }
 
     /**
@@ -45,7 +45,7 @@ class RoleControler extends Controller
         return response()->json([
             "role_name" => $role->name,
             "permissions"  => $permissions
-        ]);
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -62,7 +62,7 @@ class RoleControler extends Controller
         $request['id_role'] = $role->id;
         $this->assign_permission($request, $request['id_role'], $request->permissions);
 
-        return response()->json($role);
+        return response()->json($role, Response::HTTP_CREATED);
     }
 
     /**
@@ -93,12 +93,13 @@ class RoleControler extends Controller
 
         // Response
         $response = [
+            "id" => $role->id,
             "name" => $role->name,
             "had_permissions" => $response_list,
             "list_permissions" => $per
         ];
 
-        return response()->json($response);
+        return response()->json($response, Response::HTTP_OK);
     }
 
     /**
@@ -119,7 +120,7 @@ class RoleControler extends Controller
         $request['id_role'] = $role->id;
         $this->assign_permission($request, $request['id_role'], $request->permissions);
         $role->save();
-        return response()->json($role);
+        return response()->json($role, Response::HTTP_OK);
     }
 
     /**
@@ -136,9 +137,8 @@ class RoleControler extends Controller
         }
         $role->delete();
         return response()->json([
-            "message" => "delete success",
-            "status" => Response::HTTP_OK
-        ]);
+            "message" => "delete success"
+        ], Response::HTTP_OK);
     }
     public function updateState_role(RoleRequest $request, $id)
     {
@@ -155,6 +155,6 @@ class RoleControler extends Controller
         }
         return response()->json([
             'message' => 'Role not found',
-        ], 404);
+        ], Response::HTTP_OK);
     }
 }
