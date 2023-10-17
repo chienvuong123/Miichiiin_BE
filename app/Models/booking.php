@@ -25,6 +25,7 @@ class booking extends Model
         "phone",
         "email",
         "id_user",
+        "id_hotel",
     ];
 
     public function scopeActive($query)
