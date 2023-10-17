@@ -51,7 +51,7 @@ class RoleControler extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(RoleRequest $request)
+    public function store(Request $request)
     {
         $role = new Role();
         $role->fill($request->except('_token', 'permissons'));
@@ -113,7 +113,7 @@ class RoleControler extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(RoleRequest $request, string $id)
+    public function update(Request $request, string $id)
     {
         $role = Role::query()->find($id);
         $role->fill($request->except('_token'));
