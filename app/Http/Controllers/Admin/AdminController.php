@@ -20,15 +20,26 @@ class AdminController extends Controller
     public function index()
     {
         $admin = Auth::guard('admins')->user();
-        dd($admin->id_hotel);
         $level_role = get_current_level();
+        $response_data = [];
 
-
+        // kiểm tra id hotel
         $admins = Admin::query()
             ->select()
-            ->orderByDesc('created_at')
+            ->where('id_hotel', $admin->id_hotel)
             ->get();
-        return response()->json($admins, Response::HTTP_OK);
+
+        foreach ($admins as $admin) {
+            $admin_level = Role::query()
+                ->where('name', $admin->getRoleNames()[0])
+                ->value('level');
+            if ($admin_level != $level_role - 1) {
+                continue;
+            }
+            $response_data[] = $admin;
+        }
+
+        return response()->json($response_data, Response::HTTP_OK);
     }
 
     /**
@@ -72,6 +83,7 @@ class AdminController extends Controller
      */
     public function store(AdminRequest $request)
     {
+        $auth_admin = Auth::guard('admins')->user();
         $admin = new Admin();
 
         $level_role = get_current_level();
@@ -95,6 +107,7 @@ class AdminController extends Controller
 
         // Create account
         $admin->fill($request->except(['password', 'role']));
+        $admin->id_hotel = $auth_admin->id_hotel;
         $uploadedImage = Cloudinary::upload($request->image->getRealPath());
         $admin->image = $uploadedImage->getSecurePath();
         $admin->save();
