@@ -97,6 +97,7 @@ class CateRoomController extends Controller
         $number_of_people = $number_people ?? 1;
         $number_room = $total_room ?? 1;
 
+
         // Lấy danh sách tất cả các loại phòng
         $list_category = CategoryRoom::select(
             'category_rooms.id',
@@ -152,9 +153,9 @@ class CateRoomController extends Controller
 
             $bookedRooms = BookingDetail::whereHas('bookings', function ($query) use ($startDate, $endDate) {
                 $query->where(function ($query) use ($startDate, $endDate) {
-                    $query->where('check_in', '>=', $startDate)
+                    $query->where('check_out', '>=', $startDate)
 
-                        ->where('check_out', '<=', $endDate)
+                    ->where('check_in', '<=', $endDate)
                         ->whereNotIn('bookings.status', [2, 3]);
                 }
                 )
