@@ -154,14 +154,12 @@ class CateRoomController extends Controller
             $bookedRooms = BookingDetail::whereHas('bookings', function ($query) use ($startDate, $endDate) {
                 $query->where(function ($query) use ($startDate, $endDate) {
                     $query->where('check_out', '>=', $startDate)
-
                     ->where('check_in', '<=', $endDate)
                         ->whereNotIn('bookings.status', [2, 3]);
                 }
                 )
                     ->orWhereNull('booking_details.id_room');
             })
-
                 ->where('id_room', '!=', null)
                 ->where('id_cate', $categoryId)
                 ->distinct('id_room') // Chỉ tính các phòng duy nhất
