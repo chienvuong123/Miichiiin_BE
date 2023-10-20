@@ -3,34 +3,13 @@
 namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Symfony\Component\HttpFoundation\Response;
 
-//class BaseRequest extends FormRequest
-//{
-//    /**
-//     * Determine if the user is authorized to make this request.
-//     */
-//    public function authorize(): bool
-//    {
-//        return false;
-//    }
-//
-//    /**
-//     * Get the validation rules that apply to the request.
-//     *
-//     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
-//     */
-//    public function rules(): array
-//    {
-//        return [
-//            //
-//        ];
-//    }
-//}
-
-trait BaseRequest {
-    public function message () {
+trait BaseRequest
+{
+    public function message()
+    {
         return [
             'name.required' => 'Tên Không Được Để Trống',
             'email.required' => 'Email không được để trống',
@@ -87,13 +66,14 @@ trait BaseRequest {
 
         ];
     }
+
     protected function failedValidation(Validator $validator)
     {
-
-          throw new HttpResponseException(response()->json([
-            'errors' => $validator->errors(),
-            'messenger' => "Fail",
-            "Success"=>false,
-        ]));
+        throw new HttpResponseException(response()->json(
+            [
+                'errors' => $validator->errors(),
+                'messenger' => "Fail",
+            ],
+            Response::HTTP_UNPROCESSABLE_ENTITY));
     }
 }
