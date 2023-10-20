@@ -153,9 +153,8 @@ class CateRoomController extends Controller
 
             $bookedRooms = BookingDetail::whereHas('bookings', function ($query) use ($startDate, $endDate) {
                 $query->where(function ($query) use ($startDate, $endDate) {
-                    $query->where('check_in', '>=', $startDate)
-
-                        ->where('check_out', '<=', $endDate)
+                    $query->where('check_out', '>=', $startDate)
+                        ->where('check_in', '<=', $endDate)
                         ->whereNotIn('bookings.status', [2, 3]);
                 }
                 )
@@ -1092,39 +1091,72 @@ class CateRoomController extends Controller
     }
     public function statistical_rates($id_hotel)
     {
-        $rates = DB::table('rates')
-        ->join('rooms', 'rooms.id_cate', '=', 'rates.id_category')
-        ->join('category_rooms', 'category_rooms.id', '=', 'rooms.id_cate')
-        ->where('rooms.id_hotel', $id_hotel)
-        ->select('rooms.id_cate', 'category_rooms.name', 'rates.rating')
-        ->get();
+    // Truy vấn đếm rating
+ // Tạo một mảng tạm để lưu kết quả với tất cả các loại phòng của khách sạn
+$tempArray = [];
 
-    $roomAverages = [];
+// Lấy danh sách tất cả các loại phòng của khách sạn
+$categories = DB::table('category_rooms')
+    ->join('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
+    ->where('rooms.id_hotel', $id_hotel)
+    ->select('rooms.id_cate', 'category_rooms.name')
+    ->get();
 
-    foreach ($rates as $rate) {
-        $roomType = $rate->id_cate;
-        $roomTypeName = $rate->name;
-        $rating = $rate->rating;
-
-        if (!isset($roomAverages[$roomType])) {
-            $roomAverages[$roomType] = [
-                'room_type' => $roomTypeName,
-                'total_rating' => $rating,
-                'comment_count' => 1,
-                'average_rating' => $rating
-            ];
-        } else {
-            $roomAverages[$roomType]['total_rating'] += $rating;
-            $roomAverages[$roomType]['comment_count']++;
-            $roomAverages[$roomType]['average_rating'] = $roomAverages[$roomType]['total_rating'] / $roomAverages[$roomType]['comment_count'];
-        }
-    }
-
-    // Chỉnh lại chỉ mục của mảng
-    $roomAverages = array_values($roomAverages);
-
-    return response()->json([
-        'rating_comment' => $roomAverages,
-    ]);
+// Đưa tất cả các loại phòng vào mảng tạm với giá trị là 0 ban đầu
+foreach ($categories as $category) {
+    $tempArray[$category->id_cate] = [
+        'room_type' => $category->name,
+        'total_rating' => 0,
+        'comment_count' => 0,
+        'average_rating' => 0,
+        'booking_count' => 0
+    ];
 }
-} 
+
+// Lấy thông tin đánh giá của từng loại phòng
+$rates = DB::table('rates')
+    ->join('rooms', 'rooms.id_cate', '=', 'rates.id_category')
+    ->where('rooms.id_hotel', $id_hotel)
+    ->select('rooms.id_cate', 'rates.rating', DB::raw('COUNT(rates.id) AS comment_count'))
+    ->groupBy('rooms.id_cate', 'rates.rating')
+    ->get();
+
+// Lấy thông tin số lượng đặt phòng của từng loại phòng
+$bookings = DB::table('rooms')
+    ->join('booking_details', 'booking_details.id_room', '=', 'rooms.id')
+    ->where('rooms.id_hotel', $id_hotel)
+    ->select('rooms.id_cate', DB::raw('COUNT(booking_details.id) AS booking_count'))
+    ->groupBy('rooms.id_cate')
+    ->get();
+
+// Cập nhật thông tin đánh giá trong mảng tạm
+foreach ($rates as $rate) {
+    $roomType = $rate->id_cate;
+    $rating = $rate->rating;
+    $commentCount = $rate->comment_count;
+
+    if (isset($tempArray[$roomType])) {
+        $tempArray[$roomType]['total_rating'] += $rating;
+        $tempArray[$roomType]['comment_count'] += $commentCount;
+        $tempArray[$roomType]['average_rating'] = $tempArray[$roomType]['total_rating'] / $tempArray[$roomType]['comment_count'];
+    }
+}
+
+// Cập nhật thông tin số lượng đặt phòng trong mảng tạm
+foreach ($bookings as $booking) {
+    $roomType = $booking->id_cate;
+    $bookingCount = $booking->booking_count;
+
+    if (isset($tempArray[$roomType])) {
+        $tempArray[$roomType]['booking_count'] = $bookingCount;
+    }
+}
+
+// Chuyển đổi mảng tạm thành mảng kết quả cuối cùng
+$roomAverages = array_values($tempArray);
+
+return response()->json([
+    'rating_comment_booking' => $roomAverages,
+]);
+}
+}
