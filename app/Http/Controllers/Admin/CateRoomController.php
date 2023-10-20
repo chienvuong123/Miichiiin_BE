@@ -97,7 +97,6 @@ class CateRoomController extends Controller
         $number_of_people = $number_people ?? 1;
         $number_room = $total_room ?? 1;
 
-
         // Lấy danh sách tất cả các loại phòng
         $list_category = CategoryRoom::select(
             'category_rooms.id',
