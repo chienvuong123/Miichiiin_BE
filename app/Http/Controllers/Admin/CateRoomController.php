@@ -160,7 +160,6 @@ class CateRoomController extends Controller
                 )
                     ->orWhereNull('booking_details.id_room');
             })
-
                 ->where('id_room', '!=', null)
                 ->where('id_cate', $categoryId)
                 ->distinct('id_room') // Chỉ tính các phòng duy nhất
