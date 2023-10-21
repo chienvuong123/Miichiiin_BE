@@ -116,8 +116,8 @@ class CateRoomController extends Controller
             'hotels.name as nameHotel',
             DB::raw('COUNT(DISTINCT comforts.id) as Total_comfort')
         )
-            ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
-            ->leftJoin('hotels', 'hotels.id', '=', 'rooms.id_hotel')
+        ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
+        ->leftJoin('hotels', 'hotels.id', '=', 'category_rooms.id_hotel')
             ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
             ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
             ->leftJoin('booking_details', 'booking_details.id_room', '=', 'rooms.id')
@@ -148,18 +148,22 @@ class CateRoomController extends Controller
 
             // Lấy danh sách các phòng thuộc loại phòng hiện tại
             $rooms = Room::where('id_cate', $categoryId)
+            ->leftJoin('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id')
+            ->leftJoin('hotels', 'hotels.id', '=', 'category_rooms.id_hotel')
                 ->where('id_hotel', $id)
                 ->get();
 
             $bookedRooms = BookingDetail::whereHas('bookings', function ($query) use ($startDate, $endDate) {
                 $query->where(function ($query) use ($startDate, $endDate) {
                     $query->where('check_out', '>=', $startDate)
+
                     ->where('check_in', '<=', $endDate)
                         ->whereNotIn('bookings.status', [2, 3]);
                 }
                 )
                     ->orWhereNull('booking_details.id_room');
             })
+
                 ->where('id_room', '!=', null)
                 ->where('id_cate', $categoryId)
                 ->distinct('id_room') // Chỉ tính các phòng duy nhất
@@ -210,7 +214,7 @@ class CateRoomController extends Controller
             DB::raw('COUNT(DISTINCT comforts.id) as Total_comfort')
         )
             ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
-            ->leftJoin('hotels', 'hotels.id', '=', 'rooms.id_hotel')
+            ->leftJoin('hotels', 'hotels.id', '=', 'category_rooms.id_hotel')
             ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
             ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
             ->leftJoin('booking_details', 'booking_details.id_room', '=', 'rooms.id')
@@ -503,19 +507,20 @@ class CateRoomController extends Controller
         $totalAmountByHotel = [];
 
         $bookings = DB::table('bookings')
-            ->whereYear('check_in', $year)
+            ->whereYear('check_in', 2023)
             ->get();
 
         foreach ($bookings as $booking) {
             $bookingId = $booking->id;
-            $details = DB::table('booking_details')
+            $detail = DB::table('booking_details')
                 ->where('id_booking', $bookingId)
-                ->get();
+                ->first();
 
-            foreach ($details as $detail) {
+            if ($detail) {
                 $roomId = $detail->id_room;
                 $room = DB::table('rooms')
-                    ->join('hotels', 'rooms.id_hotel', '=', 'hotels.id')
+                    ->join('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id')
+                    ->join('hotels', 'category_rooms.id_hotel', '=', 'hotels.id')
                     ->where('rooms.id', $roomId)
                     ->select('hotels.name')
                     ->first();
@@ -681,7 +686,8 @@ class CateRoomController extends Controller
         $bookings = DB::table('bookings')
             ->join('booking_details', 'bookings.id', '=', 'booking_details.id_booking')
             ->join('rooms', 'booking_details.id_room', '=', 'rooms.id')
-            ->join('hotels', 'rooms.id_hotel', '=', 'hotels.id')
+            ->join('category_rooms', 'category_rooms.id', '=', 'rooms.id_cate')
+            ->join('hotels', 'category_rooms.id_hotel', '=', 'hotels.id')
             ->where('bookings.check_in', '>=', $checkInTime)
             ->where('bookings.check_out', '<=', $checkOutTime)
             ->select('hotels.name', 'booking_details.id_booking')
@@ -711,49 +717,51 @@ class CateRoomController extends Controller
     public function statictical_total_booking_month_in_hotel($id_hotels, $year)
     {
         $bookings = DB::table('bookings')
-            ->join('booking_details', 'bookings.id', '=', 'booking_details.id_booking')
-            ->join('rooms', 'booking_details.id_room', '=', 'rooms.id')
-            ->join('hotels', 'rooms.id_hotel', '=', 'hotels.id')
-            ->where('hotels.id', '=', $id_hotels)
-            ->whereYear('bookings.check_in', '=', $year)
-            ->get();
+        ->join('booking_details', 'bookings.id', '=', 'booking_details.id_booking')
+        ->join('rooms', 'booking_details.id_room', '=', 'rooms.id')
+        ->join('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id') // Liên kết với bảng danh mục
+        ->join('hotels', 'category_rooms.id_hotel', '=', 'hotels.id')
+        ->where('hotels.id', '=', $id_hotels)
+        ->whereYear('bookings.check_in', '=', $year)
+        ->get();
+    $bookingDataByMonth = [];
+    $processedBookingIds = [];
 
-        $bookingDataByMonth = [];
-        $processedBookingIds = [];
+    // Loop through each month from 1 to 12
+    for ($month = 1; $month <= 12; $month++) {
+        // Initialize month data for each hotel
+        $bookingDataByMonth[] = [
+            'Năm' => $year,
+            'Tháng' => $month,
+            'booking_count' => 0,
+            'total_amount' => 0,
+            'category' => '', // Thêm trường danh mục
+        ];
+    }
 
-        // Loop through each month from 1 to 12
-        for ($month = 1; $month <= 12; $month++) {
-            // Initialize month data for each hotel
-            $bookingDataByMonth[] = [
-                'Năm' => $year,
-                'Tháng' => $month,
-                'booking_count' => 0,
-                'total_amount' => 0,
-            ];
+    foreach ($bookings as $booking) {
+        $checkInMonth = date('n', strtotime($booking->check_in));
+        $hotelId = $booking->id_hotel;
+        $bookingId = $booking->id_booking;
+
+        // Check if the booking has already been processed
+        if (in_array($bookingId, $processedBookingIds)) {
+            continue; // Skip this booking
         }
 
-        foreach ($bookings as $booking) {
-            $checkInMonth = date('n', strtotime($booking->check_in));
-            $hotelId = $booking->id_hotel;
-            $bookingId = $booking->id_booking;
+        // Increment the booking count and add the total amount for the current month and hotel
+        $bookingDataByMonth[$checkInMonth - 1]['booking_count']++;
+        $bookingDataByMonth[$checkInMonth - 1]['total_amount'] += $booking->total_amount;
+        $bookingDataByMonth[$checkInMonth - 1]['category'] = $booking->name; // Lấy tên danh mục từ bảng danh mục
 
-            // Check if the booking has already been processed
-            if (in_array($bookingId, $processedBookingIds)) {
-                continue; // Skip this booking
-            }
+        // Add the booking id to the processed bookings array
+        $processedBookingIds[] = $bookingId;
+    }
 
-            // Increment the booking count and add the total amount for the current month and hotel
-            $bookingDataByMonth[$checkInMonth - 1]['booking_count']++;
-            $bookingDataByMonth[$checkInMonth - 1]['total_amount'] += $booking->total_amount;
-
-            // Add the booking id to the processed bookings array
-            $processedBookingIds[] = $bookingId;
-        }
-
-        // Return the booking data by month
-        return response()->json([
-            'booking_data_by_month' => $bookingDataByMonth,
-        ]);
+    // Return the booking data by month
+    return response()->json([
+        'booking_data_by_month' => $bookingDataByMonth,
+    ]);
     }
 
     public function statistical_total_amount_day($id_hotels,$month,$year)
@@ -761,7 +769,8 @@ class CateRoomController extends Controller
         $bookings = DB::table('bookings')
         ->join('booking_details', 'bookings.id', '=', 'booking_details.id_booking')
         ->join('rooms', 'booking_details.id_room', '=', 'rooms.id')
-        ->join('hotels', 'rooms.id_hotel', '=', 'hotels.id')
+        ->join('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id')
+        ->join('hotels', 'category_rooms.id_hotel', '=', 'hotels.id')
         ->where('hotels.id', '=', $id_hotels)
         ->whereYear('bookings.check_in', '=', $year)
         ->whereMonth('bookings.check_in', '=', $month)
@@ -782,7 +791,6 @@ class CateRoomController extends Controller
             "total_amount" => 0,
         ];
     }
-
     foreach ($bookings as $booking) {
         $checkInDay = date('j', strtotime($booking->check_in));
         $hotelId = $booking->id_hotel;
@@ -806,62 +814,7 @@ class CateRoomController extends Controller
         'booking_data_by_day' => $bookingDataByDay,
     ]);
     }
-    //  truyền tháng cả năm vào  thống kê booking  tháng trong năm của cả hệ thống
-    public function statictical_total_booking_monthl($month, $year)
-    {
-        $bookings = DB::table('bookings')
 
-            ->whereYear('bookings.check_in', $year)
-            ->whereMonth('bookings.check_in', $month)
-            ->get();
-        $hotelCounts = [];
-
-        foreach ($bookings as $booking) {
-            $bookingDetails = DB::table('booking_details')
-                ->where('id_booking', $booking->id)
-                ->get();
-
-            $processedRoomIds = [];
-
-            foreach ($bookingDetails as $bookingDetail) {
-                $roomId = $bookingDetail->id_room;
-
-                if (!in_array($roomId, $processedRoomIds)) {
-                    $room = DB::table('rooms')
-                        ->join('hotels', 'rooms.id_hotel', '=', 'hotels.id')
-                        ->where('rooms.id', $roomId)
-                        ->select('hotels.name as hotel_name')
-                        ->first();
-
-                    $hotelName = $room->hotel_name;
-
-                    if (!isset($hotelCounts[$hotelName])) {
-                        $hotelCounts[$hotelName] = [
-                            'booking_count' => 0,
-                            'total_amount' => 0
-                        ];
-                    }
-
-                    $hotelCounts[$hotelName]['booking_count']++;
-                    $hotelCounts[$hotelName]['total_amount'] += $booking->total_amount;
-
-                    $processedRoomIds[] = $roomId;
-                }
-            }
-        }
-
-        $response = [];
-
-        foreach ($hotelCounts as $hotelName => $data) {
-            $response[] = [
-                'hotel_name' => $hotelName,
-                'booking_count' => $data['booking_count'],
-                'total_amount' => $data['total_amount']
-            ];
-        }
-
-        return response()->json($response);
-    }
     // thống kê booking đặt trong 10 năm trở lại đây của car he thong
 
     public function statictical_total_booking_bettween_year_in_system()
@@ -872,7 +825,8 @@ class CateRoomController extends Controller
         $bookings = DB::table('bookings')
             ->join('booking_details', 'bookings.id', '=', 'booking_details.id_booking')
             ->join('rooms', 'booking_details.id_room', '=', 'rooms.id')
-            ->join('hotels', 'rooms.id_hotel', '=', 'hotels.id')
+            ->join('category_rooms', 'category_rooms.id', '=', 'rooms.id_cate')
+            ->join('hotels', 'category_rooms.id_hotel', '=', 'hotels.id')
             ->whereBetween('bookings.check_in', [$startDate, $endDate])
             ->get();
 
@@ -1090,20 +1044,18 @@ class CateRoomController extends Controller
     }
     public function statistical_rates($id_hotel)
     {
-    // Truy vấn đếm rating
- // Tạo một mảng tạm để lưu kết quả với tất cả các loại phòng của khách sạn
+  // Truy vấn đếm rating
+// Tạo một mảng tạm để lưu kết quả với tất cả các loại phòng của khách sạn
 $tempArray = [];
 
 // Lấy danh sách tất cả các loại phòng của khách sạn
 $categories = DB::table('category_rooms')
-    ->join('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
-    ->where('rooms.id_hotel', $id_hotel)
-    ->select('rooms.id_cate', 'category_rooms.name')
+    ->select('id', 'name')
     ->get();
 
-// Đưa tất cả các loại phòng vào mảng tạm với giá trị là 0 ban đầu
+// Đưa tất cả các loại phòng vào mảng tạm với giá trị ban đầu
 foreach ($categories as $category) {
-    $tempArray[$category->id_cate] = [
+    $tempArray[$category->id] = [
         'room_type' => $category->name,
         'total_rating' => 0,
         'comment_count' => 0,
@@ -1114,40 +1066,39 @@ foreach ($categories as $category) {
 
 // Lấy thông tin đánh giá của từng loại phòng
 $rates = DB::table('rates')
-    ->join('rooms', 'rooms.id_cate', '=', 'rates.id_category')
-    ->where('rooms.id_hotel', $id_hotel)
-    ->select('rooms.id_cate', 'rates.rating', DB::raw('COUNT(rates.id) AS comment_count'))
-    ->groupBy('rooms.id_cate', 'rates.rating')
+    ->join('category_rooms', 'category_rooms.id', '=', 'rates.id_category')
+    ->select('category_rooms.id', 'rates.rating', DB::raw('COUNT(rates.id) AS comment_count'))
+    ->groupBy('category_rooms.id', 'rates.rating')
     ->get();
 
 // Lấy thông tin số lượng đặt phòng của từng loại phòng
-$bookings = DB::table('rooms')
+$bookings = DB::table('category_rooms')
+    ->join('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
     ->join('booking_details', 'booking_details.id_room', '=', 'rooms.id')
-    ->where('rooms.id_hotel', $id_hotel)
-    ->select('rooms.id_cate', DB::raw('COUNT(booking_details.id) AS booking_count'))
-    ->groupBy('rooms.id_cate')
+    ->select('category_rooms.id', DB::raw('COUNT(booking_details.id) AS booking_count'))
+    ->groupBy('category_rooms.id')
     ->get();
 
 // Cập nhật thông tin đánh giá trong mảng tạm
 foreach ($rates as $rate) {
-    $roomType = $rate->id_cate;
+    $categoryId = $rate->id;
     $rating = $rate->rating;
     $commentCount = $rate->comment_count;
 
-    if (isset($tempArray[$roomType])) {
-        $tempArray[$roomType]['total_rating'] += $rating;
-        $tempArray[$roomType]['comment_count'] += $commentCount;
-        $tempArray[$roomType]['average_rating'] = $tempArray[$roomType]['total_rating'] / $tempArray[$roomType]['comment_count'];
+    if (isset($tempArray[$categoryId])) {
+        $tempArray[$categoryId]['total_rating'] += $rating;
+        $tempArray[$categoryId]['comment_count'] += $commentCount;
+        $tempArray[$categoryId]['average_rating'] = $tempArray[$categoryId]['total_rating'] / $tempArray[$categoryId]['comment_count'];
     }
 }
 
 // Cập nhật thông tin số lượng đặt phòng trong mảng tạm
 foreach ($bookings as $booking) {
-    $roomType = $booking->id_cate;
+    $categoryId = $booking->id;
     $bookingCount = $booking->booking_count;
 
-    if (isset($tempArray[$roomType])) {
-        $tempArray[$roomType]['booking_count'] = $bookingCount;
+    if (isset($tempArray[$categoryId])) {
+        $tempArray[$categoryId]['booking_count'] = $bookingCount;
     }
 }
 

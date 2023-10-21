@@ -79,7 +79,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
             Route::middleware('permission:add hotel,admins')->post('/', [hotelController::class, 'store']);
             Route::middleware('permission:update hotel,admins')->put('/{id}', [hotelController::class, 'update']);
             Route::middleware('permission:delete hotel,admins')->delete('/{id}', [hotelController::class, 'destroy']);
-
             Route::middleware('permission:update hotel,admins')->put('{id}/status', [hotelController::class, 'updateState_hotel']);
         });
     });
@@ -92,7 +91,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
             Route::middleware('permission:add room,admins')->post('/', [roomsController::class, 'store']);
             Route::middleware('permission:update room,admins')->put('/{id}', [roomsController::class, 'update']);
             Route::middleware('permission:delete room,admins')->delete('/{id}', [roomsController::class, 'destroy']);
-
             Route::get('/cate_room/{id}', [roomsController::class, 'room_cate']);
             Route::middleware('permission:update room,admins')->put('{id}/status', [roomsController::class, 'updateState']);
         });
@@ -172,7 +170,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     // thống kê  số lượng phòng được đặt trong  start_year và endYear
     Route::get('/statistical_year/{startYear}/{endYear}', [CateRoomController::class, 'statistical_year']);
     // Route::get('/statistical_room_checkin/{check_in}/{check_out}', [CateRoomController::class, 'statistical_room_checkin']);
-    Route::get('/statictical_total_booking_bettween_year/{id_hotels}', [CateRoomController::class, 'statictical_total_booking_bettween_year']);
     //thống kê booking đặt trong 10 năm trở lại đây của car he thong
 
 
@@ -343,3 +340,4 @@ Route::get('/store_image_cate/{id}', [hotelController::class, 'store_image_cate'
 Route::get('/voucher', [VoucherController::class, 'list_vourcher']);
 
 Route::resource('permissions', PermissionController::class)->except(['create', 'edit']);
+
