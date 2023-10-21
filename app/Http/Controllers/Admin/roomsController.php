@@ -14,8 +14,8 @@ class roomsController extends Controller
     public function index()
     {
         $room = room::select('rooms.*', 'hotels.name as name_hotel','category_rooms.name as name_category')
-        ->join('hotels', 'rooms.id_hotel', '=', 'hotels.id')
         ->join('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id')
+        ->join('hotels', 'category_rooms.id_hotel', '=', 'hotels.id')
         ->get();
         return response()->json($room);
     }
