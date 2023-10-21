@@ -769,50 +769,50 @@ class CateRoomController extends Controller
         $bookings = DB::table('bookings')
         ->join('booking_details', 'bookings.id', '=', 'booking_details.id_booking')
         ->join('rooms', 'booking_details.id_room', '=', 'rooms.id')
-        ->join('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id') // Liên kết với bảng danh mục
+        ->join('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id')
         ->join('hotels', 'category_rooms.id_hotel', '=', 'hotels.id')
         ->where('hotels.id', '=', $id_hotels)
         ->whereYear('bookings.check_in', '=', $year)
+        ->whereMonth('bookings.check_in', '=', $month)
         ->get();
 
-$bookingDataByMonth = [];
-$processedBookingIds = [];
+    $bookingDataByDay = [];
+    $processedBookingIds = [];
 
-// Loop through each month from 1 to 12
-for ($month = 1; $month <= 12; $month++) {
-// Initialize month data for each hotel
-$bookingDataByMonth[] = [
-    'Năm' => $year,
-    'Tháng' => $month,
-    'booking_count' => 0,
-    'total_amount' => 0,
-    'category' => '', // Thêm trường danh mục
-];
-}
+    // Get the number of days in the specified month and year
+    $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
 
-foreach ($bookings as $booking) {
-$checkInMonth = date('n', strtotime($booking->check_in));
-$hotelId = $booking->id_hotel;
-$bookingId = $booking->id_booking;
+    // Loop through each day from 1 to the number of days in the month
+    for ($day = 1; $day <= $daysInMonth; $day++) {
+        // Initialize day data for each hotel
+        $bookingDataByDay[] = [
+            "Ngày" => $year . '-' . $month . '-' . $day,
+            "booking_count" => 0,
+            "total_amount" => 0,
+        ];
+    }
+    foreach ($bookings as $booking) {
+        $checkInDay = date('j', strtotime($booking->check_in));
+        $hotelId = $booking->id_hotel;
+        $bookingId = $booking->id_booking;
 
-// Check if the booking has already been processed
-if (in_array($bookingId, $processedBookingIds)) {
-    continue; // Skip this booking
-}
+        // Check if the booking has already been processed
+        if (in_array($bookingId, $processedBookingIds)) {
+            continue; // Skip this booking
+        }
 
-// Increment the booking count and add the total amount for the current month and hotel
-$bookingDataByMonth[$checkInMonth - 1]['booking_count']++;
-$bookingDataByMonth[$checkInMonth - 1]['total_amount'] += $booking->total_amount;
-$bookingDataByMonth[$checkInMonth - 1]['category'] = $booking->name; // Lấy tên danh mục từ bảng danh mục
+        // Increment the booking count and add the total amount for the current day and hotel
+        $bookingDataByDay[$checkInDay - 1]['booking_count']++;
+        $bookingDataByDay[$checkInDay - 1]['total_amount'] += $booking->total_amount;
 
-// Add the booking id to the processed bookings array
-$processedBookingIds[] = $bookingId;
-}
+        // Add the booking id to the processed bookings array
+        $processedBookingIds[] = $bookingId;
+    }
 
-// Return the booking data by month
-return response()->json([
-'booking_data_by_month' => $bookingDataByMonth,
-]);
+    // Return the booking data by day
+    return response()->json([
+        'booking_data_by_day' => $bookingDataByDay,
+    ]);
     }
 
     // thống kê booking đặt trong 10 năm trở lại đây của car he thong
