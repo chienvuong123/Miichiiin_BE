@@ -152,7 +152,7 @@ class BookingController extends Controller
 
         // GET SERVICES IN ROOM
         foreach ($list_room as $list_room_key => $room) {
-            $services = service::select('services.name', 'services.price')
+            $services = service::select('services.id', 'services.name', 'services.price')
                 ->join('booking_details', 'services.id', '=', 'booking_details.id_services')
                 ->leftJoin('bookings', 'bookings.id', '=', 'booking_details.id_booking')
                 ->where('booking_details.id_room', $room['id'])
