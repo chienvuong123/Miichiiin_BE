@@ -195,8 +195,10 @@ class BookingController extends Controller
             ->distinct()
             ->get();
 
+        $booking->save();
         $cart = $request->cart;
         if (!isset($cart)) {
+            set_fail($booking);
             return response()->json(
                 ['message' => 'Không tìm thấy tham số cart']
             )->setStatusCode(Response::HTTP_BAD_REQUEST);
@@ -204,7 +206,7 @@ class BookingController extends Controller
 
         $cart = collect($cart)->sortBy('id_cate')->values()->all();
 
-        $promotion = $request->promotion ?? null;
+//        $promotion = $request->promotion ?? null;
         $booking_d_record = [];
         $j = 0;
         $reset = 0;
@@ -223,6 +225,7 @@ class BookingController extends Controller
             }
 
             if ($reset == count($list_room)) {
+                set_fail($booking);
                 return response()->json([
                     'message' => "Out of room of category room"
                 ])->setStatusCode(Response::HTTP_BAD_REQUEST);
@@ -234,16 +237,13 @@ class BookingController extends Controller
                 }
             }
 
-            $booking->save();
-
             if (empty($cart[$i]['services'])) {
                 $booking_d_record[] = [
                     'id_booking' => $booking->id,
                     'id_room' => $list_room[$j]->id,
                     'id_cate' => $cart[$i]['id_cate'],
                     'id_services' => -1,
-                    'id_promotions' => $promotion,
-                    'created_at' => now()
+//                    'id_promotions' => $promotion,
                 ];
                 $reset++;
                 continue;
@@ -254,14 +254,15 @@ class BookingController extends Controller
                     'id_booking' => $booking->id,
                     'id_room' => $list_room[$j]->id,
                     'id_cate' => $cart[$i]['id_cate'],
-                    'id_services' => $service,
-                    'id_promotions' => $promotion,
+                    'id_services' => $service['id_service'],
+                    'quantity_service' => $service['quantity'],
+//                    'id_voucher' => $promotion,
                 ];
                 $reset++;
             }
         }
 
-        bookingDetail::insert($booking_d_record);
+        bookingDetail::query()->insert($booking_d_record);
 
         return response()->json($booking)
             ->setStatusCode(Response::HTTP_CREATED);
@@ -273,7 +274,7 @@ class BookingController extends Controller
     {
         $booking = booking::query()->find($id);
         $booking->fill($request->except(['_token', 'cart', 'slug']));
-        $promotion = $request->promotion ?? null;
+//        $promotion = $request->promotion ?? null;
         $flag = $request->flag;
         $cart = $request->cart;
 
@@ -281,17 +282,12 @@ class BookingController extends Controller
             $booking_d_record = [];
             $booking_detail = bookingDetail::query()
                 ->select('*')
-                ->where('id_booking', $id)
+                ->where('id_booking', '=', 1)
                 ->get();
-
             if (count($booking_detail) <= 0) {
                 return response()->json(
                     ['message' => "Không tìm thấy đơn đặt phòng"]
                 )->setStatusCode(Response::HTTP_BAD_REQUEST);
-            }
-
-            foreach ($booking_detail as $detail_record) {
-                $detail_record->delete();
             }
 
             for ($i = 0; $i < count($cart); $i++) {
@@ -307,8 +303,7 @@ class BookingController extends Controller
                         'id_room' => $cart[$i]['id_room'],
                         'id_cate' => $id_cate,
                         'id_services' => -1,
-                        'id_promotions' => $promotion,
-                        'created_at' => now()
+//                        'id_promotions' => $promotion
                     ];
                     continue;
                 }
@@ -318,10 +313,14 @@ class BookingController extends Controller
                         'id_booking' => $booking->id,
                         'id_room' => $cart[$i]['id_room'],
                         'id_cate' => $id_cate,
-                        'id_services' => $service,
-                        'id_promotions' => $promotion,
+                        'id_services' => $service['id_service'],
+//                        'id_promotions' => $promotion,
+                        'quantity_service' => $service['quantity'],
                     ];
                 }
+            }
+            foreach ($booking_detail as $detail_record) {
+                $detail_record->delete();
             }
             bookingDetail::insert($booking_d_record);
         }

@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('booking_details', function (Blueprint $table) {
             $table->id();
-            $table->integer('id_voucher');
+            $table->integer('id_voucher')->nullable()->default(null);
             $table->integer('id_room');
             $table->integer('id_cate');
             $table->integer('id_services');
-            $table->integer('quantity_service');
+            $table->integer('quantity_service')->nullable()->default(null);
             $table->integer('id_booking');
             $table->softDeletes(); // add
             $table->timestamps();
