@@ -56,7 +56,7 @@ class AdminController extends Controller
 
         $admin = Admin::where('email', $credentials['email'])->first();
         if ($admin == null) {
-            return \response()->json(['message' => 'wrong email']);
+            return \response()->json(['message' => 'wrong email'], Response::HTTP_BAD_REQUEST);
         }
 
         if (Hash::check($credentials['password'], $admin->password)) {
@@ -186,6 +186,6 @@ class AdminController extends Controller
         }
         return response()->json([
             'message' => 'Admin not found',
-        ], 404);
+        ], Response::HTTP_NOT_FOUND);
     }
 }
