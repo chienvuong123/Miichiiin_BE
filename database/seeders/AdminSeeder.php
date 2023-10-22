@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Admin;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class AdminSeeder extends Seeder
 {
@@ -19,7 +20,7 @@ class AdminSeeder extends Seeder
                 "name" => "admin",
                 "id_hotel" => null,
                 "email" => "superadmin@michimail.com",
-                "password" => "admin",
+                "password" => Hash::make("admin"),
                 "image" => "https://via.placeholder.com/640x480.png/00bb55?text=ad",
                 "description" => "Tài khoản của chủ chuỗi",
                 "phone" => "0396007890",
@@ -33,7 +34,7 @@ class AdminSeeder extends Seeder
                 "name" => "hotel owner",
                 "id_hotel" => 1,
                 "email" => "hotel@michimail.com",
-                "password" => "admin",
+                "password" => Hash::make("admin"),
                 "image" => "https://via.placeholder.com/640x480.png/00bb55?text=ad",
                 "description" => "Tài khoản của chủ khách sạn",
                 "phone" => "0396007899",

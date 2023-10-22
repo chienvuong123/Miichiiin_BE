@@ -24,3 +24,7 @@ function get_current_level () {
         ->value('level');
     return $level_role;
 }
+
+function set_fail ($model) {
+    $model->status = "FAIL";
+}
