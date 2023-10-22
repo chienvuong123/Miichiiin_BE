@@ -56,7 +56,7 @@ class AdminController extends Controller
 
         $admin = Admin::where('email', $credentials['email'])->first();
         if ($admin == null) {
-            return \response()->json(['message' => 'wrong email']);
+            return \response()->json(['message' => 'wrong email'], Response::HTTP_BAD_REQUEST);
         }
 
         if (Hash::check($credentials['password'], $admin->password)) {
@@ -109,7 +109,7 @@ class AdminController extends Controller
         // Create account
         $admin->fill($request->except(['password', 'role']));
         $admin->id_hotel = $auth_admin->id_hotel;
-        $uploadedImage = Cloudinary::upload($request->image);
+        $uploadedImage = Cloudinary::upload($request->image->getRealPath());
         $admin->image = $uploadedImage->getSecurePath();
         $admin->save();
         $admin->assignRole($role->name);
@@ -186,6 +186,6 @@ class AdminController extends Controller
         }
         return response()->json([
             'message' => 'Admin not found',
-        ], 404);
+        ], Response::HTTP_NOT_FOUND);
     }
 }
