@@ -171,8 +171,10 @@ class BookingController extends Controller
     public function store(BookingRequest $request)
     {
         // Create Booking
+        $auth_admin = Auth::guard('admins')->user();
         $booking = new booking();
         $booking->fill($request->except('_token', 'cart'));
+        $booking->id_hotel = $auth_admin->id_hotel;
 
         $slug = "MiChi-" . strtolower(Str::random(2)) . rand(100, 999);
         $booking->slug = $slug;
