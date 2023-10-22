@@ -13,8 +13,12 @@ class AssignRoleSeeder extends Seeder
      */
     public function run(): void
     {
-        $role = Role::select('*')->where('name','chain owner')->first();
-        $admin = Admin::query()->first();
-        $admin->assignRole($role);
+        $chain_owner_role = Role::query()->select('*')->where('name','chain owner')->first();
+        $chain_owner = Admin::query()->where('id', "=", 1)->first();
+        $chain_owner->assignRole($chain_owner_role);
+
+        $hotel_owner_role = Role::query()->select('*')->where('name','hotel owner')->first();
+        $hotel_owner = Admin::query()->where('id', "=", 2)->first();
+        $hotel_owner->assignRole($hotel_owner_role);
     }
 }
