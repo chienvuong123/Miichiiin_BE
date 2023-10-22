@@ -140,7 +140,7 @@ class BookingController extends Controller
         // GET ROOM IN BOOKING
         foreach ($booking_d_record as $value) {
             $room = room::query()
-                ->select('rooms.id', 'rooms.name', 'rooms.id_hotel', 'category_rooms.id as id_category', 'category_rooms.name as category_name')
+                ->select('rooms.id', 'rooms.name', 'category_rooms.id as id_category', 'category_rooms.name as category_name')
                 ->join('category_rooms', 'category_rooms.id', '=', 'rooms.id_cate')
                 ->where('rooms.id', $value->id_room)
                 ->first();
