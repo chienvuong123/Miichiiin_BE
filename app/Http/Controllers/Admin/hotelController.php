@@ -58,8 +58,8 @@ class hotelController extends Controller
             DB::raw('COUNT(DISTINCT services.id) as total_services'),
         )
             ->leftJoin('cities', 'hotels.id_city', '=', 'cities.id')
-            ->leftJoin('rooms', 'hotels.id', '=', 'rooms.id_hotel')
-            ->leftJoin('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id')
+            ->leftJoin('category_rooms', 'category_rooms.id_hotel', '=', 'hotels.id')
+            ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
             ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
             ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
             ->leftJoin('rates', 'rates.id_category', '=', 'category_rooms.id')
@@ -113,8 +113,8 @@ class hotelController extends Controller
             DB::raw('COUNT(DISTINCT services.id) as total_services'),
         )
             ->leftJoin('cities', 'hotels.id_city', '=', 'cities.id')
-            ->leftJoin('rooms', 'hotels.id', '=', 'rooms.id_hotel')
-            ->leftJoin('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id')
+            ->leftJoin('category_rooms', 'category_rooms.id_hotel', '=', 'hotels.id')
+            ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
             ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
             ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
             ->leftJoin('rates', 'rates.id_category', '=', 'category_rooms.id')
@@ -169,8 +169,8 @@ class hotelController extends Controller
             DB::raw('COUNT(DISTINCT services.id) as total_services'),
         )
             ->leftJoin('cities', 'hotels.id_city', '=', 'cities.id')
-            ->leftJoin('rooms', 'hotels.id', '=', 'rooms.id_hotel')
-            ->leftJoin('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id')
+            ->leftJoin('category_rooms', 'category_rooms.id_hotel', '=', 'hotels.id')
+            ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
             ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
             ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
             ->leftJoin('rates', 'rates.id_category', '=', 'category_rooms.id')

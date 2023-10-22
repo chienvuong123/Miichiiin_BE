@@ -31,7 +31,6 @@ class RoomRequest extends FormRequest
         $rules = [
             'id_cate' => 'required',
             'status' => 'required|integer',
-            'id_hotel' => 'required|integer',
             'name' => 'required',
         ];
         // lấy ra tên phương thức cần sử lý

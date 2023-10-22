@@ -14,7 +14,7 @@ class room extends Model
         "id",
         "name",
         "status",
-        "id_hotel",
+        "id_cate",
     ];
     public function scopeActive($query)
     {
