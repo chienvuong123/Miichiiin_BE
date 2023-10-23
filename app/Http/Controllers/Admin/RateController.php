@@ -115,7 +115,6 @@ class RateController extends Controller
             ->where('hotels.id', $id)
             ->where('rates.status',"=", 1)
             ->get();
-
         // sau khi mình gửi cho bên front thông tin comment
         // bên front sẽ lấy thời gian hiện tại comment
         //   trừ đi thời gian comment để lấy thời gian comment  ví dụ (8h trước)
