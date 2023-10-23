@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\districtController;
 use App\Http\Controllers\Admin\ComfortDetailController;
 use App\Http\Controllers\Admin\VoucherController;
+use App\Http\Controllers\BookingUserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -283,7 +284,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     });
 });
 // USER
-
+Route::post('create_booking', [BookingUserController::class, 'create_booking']);
 //Login
 Route::post('login', [UserController::class, 'login'])->name('login');
 Route::post('register', [UserController::class, 'register'])->name('register');

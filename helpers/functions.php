@@ -1,8 +1,14 @@
 <?php
 
+use App\Models\booking;
+use App\Models\bookingDetail;
+use App\Models\room;
+use App\Models\Service;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
+use Symfony\Component\HttpFoundation\Response;
 
 if (!function_exists('upload_file')) {
     function upload_file($folder, $file) {
@@ -27,4 +33,154 @@ function get_current_level () {
 
 function set_fail ($model) {
     $model->status = "FAIL";
+}
+
+function create_booking($id_hotel, $data, $id_user=null) {
+    // Create Booking
+    $booking = new booking();
+    $booking->fill($data);
+    $booking->id_hotel = $id_hotel;
+    $booking->id_user = $id_user;
+
+    $slug = "MiChi-" . strtolower(Str::random(2)) . rand(100, 999);
+    $booking->slug = $slug;
+
+    $check_in = $data['check_in'];
+    $check_out = $data['check_out'];
+
+    $list_booking = booking::query()
+        ->select('id')
+        ->where('check_out', '>=', $check_in)
+        ->orWhere('check_in', '<=', $check_out)
+        ->whereNotIn('status', ["FAIL", "COMPLETED"])
+        ->get();
+
+    $room_ignore = bookingDetail::query()
+        ->select('id_room')
+        ->whereIn('id_booking', $list_booking)
+        ->distinct()
+        ->get();
+
+    $booking->save();
+    $cart = $data['cart'];
+    if (!isset($cart)) {
+        set_fail($booking);
+        return response()->json(
+            ['message' => 'Không tìm thấy tham số cart']
+        )->setStatusCode(Response::HTTP_BAD_REQUEST);
+    }
+
+    $cart = collect($cart)->sortBy('id_cate')->values()->all();
+
+    $booking_d_record = [];
+    $j = 0;
+    $reset = 0;
+    for ($i = 0; $i < count($cart); $i++) {
+        $list_room = room::query()
+            ->select('id')
+            ->whereNotIn('id', $room_ignore)
+            ->where('id_cate', $cart[$i]['id_cate'])
+            ->orderBy('name')
+            ->get();
+
+        if ($i != 0) {
+            if ($cart[$i]['id_cate'] != $cart[$i - 1]['id_cate']) {
+                $reset = 0;
+            }
+        }
+
+        if ($reset == count($list_room)) {
+            set_fail($booking);
+            return response()->json([
+                'message' => "Out of room of category room"
+            ])->setStatusCode(Response::HTTP_BAD_REQUEST);
+        }
+
+        if (count($booking_d_record) >= 1) {
+            if ($booking_d_record[count($booking_d_record) - 1]['id_cate'] == $cart[$i]['id_cate']) {
+                $j++;
+            }
+        }
+
+        if (empty($cart[$i]['services'])) {
+            $booking_d_record[] = [
+                'id_booking' => $booking->id,
+                'id_room' => $list_room[$j]->id,
+                'id_cate' => $cart[$i]['id_cate'],
+                'id_services' => -1,
+//                    'id_promotions' => $promotion,
+            ];
+            $reset++;
+            continue;
+        }
+
+        foreach ($cart[$i]['services'] as $service) {
+            $booking_d_record[] = [
+                'id_booking' => $booking->id,
+                'id_room' => $list_room[$j]->id,
+                'id_cate' => $cart[$i]['id_cate'],
+                'id_services' => $service['id_service'],
+                'quantity_service' => $service['quantity'],
+            ];
+            $reset++;
+        }
+    }
+
+    bookingDetail::query()->insert($booking_d_record);
+    $response_booking = [
+        "id" => $booking->id,
+        "slug" => $booking->slug
+    ];
+
+    return response()->json([
+        "booking" => $response_booking,
+        "detail" => get_detail_booking($booking->id)
+    ], Response::HTTP_CREATED);
+}
+
+function get_detail_booking($id) {
+    $booking = booking::query()
+        ->select('*')
+        ->where('id', $id)
+        ->first();
+
+    $list_room = [];
+    $total_service = 0;
+    // GET ALL BOOKING OF user($id)
+    $booking_d_record = bookingDetail::query()
+        ->select('*')
+        ->where('id_booking', $id)
+        ->get();
+
+    // GET ROOM IN BOOKING
+    foreach ($booking_d_record as $value) {
+        $room = room::query()
+            ->select('rooms.id', 'rooms.name', 'category_rooms.id as id_category', 'category_rooms.name as category_name')
+            ->join('category_rooms', 'category_rooms.id', '=', 'rooms.id_cate')
+            ->where('rooms.id', $value->id_room)
+            ->first();
+        if (in_array($room, $list_room)) {
+            continue;
+        }
+        $list_room[] = $room;
+    }
+
+    // GET SERVICES IN ROOM
+    foreach ($list_room as $list_room_key => $room) {
+        $services = service::query()
+            ->select('services.id', 'services.name', 'services.price', 'booking_details.quantity_service')
+            ->join('booking_details', 'services.id', '=', 'booking_details.id_services')
+            ->leftJoin('bookings', 'bookings.id', '=', 'booking_details.id_booking')
+            ->where('booking_details.id_room', $room['id'])
+            ->where('bookings.id', $booking->id)
+            ->get();
+        $list_room[$list_room_key]['services'] = $services;
+        $total_service += count($services);
+    }
+
+    $booking['room'] = $list_room;
+    $booking['total_room'] = count($list_room);
+    $booking['total_service'] = $total_service;
+
+    return $booking;
 }
