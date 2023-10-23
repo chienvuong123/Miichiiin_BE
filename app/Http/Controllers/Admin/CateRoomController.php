@@ -1109,4 +1109,64 @@ return response()->json([
     'rating_comment_booking' => $roomAverages,
 ]);
 }
+ //  truyền tháng cả năm vào  thống kê booking  tháng trong năm của cả hệ thống
+ public function statictical_total_booking_monthl($month, $year)
+ {
+     $bookings = DB::table('bookings')
+
+         ->whereYear('bookings.check_in', $year)
+         ->whereMonth('bookings.check_in', $month)
+         ->get();
+     $hotelCounts = [];
+
+     foreach ($bookings as $booking) {
+         $bookingDetails = DB::table('booking_details')
+             ->where('id_booking', $booking->id)
+             ->get();
+
+         $processedRoomIds = [];
+
+         foreach ($bookingDetails as $bookingDetail) {
+             $roomId = $bookingDetail->id_room;
+
+             if (!in_array($roomId, $processedRoomIds)) {
+                 $room = DB::table('rooms')
+                     ->join('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id')
+                     ->join('hotels', 'category_rooms.id_hotel', '=', 'hotels.id')
+                     ->where('rooms.id', $roomId)
+                     ->select('hotels.name as hotel_name')
+                     ->first();
+
+                 $hotelName = $room->hotel_name;
+
+                 if (!isset($hotelCounts[$hotelName])) {
+                     $hotelCounts[$hotelName] = [
+                         'booking_count' => 0,
+                         'total_amount' => 0
+                     ];
+                 }
+
+                 $hotelCounts[$hotelName]['booking_count']++;
+                 $hotelCounts[$hotelName]['total_amount'] += $booking->total_amount;
+
+                 $processedRoomIds[] = $roomId;
+             }
+         }
+     }
+
+     $response = [];
+
+     foreach ($hotelCounts as $hotelName => $data) {
+         $response[] = [
+             'hotel_name' => $hotelName,
+             'booking_count' => $data['booking_count'],
+             'total_amount' => $data['total_amount']
+         ];
+     }
+
+     return response()->json($response);
+ }
+ // thống kê booking đặt trong 10 năm trở lại đây của car he thong
+
+
 }
