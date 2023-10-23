@@ -1114,10 +1114,10 @@ return response()->json([
  public function statictical_total_booking_monthl($month, $year)
  {
      $bookings = DB::table('bookings')
-
          ->whereYear('bookings.check_in', $year)
          ->whereMonth('bookings.check_in', $month)
          ->get();
+
      $hotelCounts = [];
 
      foreach ($bookings as $booking) {
@@ -1142,13 +1142,15 @@ return response()->json([
 
                  if (!isset($hotelCounts[$hotelName])) {
                      $hotelCounts[$hotelName] = [
-                         'booking_count' => 0,
-                         'total_amount' => 0
+                         'year' => $year,
+                         'month' => $month,
+                         'booking' => 0,
+                         'revenue' => 0
                      ];
                  }
 
-                 $hotelCounts[$hotelName]['booking_count']++;
-                 $hotelCounts[$hotelName]['total_amount'] += $booking->total_amount;
+                 $hotelCounts[$hotelName]['booking']++;
+                 $hotelCounts[$hotelName]['revenue'] += $booking->total_amount;
 
                  $processedRoomIds[] = $roomId;
              }
@@ -1159,9 +1161,11 @@ return response()->json([
 
      foreach ($hotelCounts as $hotelName => $data) {
          $response[] = [
-             'hotel_name' => $hotelName,
-             'booking_count' => $data['booking_count'],
-             'total_amount' => $data['total_amount']
+            'hotel' => $hotelName,
+             'year' => $data['year'],
+             'month' => $data['month'],
+             'booking' => $data['booking'],
+             'revenue' => $data['revenue']
          ];
      }
 
