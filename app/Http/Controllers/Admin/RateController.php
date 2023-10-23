@@ -101,6 +101,26 @@ class RateController extends Controller
         //   trừ đi thời gian comment để lấy thời gian comment  ví dụ (8h trước)
         return response()->json($comments);
     }
+    public function comment_hotel($id)
+    {
+        $comments = Rate::select(
+            'rates.*',
+            'category_rooms.name as category_name',
+            'users.name as user_name',
+            'users.email as user_email'
+        )
+            ->join('category_rooms', 'rates.id_category', '=', 'category_rooms.id')
+            ->join('hotels', 'hotels.id', '=', 'category_rooms.id_hotel')
+            ->join('users', 'users.id', '=', 'rates.id_user')
+            ->where('hotels.id', $id)
+            ->where('rates.status',"=", 1)
+            ->get();
+
+        // sau khi mình gửi cho bên front thông tin comment
+        // bên front sẽ lấy thời gian hiện tại comment
+        //   trừ đi thời gian comment để lấy thời gian comment  ví dụ (8h trước)
+        return response()->json($comments);
+    }
 
     public function updateState_rate(RateRequest $request, $id)
     {

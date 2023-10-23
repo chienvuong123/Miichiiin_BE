@@ -312,6 +312,7 @@ Route::get('/services', [ServiceController::class, 'index']);
 Route::get('/services/hotels={id}', [ServiceController::class, 'list_services_hotel']);
 // hiển thị comment theo id_cate
 Route::get('/comment/id_cate={id}', [RateController::class, 'comment_cate']);
+Route::get('/comment/id_hotel={id}', [RateController::class, 'comment_hotel']);
 // hiển thị cate_room theo id
 Route::get('/cateRoom/{id}', [CateRoomController::class, 'detail_list_cate']);
 // hiển thị cate_room theo hotel
