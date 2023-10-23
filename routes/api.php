@@ -142,7 +142,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
         Route::get('rates', [RateController::class, 'index']);
         Route::prefix('rate')->group(function () {
             Route::get('/{id}', [RateController::class, 'show']);
-            Route::middleware('permission:add rate,admins')->post('/', [RateController::class, 'store']);
             Route::middleware('permission:update rate,admins')->put('/{id}', [RateController::class, 'update']);
             Route::middleware('permission:delete rate,admins')->delete('/{id}', [RateController::class, 'destroy']);
 
@@ -342,3 +341,4 @@ Route::get('/voucher', [VoucherController::class, 'list_vourcher']);
 
 Route::resource('permissions', PermissionController::class)->except(['create', 'edit']);
 
+Route::post('/rate', [RateController::class, 'store']);
