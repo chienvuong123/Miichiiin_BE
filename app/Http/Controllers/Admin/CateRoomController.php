@@ -732,7 +732,7 @@ class CateRoomController extends Controller
         // Initialize month data for each hotel
         $bookingDataByMonth[] = [
             'Year' => $year,
-            'Month' => "Month" . $month,
+            'Month' => "Tháng " . $month,
             'bookings' => 0,
             'revenue' => 0,
             'cancelRoom' => "", // Thêm trường danh mục
