@@ -37,7 +37,6 @@ class BookingRequest extends FormRequest
             'email' => 'required|email|unique:users,email',
              'name' => 'required',
             'id_user' => 'required|integer',
-            'message' => 'required',
             'phone' => 'required | regex:/^([0-9\s\-\+\(\)]*)$/',
         ];
         // lấy ra tên phương thức cần sử lý
@@ -54,7 +53,6 @@ class BookingRequest extends FormRequest
                             'nationality' => 'required',
                             'email' => 'required|email|unique:users,email',
                              'name' => 'required',
-                            'message' => 'required',
                             'phone' => 'required | regex:/^([0-9\s\-\+\(\)]*)$/',
                         ];
                 }
