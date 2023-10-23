@@ -282,7 +282,7 @@ class BookingController extends Controller
             $booking_d_record = [];
             $booking_detail = bookingDetail::query()
                 ->select('*')
-                ->where('id_booking', '=', 1)
+                ->where('id_booking', '=', $booking->id)
                 ->get();
             if (count($booking_detail) <= 0) {
                 return response()->json(
