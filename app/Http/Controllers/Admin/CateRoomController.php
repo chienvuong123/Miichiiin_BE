@@ -731,7 +731,7 @@ class CateRoomController extends Controller
     for ($month = 1; $month <= 12; $month++) {
         // Initialize month data for each hotel
         $bookingDataByMonth[] = [
-            'Year' => $year,
+            "Year" => $year,
             'Month' => "Tháng " . $month,
             'bookings' => 0,
             'revenue' => 0,
@@ -751,8 +751,8 @@ class CateRoomController extends Controller
         }
 
         // Increment the booking count and add the total amount for the current month and hotel
-        $bookingDataByMonth[$checkInMonth - 1]['booking_count']++;
-        $bookingDataByMonth[$checkInMonth - 1]['total_amount'] += $booking->total_amount;
+        $bookingDataByMonth[$checkInMonth - 1]['bookings']++;
+        $bookingDataByMonth[$checkInMonth - 1]['revenue'] += $booking->total_amount;
         $bookingDataByMonth[$checkInMonth - 1]['category'] = $booking->name; // Lấy tên danh mục từ bảng danh mục
 
         // Add the booking id to the processed bookings array
