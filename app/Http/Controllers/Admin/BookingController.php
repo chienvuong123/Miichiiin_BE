@@ -163,6 +163,9 @@ class BookingController extends Controller
             }
 
             for ($i = 0; $i < count($cart); $i++) {
+                if ($cart[$i]['id_room'] == null) {
+                    return response()->json("Bạn chưa chọn phòng", Response::HTTP_BAD_REQUEST);
+                }
                 $id_cate = room::query()
                     ->select('id_cate')
                     ->where('id', $cart[$i]['id_room'])

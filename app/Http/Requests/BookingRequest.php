@@ -35,7 +35,7 @@ class BookingRequest extends FormRequest
             'cccd' => 'required',
             'nationality' => 'required',
             'email' => 'required|email|unique:users,email',
-             'name' => 'required',
+            'name' => 'required',
             'id_user' => 'required|integer',
             'phone' => 'required | regex:/^([0-9\s\-\+\(\)]*)$/',
         ];
@@ -52,7 +52,7 @@ class BookingRequest extends FormRequest
                             'cccd' => 'required',
                             'nationality' => 'required',
                             'email' => 'required|email|unique:users,email',
-                             'name' => 'required',
+                            'name' => 'required',
                             'phone' => 'required | regex:/^([0-9\s\-\+\(\)]*)$/',
                         ];
                 }
