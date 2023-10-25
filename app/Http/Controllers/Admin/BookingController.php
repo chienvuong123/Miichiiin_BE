@@ -123,7 +123,8 @@ class BookingController extends Controller
     }
     public function show($id)
     {
-        return response()->json(get_detail_booking($id), Response::HTTP_OK);
+        $booking_detail = get_detail_booking($id);
+        return response()->json($booking_detail["message"], $booking_detail["status"]);
     }
     public function store(BookingRequest $request)
     {
@@ -131,7 +132,7 @@ class BookingController extends Controller
         $auth_admin = Auth::guard('admins')->user();
         $data = $request->except('_token');
         $reponse_data = create_booking($auth_admin->id_hotel, $data);
-        return response()->json($reponse_data, Response::HTTP_CREATED);
+        return response()->json($reponse_data['message'], $reponse_data['status']);
     }
     public function create()
     {
@@ -139,6 +140,11 @@ class BookingController extends Controller
     protected function update(Request $request, $id)
     {
         $booking = booking::query()->find($id);
+        if ($booking == null) {
+            return response()->json(
+                "Không tìm thấy đơn đặt hàng"
+            , Response::HTTP_BAD_REQUEST);
+        }
         $booking->fill($request->except(['_token', 'cart', 'slug']));
 //        $promotion = $request->promotion ?? null;
         $flag = $request->flag;
@@ -188,7 +194,7 @@ class BookingController extends Controller
             foreach ($booking_detail as $detail_record) {
                 $detail_record->delete();
             }
-            bookingDetail::insert($booking_d_record);
+            bookingDetail::query()->insert($booking_d_record);
         }
 
         $booking->save();

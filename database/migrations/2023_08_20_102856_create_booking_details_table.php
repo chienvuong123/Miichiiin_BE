@@ -19,7 +19,6 @@ return new class extends Migration
             $table->integer('id_services');
             $table->integer('quantity_service')->nullable()->default(null);
             $table->integer('id_booking');
-            $table->softDeletes(); // add
             $table->timestamps();
         });
     }
