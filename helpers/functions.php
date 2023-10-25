@@ -2,6 +2,7 @@
 
 use App\Models\booking;
 use App\Models\bookingDetail;
+use App\Models\categoryRoom;
 use App\Models\room;
 use App\Models\Service;
 use Illuminate\Support\Facades\Auth;
@@ -32,7 +33,11 @@ function get_current_level () {
 }
 
 function set_fail ($model) {
-    $model->status = "FAIL";
+    $model->status = 1;
+}
+
+function set_success_booking ($model) {
+    $model->status = 3;
 }
 
 function create_booking($id_hotel, $data, $id_user=null) {
@@ -65,9 +70,10 @@ function create_booking($id_hotel, $data, $id_user=null) {
     $cart = $data['cart'];
     if (!isset($cart)) {
         set_fail($booking);
-        return response()->json(
-            ['message' => 'Không tìm thấy tham số cart']
-        )->setStatusCode(Response::HTTP_BAD_REQUEST);
+        return [
+            "message" => 'Không tìm thấy tham số cart',
+            "status" => Response::HTTP_BAD_REQUEST
+        ];
     }
 
     $cart = collect($cart)->sortBy('id_cate')->values()->all();
@@ -90,10 +96,12 @@ function create_booking($id_hotel, $data, $id_user=null) {
         }
 
         if ($reset == count($list_room)) {
+            $cate = categoryRoom::query()->find($cart[$i]['id_cate']);
             set_fail($booking);
-            return response()->json([
-                'message' => "Out of room of category room"
-            ])->setStatusCode(Response::HTTP_BAD_REQUEST);
+            return [
+                "message" => 'Đã hết phòng trong loại phòng ' . $cate->name,
+                "status" => Response::HTTP_BAD_REQUEST
+            ];
         }
 
         if (count($booking_d_record) >= 1) {
@@ -127,15 +135,12 @@ function create_booking($id_hotel, $data, $id_user=null) {
     }
 
     bookingDetail::query()->insert($booking_d_record);
-    $response_booking = [
-        "id" => $booking->id,
-        "slug" => $booking->slug
-    ];
 
-    return response()->json([
-        "booking" => $response_booking,
-        "detail" => get_detail_booking($booking->id)
-    ], Response::HTTP_CREATED);
+    set_success_booking($booking);
+    return [
+        "message" => $booking,
+        "status" => Response::HTTP_OK
+    ];
 }
 
 function get_detail_booking($id) {
@@ -143,6 +148,13 @@ function get_detail_booking($id) {
         ->select('*')
         ->where('id', $id)
         ->first();
+
+    if ($booking == null) {
+        return [
+            "message" => "Không tìm thấy đơn đặt hàng",
+            "status" => Response::HTTP_BAD_REQUEST
+        ];
+    }
 
     $list_room = [];
     $total_service = 0;
@@ -174,6 +186,7 @@ function get_detail_booking($id) {
             ->where('booking_details.id_room', $room['id'])
             ->where('bookings.id', $booking->id)
             ->get();
+
         $list_room[$list_room_key]['services'] = $services;
         $total_service += count($services);
     }
@@ -182,5 +195,8 @@ function get_detail_booking($id) {
     $booking['total_room'] = count($list_room);
     $booking['total_service'] = $total_service;
 
-    return $booking;
+    return [
+        "message" => $booking,
+        "status" => Response::HTTP_OK
+    ];
 }
