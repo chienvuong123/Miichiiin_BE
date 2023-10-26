@@ -30,7 +30,7 @@ class ServiceRequest extends FormRequest
             'name' => 'required',
             'quantity' => 'required',
             'price' => 'required',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp',
             'description' => 'required',
         ];
         // lấy ra tên phương thức cần sử lý

@@ -216,7 +216,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
             Route::middleware('permission:add user,admins')->post('/', [UserController::class, 'store']);
             Route::middleware('permission:update user,admins')->put('/{id}', [UserController::class, 'update']);
             Route::middleware('permission:delete user,admins')->delete('/{id}', [UserController::class, 'destroy']);
-
             Route::middleware('permission:update user,admins')->put('{id}/status', [UserController::class, 'updateState_user']);
             Route::get('/statistical_user_month', [UserController::class, 'statistical_user_month']);
             Route::get('/statistical_user_year', [UserController::class, 'statistical_user_year']);
@@ -340,3 +339,4 @@ Route::get('/voucher', [VoucherController::class, 'list_vourcher']);
 Route::resource('permissions', PermissionController::class)->except(['create', 'edit']);
 
 Route::post('/rate', [RateController::class, 'store']);
+Route::get('/services/id_hotel={id}', [ServiceController::class, 'list_services_hotel']);

@@ -32,8 +32,6 @@ class CateRoomController extends Controller
         }
         return response()->json($categoryRoom);
     }
-
-
     public function detail_list_cate($id)
     {
         $status = 1;
@@ -273,9 +271,20 @@ class CateRoomController extends Controller
     {
         // nếu như tồn tại file sẽ upload file
         $params = $request->except('_token');
+        dd($request->image);
         $uploadedImage = Cloudinary::upload($params['image']->getRealPath());
         $params['image'] = $uploadedImage->getSecurePath();
         $categoryRoom = categoryRoom::create($params);
+
+        $cate = categoryRoom::find($categoryRoom->id);
+        $imageRecord = new Image();
+        $imageRecord->image = $uploadedImage->getSecurePath();
+        $imageRecord->save();
+        // Lưu thông tin hình ảnh vào bảng `image_details`
+        $imageDetail = new imageDetail();
+        $imageDetail->id_cate = $cate->id;
+        $imageDetail->id_image = $imageRecord->id;
+        $imageDetail->save();
         if ($categoryRoom->id) {
             return response()->json([
                 'message' => $categoryRoom,
@@ -286,12 +295,11 @@ class CateRoomController extends Controller
     public function store_image_cate(CategoryRoomRequest $request, $id)
     {
         $params = $request->except('_token');
-        $cate = hotel::find($id);
+        $cate = categoryRoom::find($id);
         if ($cate) {
             foreach ($request->file('images') as $image) {
                 // Tải lên ảnh mới
                 $uploadedImage = Cloudinary::upload($image->getRealPath());
-
                 // Tạo bản ghi mới trong bảng `images`
                 $imageRecord = new Image();
                 $imageRecord->image = $uploadedImage->getSecurePath();
@@ -322,6 +330,14 @@ class CateRoomController extends Controller
                 Cloudinary::destroy($oldImg);
             }
             $uploadedImage = Cloudinary::upload($request->image->getRealPath());
+            $imageRecord = new Image();
+            $imageRecord->image = $uploadedImage->getSecurePath();
+            $imageRecord->save();
+            // Lưu thông tin hình ảnh vào bảng `image_details`
+            $imageDetail = new imageDetail();
+            $imageDetail->id_cate = $categoryRoom->id;
+            $imageDetail->id_image = $imageRecord->id;
+            $imageDetail->save();
             $params['image'] = $uploadedImage->getSecurePath();
         }
         if ($categoryRoom) {
