@@ -17,7 +17,8 @@ return new class extends Migration
             $table->integer('status')->default(1);
             $table->integer('id_cate')->nullable();
             $table->softDeletes(); // add
-            $table->timestamps();
+            $table->timestamp('updated_at')->default(now());
+            $table->timestamp('created_at')->default(now());
         });
     }
 

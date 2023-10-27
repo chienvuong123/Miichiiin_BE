@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->softDeletes(); // add
             $table->string('alt')->nullable();
-            $table->timestamps();
+            $table->timestamp('updated_at')->default(now());
+            $table->timestamp('created_at')->default(now());
         });
     }
 

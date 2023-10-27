@@ -22,11 +22,12 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
             $table->integer('status')->default(1);
-            $table->integer('gender')->nullable();
+            $table->integer('gender')->default(0);
             $table->date('date')->nullable();
             $table->rememberToken();
             $table->softDeletes(); // add
-            $table->timestamps();
+            $table->timestamp('updated_at')->default(now());
+            $table->timestamp('created_at')->default(now());
         });
     }
 
