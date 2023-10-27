@@ -23,5 +23,17 @@ class AssignPermissionSeeder extends Seeder
             ->whereNotIn('id', [2,3,4,9,11,13])
             ->get();
         $role->syncPermissions($permissions);
+
+        $staff_permission = Role::query()
+            ->select('*')
+            ->where('level','>', 1)
+            ->get()
+            ->pluck('id');
+        $staff_role = Role::query()->select('*')->where('name','staff')->first();
+        $permissions = Permission::query()
+            ->select('*')
+            ->whereNotIn('id', $staff_permission)
+            ->get();
+        $staff_role->syncPermissions($permissions);
     }
 }

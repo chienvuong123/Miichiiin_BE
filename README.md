@@ -1,16 +1,52 @@
-status_booking = [
-    0 => " Chờ Thanh Toán",
-    1 => "Hủy Thanh Toán",
-    2 => "Đã Check IN",
-    3 => "ĐÃ Thanh Toán",
-    4 => "Hoàn Thành",
+# Khách sạn Michi
+
+## Deloy
+````
+- composer du
+- php artisan key:gen
+- php artisan passport:key
+- php artisan migrate
+- php artisan reset-db
+- php artisan ser
+````
+
+## Thông tin về các trạng thái
+````php
+general => [
+    0 => "Chờ",
+    1 => "Ẩn | Dừng | Hủy" 
 ]
-status_comment = [
-    0 => "Chờ xác nhận"
-    1 => "xác nhận"
-    2 => "Ẩn"
+
+hotel => [
+    2 => "Hoạt động",
 ]
-cate = [
-    0 => "Ẩn"
-    1 => "Hoạt Động"
+
+booking => [
+    2 => "Đã Check in",
+    3 => "Đã thanh toán",
+    4 => "Hoàn thành",
 ]
+
+comment => [
+    2 => "Xác nhận"
+]
+
+category => [
+    2 => "Hoạt Động"
+]
+
+room => [
+    2 => "Hoạt động"
+]
+
+admin => [
+    2 => "Hoạt động"
+]
+````
+
+## Giới tính
+````php
+0 => Nam
+1 => Nữ
+2 => Khác
+````

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 
 use App\Http\Requests\RoleRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,9 +18,11 @@ class RoleControler extends Controller
      */
     public function index()
     {
+        $admin = Auth::guard('admins')->user();
         $level_role = get_current_level();
         $roles = Role::query()
             ->where('level', '<', $level_role)
+            ->whereIn('id_hotel', [null, $admin->id_hotel])
             ->OrderByDesc('created_at')
             ->get(['id', 'name', 'level', 'updated_at', 'created_at']);
         return response()->json($roles, Response::HTTP_OK);
@@ -53,8 +56,10 @@ class RoleControler extends Controller
      */
     public function store(Request $request)
     {
+        $admin = Auth::guard('admins')->user();
         $role = new Role();
         $role->fill($request->except('_token', 'permissons'));
+        $role->id_hotel = $admin->id_hotel;
         $level_role = get_current_level();
         $role->level = $level_role - 1;
         $role->save();
@@ -70,11 +75,17 @@ class RoleControler extends Controller
      */
     public function show(string $id)
     {
+        $admin = Auth::guard('admins')->user();
+        $level = get_current_level();
         // tạo đối tượng của permission
         $permissons_class = new PermissionController();
 
         // tìm role theo $id
-        $role = Role::query()->find($id);
+        $role = Role::query()
+            ->where('id', $id)
+            ->where('id_hotel', $admin->id_hotel)
+            ->where('level', $level)
+            ->first();
         // Các permission mà role đã có
         $had_permissions = $role->permissions->pluck('id', 'name');
 

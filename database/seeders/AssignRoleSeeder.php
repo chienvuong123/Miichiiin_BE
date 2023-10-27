@@ -18,7 +18,15 @@ class AssignRoleSeeder extends Seeder
         $chain_owner->assignRole($chain_owner_role);
 
         $hotel_owner_role = Role::query()->select('*')->where('name','hotel owner')->first();
-        $hotel_owner = Admin::query()->where('id', "=", 2)->first();
-        $hotel_owner->assignRole($hotel_owner_role);
+        $hotel_owners = Admin::query()->whereIn('id', [2,3,4,5,6])->get();
+        foreach ($hotel_owners as $hotel_owner) {
+            $hotel_owner->assignRole($hotel_owner_role);
+        }
+
+        $hotel_staff_role = Role::query()->select('*')->where('name','staff')->first();
+        $hotel_staffs = Admin::query()->whereIn('id', [7,8,9,10,11])->get();
+        foreach ($hotel_staffs as $hotel_staff) {
+            $hotel_staff->assignRole($hotel_staff_role);
+        }
     }
 }

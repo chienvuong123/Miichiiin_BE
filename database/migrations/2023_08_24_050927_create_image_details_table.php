@@ -18,7 +18,8 @@ return new class extends Migration
             $table->integer('id_cate')->nullable();
             $table->softDeletes(); // add
             $table->integer('id_image')->nullable();
-            $table->timestamps();
+            $table->timestamp('updated_at')->default(now());
+            $table->timestamp('created_at')->default(now());
         });
     }
 

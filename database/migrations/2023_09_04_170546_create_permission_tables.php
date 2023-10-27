@@ -45,6 +45,7 @@ class CreatePermissionTables extends Migration
             $table->string('name');       // For MySQL 8.0 use string('name', 125);
             $table->string('guard_name')->default('web'); // For MySQL 8.0 use string('guard_name', 125);
             $table->integer('level')->default(1);
+            $table->integer('id_hotel')->nullable();
             $table->softDeletes();
             $table->timestamps();
             if ($teams || config('permission.testing')) {
