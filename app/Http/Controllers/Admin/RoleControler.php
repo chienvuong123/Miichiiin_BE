@@ -22,7 +22,10 @@ class RoleControler extends Controller
         $level_role = get_current_level();
         $roles = Role::query()
             ->where('level', '<', $level_role)
-            ->whereIn('id_hotel', [null, $admin->id_hotel])
+            ->where(function ($query) use ($admin) {
+                $query->where('id_hotel', null)
+                    ->orWhere('id_hotel', $admin->id_hotel);
+            })
             ->OrderByDesc('created_at')
             ->get(['id', 'name', 'level', 'updated_at', 'created_at']);
         return response()->json($roles, Response::HTTP_OK);
@@ -62,6 +65,11 @@ class RoleControler extends Controller
         $role->id_hotel = $admin->id_hotel;
         $level_role = get_current_level();
         $role->level = $level_role - 1;
+        if (!isset($request->permissions) || is_array($request->permissions)) {
+            return response()->json([
+                "error_message" => "Wrong permissions"
+            ], Response::HTTP_BAD_REQUEST);
+        }
         $role->save();
 
         $request['id_role'] = $role->id;
