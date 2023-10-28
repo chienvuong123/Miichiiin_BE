@@ -1008,13 +1008,12 @@ class CateRoomController extends Controller
             'roomCounts' => $roomCounts,
         ]);
     }
-    public function statistical_services($month,$year)
+    public function statistical_services($month,$year,$id_hotel)
     {
         $bookings = DB::table('bookings')
         ->whereYear('check_in', $year)
         ->whereMonth('check_in', $month)
-        ->orWhereYear('check_out', $year)
-        ->orWhereMonth('check_out', $month)
+        ->where('id_hotel', $id_hotel)
         ->get();
         $total = 0;
         $roomCounts = [];
@@ -1134,6 +1133,120 @@ class CateRoomController extends Controller
             'rating_comment_booking' => $roomAverages,
         ]);
     }
+    public function statistical_rates_inchain($month, $year,$categoryId)
+    {
+      // Tạo một mảng tạm để lưu kết quả với tất cả các loại phòng của khách sạn
+      $tempArray = [];
+
+      // Lấy danh sách tất cả các khách sạn
+      $hotels = DB::table('hotels')->select('id', 'name')->get();
+
+      foreach ($hotels as $hotel) {
+          $hotelId = $hotel->id;
+          $hotelName = $hotel->name;
+
+          // Lấy danh sách tất cả các loại phòng của khách sạn
+          $categoriesQuery = DB::table('category_rooms')
+              ->select('id', 'name')
+              ->where('id_hotel', $hotelId); // Lọc theo id_hotel
+
+          if ($categoryId !== null) {
+              $categoriesQuery->where('id', $categoryId);
+          }
+
+          $categories = $categoriesQuery->get();
+
+          // Đưa tất cả các loại phòng vào mảng tạm với giá trị ban đầu
+          foreach ($categories as $category) {
+              $categoryId = $category->id;
+
+              if (!isset($tempArray[$hotelId])) {
+                  $tempArray[$hotelId] = [
+                      'hotelName' => $hotelName,
+                      'roomAverages' => []
+                  ];
+              }
+
+              $tempArray[$hotelId]['roomAverages'][$categoryId] = [
+                  'roomType' => $category->name,
+                  'total_rating' => 0,
+                  'comment_count' => 0,
+                  'rating' => 0,
+                  'bookingCount' => 0
+              ];
+          }
+
+          // Lấy thông tin đánh giá của từng loại phòng trong tháng và năm được chỉ định
+          $ratesQuery = DB::table('rates')
+              ->join('category_rooms', 'category_rooms.id', '=', 'rates.id_category')
+              ->select('category_rooms.id', 'rates.rating', DB::raw('COUNT(rates.id) AS comment_count'))
+              ->where('category_rooms.id_hotel', $hotelId) // Lọc theo id_hotel
+              ->whereMonth('rates.created_at', $month) // Lọc theo tháng
+              ->whereYear('rates.created_at', $year) // Lọc theo năm
+              ->groupBy('category_rooms.id', 'rates.rating');
+
+          if ($categoryId !== null) {
+              $ratesQuery->where('category_rooms.id', $categoryId);
+          }
+
+          $rates = $ratesQuery->get();
+
+          // Lấy thông tin số lượng đặt phòng của từng loại phòng trong tháng và năm được chỉ định
+          $bookingsQuery = DB::table('category_rooms')
+              ->join('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
+              ->join('booking_details', 'booking_details.id_room', '=', 'rooms.id')
+              ->select('category_rooms.id', DB::raw('COUNT(booking_details.id) AS booking_count'))
+              ->where('category_rooms.id_hotel', $hotelId) // Lọc theo id_hotel
+              ->whereMonth('booking_details.created_at', $month) // Lọc theo tháng
+              ->whereYear('booking_details.created_at', $year) // Lọc theo năm
+              ->groupBy('category_rooms.id');
+
+          if ($categoryId !== null) {
+              $bookingsQuery->where('category_rooms.id', $categoryId);
+          }
+
+          $bookings = $bookingsQuery->get();
+
+          // Cập nhật thông tin đánh giá trong mảng tạm
+          foreach ($rates as $rate) {
+              $categoryId = $rate->id;
+              $rating = $rate->rating;
+              $commentCount = $rate->comment_count;
+
+              if (isset($tempArray[$hotelId]['roomAverages'][$categoryId])) {
+                  $tempArray[$hotelId]['roomAverages'][$categoryId]['total_rating'] += $rating;
+                  $tempArray[$hotelId]['roomAverages'][$categoryId]['comment_count'] += $commentCount;
+                  $tempArray[$hotelId]['roomAverages'][$categoryId]['rating'] = $tempArray[$hotelId]['roomAverages'][$categoryId]['total_rating'] / $tempArray[$hotelId]['roomAverages'][$categoryId]['comment_count'];
+              }
+          }
+
+          // Cập nhật thông tin số lượng đặt phòng trong mảng tạm
+
+          // Cập nhật thông tin số lượng đặt phòng trong mảng tạm
+          foreach ($bookings as $booking) {
+              $categoryId = $booking->id;
+              $bookingCount = $booking->booking_count;
+
+              if (isset($tempArray[$hotelId]['roomAverages'][$categoryId])) {
+                  $tempArray[$hotelId]['roomAverages'][$categoryId]['bookingCount'] = $bookingCount;
+              }
+          }
+      }
+
+      // Chuyển đổi mảng tạm thành mảng kết quả cuối cùng
+      $result = [];
+      foreach ($tempArray as $hotelId => $hotelData) {
+          $result[] = [
+              'hotelName' => $hotelData['hotelName'],
+              'roomAverages' => array_values($hotelData['roomAverages'])
+          ];
+      }
+
+      return response()->json([
+          'rating_comment_booking' => $result,
+      ]);
+    }
+
     //  truyền tháng cả năm vào  thống kê booking  tháng trong năm của cả hệ thống
     public function statictical_total_booking_monthl($month, $year)
     {

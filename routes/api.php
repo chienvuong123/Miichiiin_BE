@@ -185,6 +185,8 @@ Route::middleware('admin')->prefix('admin')->group(function () {
 
 
     Route::get('/statistical_rates_in_hotel/{id_hotel}/{month}/{year}', [CateRoomController::class, 'statistical_rates']);
+    Route::get('/statistical_rates/{month}/{year}/{category}', [CateRoomController::class, 'statistical_rates_inchain']);
+
 
 
     // test
@@ -203,7 +205,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     // thống kê loại phòng theo khoảng
     Route::get('statistical_cateRoom_checkin/{check_in}/{check_out}', [CateRoomController::class, 'statistical_cateRoom_checkin']);
 
-    Route::get('statistical_services/{month}/{year}', [CateRoomController::class, 'statistical_services']);
+    Route::get('statistical_services/{month}/{year}/{id_hotel}', [CateRoomController::class, 'statistical_services']);
 
 
     // PHÂN QUYỀN SAU
