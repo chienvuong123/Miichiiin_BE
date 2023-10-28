@@ -1015,47 +1015,44 @@ class CateRoomController extends Controller
         ->whereMonth('check_in', $month)
         ->where('id_hotel', $id_hotel)
         ->get();
-        $total = 0;
-        $roomCounts = [];
+    $total = 0;
+    $roomCounts = [];
 
-        foreach ($bookings as $booking) {
-            $uniqueRoomIds = [];
-            $roomCountForBooking = 0;
+    foreach ($bookings as $booking) {
+        $uniqueRoomIds = [];
+        $roomCountForBooking = 0;
 
-            $bookingId = $booking->id;
-            $details = DB::table('booking_details')
-                ->where('id_booking', $bookingId)
-                ->get();
+        $bookingId = $booking->id;
+        $details = DB::table('booking_details')
+            ->where('id_booking', $bookingId)
+            ->get();
 
-            foreach ($details as $detail) {
-                $id_services = $detail->id_services;
-                $services = DB::table('services')
-                    ->where('services.id', $id_services)
-                    ->value('services.name');
+        foreach ($details as $detail) {
+            $id_services = $detail->id_services;
+            $services = DB::table('services')
+                ->where('services.id', $id_services)
+                ->value('services.name');
 
-                if (!isset($roomCounts[$services])) {
-                    $roomCounts[$services] = [
-                        'serviceName' => $services,
-                        'count' => 0,
-                    ];
-                }
+            if (!isset($roomCounts[$services])) {
+                $roomCounts[$services] = [
+                    'serviceName' => $services,
+                    'count' => 0,
+                ];
+            }
 
-                if (!in_array($id_services, $uniqueRoomIds)) {
-                    $roomCounts[$services]['count']++;
-                    $uniqueRoomIds[] = $id_services;
-                    $roomCountForBooking++;
-                    $total++;
-                }
+            if (!in_array($id_services, $uniqueRoomIds)) {
+                $roomCounts[$services]['count']++;
+                $uniqueRoomIds[] = $id_services;
+                $roomCountForBooking++;
+                $total++;
             }
         }
+    }
 
-        // Chuyển mảng kết quả về dạng danh sách các đối tượng
-        $roomCounts = array_values($roomCounts);
+    // Chuyển mảng kết quả về dạng danh sách các đối tượng
+    $roomCounts = array_values($roomCounts);
 
-        return response()->json([
-            'total' => $total,
-            'room_counts' => $roomCounts,
-        ]);
+    return response()->json($roomCounts);
     }
     public function statistical_rates($idHotel, $month, $year)
     {
