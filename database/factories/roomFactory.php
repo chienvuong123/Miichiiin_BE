@@ -19,7 +19,6 @@ class roomFactory extends Factory
         return [
             //
             "name" => fake()->name(),
-            "id_hotel" => fake()->numberBetween(1,10),
             "id_cate" => fake()->numberBetween(1,10),
             "status" => fake()->numberBetween(0,1),
 

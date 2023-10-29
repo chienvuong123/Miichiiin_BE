@@ -79,7 +79,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
             Route::middleware('permission:add hotel,admins')->post('/', [hotelController::class, 'store']);
             Route::middleware('permission:update hotel,admins')->put('/{id}', [hotelController::class, 'update']);
             Route::middleware('permission:delete hotel,admins')->delete('/{id}', [hotelController::class, 'destroy']);
-
             Route::middleware('permission:update hotel,admins')->put('{id}/status', [hotelController::class, 'updateState_hotel']);
         });
     });
@@ -92,7 +91,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
             Route::middleware('permission:add room,admins')->post('/', [roomsController::class, 'store']);
             Route::middleware('permission:update room,admins')->put('/{id}', [roomsController::class, 'update']);
             Route::middleware('permission:delete room,admins')->delete('/{id}', [roomsController::class, 'destroy']);
-
             Route::get('/cate_room/{id}', [roomsController::class, 'room_cate']);
             Route::middleware('permission:update room,admins')->put('{id}/status', [roomsController::class, 'updateState']);
         });
@@ -144,7 +142,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
         Route::get('rates', [RateController::class, 'index']);
         Route::prefix('rate')->group(function () {
             Route::get('/{id}', [RateController::class, 'show']);
-            Route::post('/', [RateController::class, 'store']);
             Route::middleware('permission:update rate,admins')->put('/{id}', [RateController::class, 'update']);
             Route::middleware('permission:delete rate,admins')->delete('/{id}', [RateController::class, 'destroy']);
 
@@ -172,7 +169,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     // thống kê  số lượng phòng được đặt trong  start_year và endYear
     Route::get('/statistical_year/{startYear}/{endYear}', [CateRoomController::class, 'statistical_year']);
     // Route::get('/statistical_room_checkin/{check_in}/{check_out}', [CateRoomController::class, 'statistical_room_checkin']);
-    Route::get('/statictical_total_booking_bettween_year/{id_hotels}', [CateRoomController::class, 'statictical_total_booking_bettween_year']);
     //thống kê booking đặt trong 10 năm trở lại đây của car he thong
 
 
@@ -315,6 +311,7 @@ Route::get('/services', [ServiceController::class, 'index']);
 Route::get('/services/hotels={id}', [ServiceController::class, 'list_services_hotel']);
 // hiển thị comment theo id_cate
 Route::get('/comment/id_cate={id}', [RateController::class, 'comment_cate']);
+Route::get('/comment/id_hotel={id}', [RateController::class, 'comment_hotel']);
 // hiển thị cate_room theo id
 Route::get('/cateRoom/{id}', [CateRoomController::class, 'detail_list_cate']);
 // hiển thị cate_room theo hotel
@@ -343,3 +340,5 @@ Route::get('/store_image_cate/{id}', [hotelController::class, 'store_image_cate'
 Route::get('/voucher', [VoucherController::class, 'list_vourcher']);
 
 Route::resource('permissions', PermissionController::class)->except(['create', 'edit']);
+
+Route::post('/rate', [RateController::class, 'store']);
