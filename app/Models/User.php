@@ -37,7 +37,7 @@ class User extends Authenticatable
     }
     public function scopeActive($query)
     {
-        return $query->where('users.status', 1);
+        return $query->where('users.status', 2);
     }
     /**
      * The attributes that should be hidden for serialization.

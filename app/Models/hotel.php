@@ -11,7 +11,7 @@ class hotel extends Model
     use HasFactory, SoftDeletes;
     public function scopeActive($query)
     {
-        return $query->where('hotels.status', 1);
+        return $query->where('hotels.status', 2);
     }
     protected $table = 'hotels';
     protected $fillable = [

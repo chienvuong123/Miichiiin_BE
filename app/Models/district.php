@@ -18,6 +18,6 @@ class district extends Model
     ];
     public function scopeActiveCategoryRooms($query)
     {
-        return $query->where('districts.status', 1);
+        return $query->where('districts.status', 2);
     }
 }

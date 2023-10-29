@@ -20,6 +20,6 @@ class Service extends Model
     ];
     public function scopeActive($query)
     {
-        return $query->where('services.status', 1);
+        return $query->where('services.status', 2);
     }
 }

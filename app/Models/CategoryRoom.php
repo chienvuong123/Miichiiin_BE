@@ -27,7 +27,7 @@ class categoryRoom extends Model
     ];
     public function scopeActiveCategoryRooms($query)
     {
-        return $query->where('category_rooms.status', 1);
+        return $query->where('category_rooms.status', 2);
     }
 
     public function bookingDetails()

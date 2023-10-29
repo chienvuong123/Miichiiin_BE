@@ -13,7 +13,7 @@ class Rate extends Model
 
     public function scopeActiveCategoryRooms($query)
     {
-        return $query->where('rates.status', 1);
+        return $query->where('rates.status', 2);
     }
     protected $fillable = ['id_user', 'id_category', 'content', 'rating', 'status'];
 }

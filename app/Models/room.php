@@ -18,6 +18,6 @@ class room extends Model
     ];
     public function scopeActive($query)
     {
-        return $query->where('rooms.status', 1);
+        return $query->where('rooms.status', 2);
     }
 }
