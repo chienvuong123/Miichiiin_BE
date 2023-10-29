@@ -34,7 +34,7 @@ class CateRoomController extends Controller
     }
     public function detail_list_cate($id)
     {
-        $status = 1;
+        $status = 2;
         $rooms = CategoryRoom::select(
             'category_rooms.id',
             'category_rooms.name',
@@ -54,7 +54,7 @@ class CateRoomController extends Controller
             DB::raw('COUNT(DISTINCT comforts.id) as total_comfort'),
         )
             ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
-            ->leftJoin('hotels', 'hotels.id', '=', 'rooms.id_hotel')
+            ->leftJoin('hotels', 'hotels.id', '=', 'category_rooms.id_hotel')
             ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
             ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
             ->where('category_rooms.id', '=', $id)
@@ -89,7 +89,7 @@ class CateRoomController extends Controller
     }
     public function list_cate($id, $check_in = null, $check_out = null, $number_people = null, $total_room = null)
     {
-        $status = 1;
+        $status = 2;
         $startDate = isset($check_in) ? Carbon::parse($check_in) : Carbon::now()->setTime(0, 0);
         $endDate = isset($check_out) ? Carbon::parse($check_out) : $startDate->copy()->addDays(3)->setTime(0, 0);
         $number_of_people = $number_people ?? 1;
@@ -187,8 +187,7 @@ class CateRoomController extends Controller
 
     public function find($id, $check_in = null, $check_out = null, $number_people = null, $total_room = null)
     {
-        $status = 1;
-        $status = 1;
+        $status = 2;
         $startDate = isset($check_in) ? Carbon::parse($check_in) : Carbon::now()->setTime(0, 0);
         $endDate = isset($check_out) ? Carbon::parse($check_out) : $startDate->copy()->addDays(3)->setTime(0, 0);
         $number_of_people = $number_people ?? 1;
