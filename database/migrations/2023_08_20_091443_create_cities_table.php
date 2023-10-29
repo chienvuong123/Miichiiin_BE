@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name')->nullable();
             $table->softDeletes(); // add
-            $table->timestamps();
+            $table->timestamp('updated_at')->default(now());
+            $table->timestamp('created_at')->default(now());
         });
     }
 

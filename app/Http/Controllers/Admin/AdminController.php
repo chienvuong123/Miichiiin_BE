@@ -60,21 +60,28 @@ class AdminController extends Controller
         }
 
         if (Hash::check($credentials['password'], $admin->password)) {
-            $admin = Auth::guard('admins')->getProvider()->retrieveByCredentials($credentials);
-            $token = $admin->createToken('adminToken', ['admins'])->accessToken;
-            $role = $admin->getRoleNames();
-            $permissions = $admin->getAllPermissions()->pluck('name');
-            return response()->json([
-                'token' => $token,
-                'admin' => [
-                    'id' => $admin->id,
-                    'name' => $admin->name,
-                    'image' => $admin->image,
-                    'id_hotel' => $admin->id_hotel,
-                    'role' => $role[0],
-                    'permissions' => $permissions
-                ]
-            ]);
+            $adminWithHotel = Admin::join('hotels', 'admins.id_hotel', '=', 'hotels.id')
+                ->where('admins.email', $credentials['email'])
+                ->select('admins.*', 'hotels.name as name_hotel')
+                ->first();
+
+            if ($adminWithHotel) {
+                $token = $adminWithHotel->createToken('adminToken', ['admins'])->accessToken;
+                $role = $adminWithHotel->getRoleNames();
+                $permissions = $adminWithHotel->getAllPermissions()->pluck('name');
+                return response()->json([
+                    'token' => $token,
+                    'admin' => [
+                        'id' => $adminWithHotel->id,
+                        'name' => $adminWithHotel->name,
+                        'image' => $adminWithHotel->image,
+                        'id_hotel' => $adminWithHotel->id_hotel,
+                        'name_hotel' => $adminWithHotel->name_hotel,
+                        'role' => $role[0],
+                        'permissions' => $permissions
+                    ]
+                ]);
+            }
         }
         return response()->json(['message' => 'wrong password']);
     }

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class bookingDetail extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
     protected $table = 'booking_details';
     protected $fillable = [
         "id",

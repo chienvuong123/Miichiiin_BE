@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\districtController;
 use App\Http\Controllers\Admin\ComfortDetailController;
 use App\Http\Controllers\Admin\VoucherController;
+use App\Http\Controllers\BookingUserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -183,7 +184,8 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::get('/statistical_total_amount_day/{id_hotel}/{month}/{year}', [CateRoomController::class, 'statistical_total_amount_day']);
 
 
-    Route::get('/statistical_rates/{id_hotel}', [CateRoomController::class, 'statistical_rates']);
+    Route::get('/statistical_rates_in_hotel/{id_hotel}/{month}/{year}', [CateRoomController::class, 'statistical_rates']);
+    Route::get('/statistical_rates/{month}/{year}/{category}', [CateRoomController::class, 'statistical_rates_inchain']);
 
 
 
@@ -203,7 +205,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     // thống kê loại phòng theo khoảng
     Route::get('statistical_cateRoom_checkin/{check_in}/{check_out}', [CateRoomController::class, 'statistical_cateRoom_checkin']);
 
-    Route::get('statistical_services/{year}', [CateRoomController::class, 'statistical_services']);
+    Route::get('statistical_services/{month}/{year}/{id_hotel}', [CateRoomController::class, 'statistical_services']);
 
 
     // PHÂN QUYỀN SAU
@@ -216,7 +218,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
             Route::middleware('permission:add user,admins')->post('/', [UserController::class, 'store']);
             Route::middleware('permission:update user,admins')->put('/{id}', [UserController::class, 'update']);
             Route::middleware('permission:delete user,admins')->delete('/{id}', [UserController::class, 'destroy']);
-
             Route::middleware('permission:update user,admins')->put('{id}/status', [UserController::class, 'updateState_user']);
             Route::get('/statistical_user_month', [UserController::class, 'statistical_user_month']);
             Route::get('/statistical_user_year', [UserController::class, 'statistical_user_year']);
@@ -282,7 +283,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     });
 });
 // USER
-
+Route::post('create_booking', [BookingUserController::class, 'create_booking']);
 //Login
 Route::post('login', [UserController::class, 'login'])->name('login');
 Route::post('register', [UserController::class, 'register'])->name('register');
@@ -293,15 +294,15 @@ Route::post('loginFacebook', [UserController::class, 'loginFacebook'])->name('lo
 //
 Route::middleware('auth:api')->prefix('users')->group(function () {
     // Các routes cần xác thực token
-    Route::get('hotel', [hotelController::class, 'home_user']);
-    Route::get('/hotel/city={id}', [hotelController::class, 'home_city']);
+    Route::get('/comment/id_cate={id}', [RateController::class, 'comment_cate']);
+    Route::get('/comment/id_hotel={id}', [RateController::class, 'comment_hotel']);
     // ...
 });
-
+Route::get('hotel', [hotelController::class, 'home_user']);
+Route::get('/hotel/city={id}', [hotelController::class, 'home_city']);
 // hiển thị thông tin hotel trang home_user
 // hiển thị khách sạn theo thành phố
 // hiển thị tất cả services cả hệ thống
-
 
 // hiển thị khách sạn theo id (detail_hotel)
 Route::get('/hotel/{id}', [hotelController::class, 'detail_hotel_user']);
@@ -310,8 +311,7 @@ Route::get('/services', [ServiceController::class, 'index']);
 // hiển thị services theo id_hotel
 Route::get('/services/hotels={id}', [ServiceController::class, 'list_services_hotel']);
 // hiển thị comment theo id_cate
-Route::get('/comment/id_cate={id}', [RateController::class, 'comment_cate']);
-Route::get('/comment/id_hotel={id}', [RateController::class, 'comment_hotel']);
+
 // hiển thị cate_room theo id
 Route::get('/cateRoom/{id}', [CateRoomController::class, 'detail_list_cate']);
 // hiển thị cate_room theo hotel
@@ -329,7 +329,6 @@ Route::get('/booking/{id}/profile', [BookingController::class, 'booking_list']);
 // hiển thị booking_detail theo id_user
 Route::get('/bookingDetail/{id}', [BookingDetailController::class, 'booking_detail_list']);
 
-
 // hiển thị comfort theo loại phòng
 Route::get('/comfort/cate={id}', [ComfortController::class, 'comfort_cate']);
 
@@ -342,3 +341,4 @@ Route::get('/voucher', [VoucherController::class, 'list_vourcher']);
 Route::resource('permissions', PermissionController::class)->except(['create', 'edit']);
 
 Route::post('/rate', [RateController::class, 'store']);
+Route::get('/services/id_hotel={id}', [ServiceController::class, 'list_services_hotel']);

@@ -236,7 +236,6 @@ class hotelController extends Controller
                     $imageDetail = new imageDetail();
                     $imageDetail->id_hotel = $hotel->id;
                     $imageDetail->id_image = $imageRecord->id;
-                    $imageDetail->alt = 'Alt text for the image'; // Thay thế bằng alt text thích hợp
                     $imageDetail->save();
                 }
         }

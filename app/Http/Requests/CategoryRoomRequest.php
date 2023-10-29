@@ -28,7 +28,7 @@ class CategoryRoomRequest extends FormRequest
         $rules = [
             'name' => 'required',
             'description' => 'required',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp',
             'floor' => 'required|integer',
             'likes' => 'required|integer',
             'status' => 'required|integer',
