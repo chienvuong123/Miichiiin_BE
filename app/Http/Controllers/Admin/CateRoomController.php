@@ -270,7 +270,6 @@ class CateRoomController extends Controller
     {
         // nếu như tồn tại file sẽ upload file
         $params = $request->except('_token');
-        dd($request->image);
         $uploadedImage = Cloudinary::upload($params['image']->getRealPath());
         $params['image'] = $uploadedImage->getSecurePath();
         $categoryRoom = categoryRoom::create($params);
