@@ -116,7 +116,7 @@ class AdminController extends Controller
         // Create account
         $admin->fill($request->except(['password', 'role']));
         $admin->id_hotel = $auth_admin->id_hotel;
-        $uploadedImage = Cloudinary::upload($request->image);
+        $uploadedImage = Cloudinary::upload($request->image->getRealPath());
         $admin->image = $uploadedImage->getSecurePath();
         $admin->save();
         $admin->assignRole($role->name);
