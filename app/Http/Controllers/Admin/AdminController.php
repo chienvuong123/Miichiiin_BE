@@ -138,7 +138,7 @@ class AdminController extends Controller
         if ($admin == null) {
             return response()->json(
                 ["error_message" => "Không tìm thấy nhân viên"]
-                , Response::HTTP_BAD_REQUEST
+                , Response::HTTP_NOT_FOUND
             );
         }
         $admin->getRoleNames()[0];

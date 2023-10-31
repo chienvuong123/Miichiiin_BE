@@ -8,7 +8,7 @@ use App\Models\Service;
 use App\Models\ServiceDetail;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
 
 class ServiceController extends Controller
 {
@@ -66,10 +66,18 @@ class ServiceController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        dd($request->all());
         $service = Service::query()->find($id);
+        if ($service == null) {
+            return response()->json(
+                ["error_message" => "Không tìm thấy dịch vụ"]
+                , Response::HTTP_NOT_FOUND
+            );
+        }
         $oldImg = $service->image;
 
         $service->fill($request->except('_token'));
+
 
         if ($request->hasFile('image') && $request->file('image')) {
             if ($oldImg) {
@@ -79,7 +87,6 @@ class ServiceController extends Controller
             $service->image = $uploadedImage->getSecurePath();
         }
         $service->save();
-
         return response()->json($service);
     }
 
@@ -89,6 +96,12 @@ class ServiceController extends Controller
     public function destroy(string $id)
     {
         $service = Service::query()->find($id);
+        if ($service == null) {
+            return response()->json(
+                ["error_message" => "Không tìm thấy dịch vụ"]
+                , Response::HTTP_NOT_FOUND
+            );
+        }
         $oldImg = $service->image;
 
         if($service){
