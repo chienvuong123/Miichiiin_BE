@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 class BookingUserController extends Controller {
     public function create_booking(Request $request) {
         // Create Booking
-        $id_user = Auth::user()->id ?? null;
+        $id_user = $request->id_user ?? null;
         $data = $request->except('_token');
         $booking = create_booking($data["id_hotel"], $data, $id_user);
         $response = get_detail_booking($booking["message"]["id"]);
@@ -29,7 +29,6 @@ class BookingUserController extends Controller {
         $booking = booking::select('*')->where('id_user', $id)->get();
         foreach ($booking as $key => $booking_record) {
             $list_room = [];
-            $categories = [];
             $total_service = 0;
             // GET ALL BOOKING OF user($id)
             $booking_d_record = bookingDetail::query()
@@ -37,29 +36,16 @@ class BookingUserController extends Controller {
                 ->where('id_booking', $booking_record->id)
                 ->get();
             foreach ($booking_d_record as $record_booking_d) {
-                $category = categoryRoom::query()
-                    ->select('id', 'name', 'image')
-                    ->where('id', $record_booking_d->id_cate)
+                $room = room::query()
+                    ->select('rooms.id', 'rooms.name', 'category_rooms.id as id_category', 'category_rooms.name as category_name', 'category_rooms.image as category_image')
+                    ->join('category_rooms', 'category_rooms.id', '=', 'rooms.id_cate')
+                    ->where('rooms.id', $record_booking_d->id_room)
                     ->first();
-
-                if (array_key_exists($category->id, $categories)) {
-                    $room = room::query()
-                        ->select('id', 'name')
-                        ->where('id', $record_booking_d->id_room)
-                        ->where('id_cate', $record_booking_d->id_cate)
-                        ->first();
-                    if (in_array($room, $list_room)) {
-                        continue;
-                    }
-                    $list_room[] = $room;
-                    $category['rooms'] = $list_room;
+                if (in_array($room, $list_room)) {
+                    continue;
                 }
-
-                $categories = [
-                    $category->id => $category
-                ];
+                $list_room[] = $room;
             }
-            $categories = array_values($categories);
 
             // GET SERVICES IN ROOM
             foreach ($list_room as $list_room_key => $room) {
@@ -92,7 +78,7 @@ class BookingUserController extends Controller {
                 "alt" => $image->alt
             ];
 
-            $booking[$key]['categories'] = $categories;
+            $booking[$key]['rooms'] = $list_room;
             $booking[$key]['total_room'] = count($list_room);
             $booking[$key]['total_service'] = $total_service;
         }
