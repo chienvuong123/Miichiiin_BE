@@ -14,6 +14,7 @@ use App\Models\room;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Symfony\Component\HttpFoundation\Response;
 
 
 class CateRoomController extends Controller
@@ -270,7 +271,6 @@ class CateRoomController extends Controller
     {
         // nếu như tồn tại file sẽ upload file
         $params = $request->except('_token');
-        dd($request->image);
         $uploadedImage = Cloudinary::upload($params['image']->getRealPath());
         $params['image'] = $uploadedImage->getSecurePath();
         $categoryRoom = categoryRoom::create($params);
@@ -285,11 +285,11 @@ class CateRoomController extends Controller
         $imageDetail->id_image = $imageRecord->id;
         $imageDetail->save();
         if ($categoryRoom->id) {
-            return response()->json([
-                'message' => $categoryRoom,
-                'status' => 200
-            ]);
+            return response()->json($categoryRoom, Response::HTTP_CREATED);
         }
+        return response()->json([
+            "error_message" => "Có lỗi xảy ra"
+        ], Response::HTTP_BAD_REQUEST);
     }
     public function store_image_cate(CategoryRoomRequest $request, $id)
     {
