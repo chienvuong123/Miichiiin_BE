@@ -129,7 +129,19 @@ class AdminController extends Controller
      */
     public function show(string $id)
     {
-        $admin = Admin::query()->find($id);
+        $auth_admin = Auth::guard('admins')->user();
+        $admin = Admin::query()
+            ->select("*")
+            ->where("id_hotel", $auth_admin->id_hotel)
+            ->where("id", $id)
+            ->first();
+        if ($admin == null) {
+            return response()->json(
+                ["error_message" => "Không tìm thấy nhân viên"]
+                , Response::HTTP_BAD_REQUEST
+            );
+        }
+        $admin->getRoleNames()[0];
         return response()->json($admin);
     }
 
