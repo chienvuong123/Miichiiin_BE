@@ -65,7 +65,7 @@ class RoleControler extends Controller
         $role->id_hotel = $admin->id_hotel;
         $level_role = get_current_level();
         $role->level = $level_role - 1;
-        if (!isset($request->permissions) || is_array($request->permissions)) {
+        if (!isset($request->permissions) || !is_array($request->permissions)) {
             return response()->json([
                 "error_message" => "Wrong permissions"
             ], Response::HTTP_BAD_REQUEST);
@@ -91,8 +91,11 @@ class RoleControler extends Controller
         // tìm role theo $id
         $role = Role::query()
             ->where('id', $id)
-            ->where('id_hotel', $admin->id_hotel)
-            ->where('level', $level)
+            ->where(function ($query) use ($admin) {
+                $query->where('id_hotel', null)
+                    ->orWhere('id_hotel', $admin->id_hotel);
+            })
+            ->where('level', $level-1)
             ->first();
         // Các permission mà role đã có
         $had_permissions = $role->permissions->pluck('id', 'name');
