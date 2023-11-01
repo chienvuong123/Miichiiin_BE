@@ -30,12 +30,9 @@ class CategoryRoomRequest extends FormRequest
             'description' => 'required',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp',
             'floor' => 'required|integer',
-            'likes' => 'required|integer',
-            'status' => 'required|integer',
             'acreage' => 'required|integer',
             'price' => 'required|integer',
             'quantity_of_people' => 'required|integer',
-             'views' => 'required',
             'short_description' => 'required',
         ];
         // lấy ra tên phương thức cần sử lý
