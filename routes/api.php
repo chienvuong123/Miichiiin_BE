@@ -323,7 +323,9 @@ Route::get(
     [CateRoomController::class, 'find']
 );
 // hiển thị booking theo id_user
-Route::get('/booking/{id}/profile', [BookingUserController::class, 'history_booking']);
+Route::get('profile/{id_user}/booking/', [BookingUserController::class, 'list_history_booking']);
+Route::get('profile/{id_user}/booking/{id_booking}', [BookingUserController::class, 'detaill_history_booking']);
+Route::get('profile/booking/{slug}', [BookingUserController::class, 'find_booking']);
 
 // hiển thị booking_detail theo id_user
 Route::get('/bookingDetail/{id}', [BookingDetailController::class, 'booking_detail_list']);
