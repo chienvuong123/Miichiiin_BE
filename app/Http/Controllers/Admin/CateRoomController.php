@@ -1066,6 +1066,46 @@ class CateRoomController extends Controller
 
     return response()->json($roomCounts);
     }
+
+    public function statistical_services_inchain($month,$year)
+    {
+        $hotels = DB::table('hotels')->select('id', 'name')->get();
+        $roomCounts = [];
+
+        foreach ($hotels as $hotel) {
+            $hotelId = $hotel->id;
+            $hotelName = $hotel->name;
+
+            $services = DB::table('booking_details')
+                ->select('services.name AS servicename', DB::raw('SUM(booking_details.quantity_service) AS count'))
+                ->join('services', 'booking_details.id_services', '=', 'services.id')
+                ->join('bookings', 'booking_details.id_booking', '=', 'bookings.id')
+                ->where('bookings.id_hotel', $hotelId)
+                ->whereYear('bookings.check_in', $year)
+                ->whereMonth('bookings.check_in', $month)
+                ->groupBy('services.name')
+                ->get();
+
+            $serviceCounts = $services->map(function ($service) use ($month, $year) {
+                return [
+                    'servicename' => $service->servicename,
+                    'count' => $service->count,
+                    'month' => 'Tháng ' . $month,
+                    'year' => $year,
+                ];
+            });
+
+            $hotelObject = [
+                'id' => $hotelId,
+                'hotel' => $hotelName,
+                'services' => $serviceCounts,
+            ];
+
+            $roomCounts[] = $hotelObject;
+        }
+
+        return response()->json($roomCounts);
+}
     public function statistical_rates($idHotel, $month, $year)
     {
         // Truyền vào id_hotel, month và year từ client

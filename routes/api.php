@@ -205,6 +205,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
 
     Route::get('statistical_services/{month}/{year}/{id_hotel}', [CateRoomController::class, 'statistical_services']);
 
+    Route::get('statistical_services_inchain/{month}/{year}', [CateRoomController::class, 'statistical_services_inchain']);
 
     // PHÂN QUYỀN SAU
 
