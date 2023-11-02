@@ -710,8 +710,9 @@ class CateRoomController extends Controller
         $bookings = DB::table('bookings')
             ->join('booking_details', 'bookings.id', '=', 'booking_details.id_booking')
             ->join('rooms', 'booking_details.id_room', '=', 'rooms.id')
-            ->join('category_rooms', 'category_rooms.id', '=', 'rooms.id_cate')
-            ->join('hotels', 'category_rooms.id_hotel', '=', 'hotels.id')
+            ->join('hotel_categories', 'hotel_categories.id', '=', 'rooms.id_hotel_cate')
+            ->join('category_rooms', 'category_rooms.id', '=', 'hotel_categories.id_cate')
+            ->join('hotels', 'hotel_categories.id_hotel', '=', 'hotels.id')
             ->where('bookings.check_in', '>=', $checkInTime)
             ->where('bookings.check_out', '<=', $checkOutTime)
             ->select('hotels.name', 'booking_details.id_booking')
@@ -742,8 +743,9 @@ class CateRoomController extends Controller
         $bookings = DB::table('bookings')
             ->join('booking_details', 'bookings.id', '=', 'booking_details.id_booking')
             ->join('rooms', 'booking_details.id_room', '=', 'rooms.id')
-            ->join('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id') // Liên kết với bảng danh mục
-            ->join('hotels', 'category_rooms.id_hotel', '=', 'hotels.id')
+            ->join('hotel_categories', 'hotel_categories.id', '=', 'rooms.id_hotel_cate')
+            ->join('category_rooms', 'hotel_categories.id_cate', '=', 'category_rooms.id') // Liên kết với bảng danh mục
+            ->join('hotels', 'hotel_categories.id_hotel', '=', 'hotels.id')
             ->where('hotels.id', '=', $id_hotels)
             ->whereYear('bookings.check_in', '=', $year)
             ->get();
@@ -793,8 +795,9 @@ class CateRoomController extends Controller
         $bookings = DB::table('bookings')
             ->join('booking_details', 'bookings.id', '=', 'booking_details.id_booking')
             ->join('rooms', 'booking_details.id_room', '=', 'rooms.id')
-            ->join('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id')
-            ->join('hotels', 'category_rooms.id_hotel', '=', 'hotels.id')
+            ->join('hotel_categories', 'hotel_categories.id', '=', 'rooms.id_hotel_cate')
+            ->join('category_rooms', 'hotel_categories.id_cate', '=', 'category_rooms.id')
+            ->join('hotels', 'hotel_categories.id_hotel', '=', 'hotels.id')
             ->where('hotels.id', '=', $id_hotels)
             ->whereYear('bookings.check_in', '=', $year)
             ->whereMonth('bookings.check_in', '=', $month)
@@ -849,8 +852,9 @@ class CateRoomController extends Controller
         $bookings = DB::table('bookings')
             ->join('booking_details', 'bookings.id', '=', 'booking_details.id_booking')
             ->join('rooms', 'booking_details.id_room', '=', 'rooms.id')
-            ->join('category_rooms', 'category_rooms.id', '=', 'rooms.id_cate')
-            ->join('hotels', 'category_rooms.id_hotel', '=', 'hotels.id')
+            ->join('hotel_categories', 'hotel_categories.id', '=', 'rooms.id_hotel_cate')
+            ->join('category_rooms', 'category_rooms.id', '=', 'hotel_categories.id_cate')
+            ->join('hotels', 'hotel_categories.id_hotel', '=', 'hotels.id')
             ->whereBetween('bookings.check_in', [$startDate, $endDate])
             ->get();
 
