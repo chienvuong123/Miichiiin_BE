@@ -72,9 +72,6 @@ class ServiceController extends Controller
         $service->fill($request->except('_token'));
 
         if ($request->hasFile('image') && $request->file('image')) {
-            if ($oldImg) {
-                Cloudinary::destroy($oldImg);
-            }
             $uploadedImage = Cloudinary::upload($request->image->getRealPath());
             $service->image = $uploadedImage->getSecurePath();
         }

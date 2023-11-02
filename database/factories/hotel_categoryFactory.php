@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\room>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\hotel_category>
  */
-class roomFactory extends Factory
+class hotel_categoryFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,10 +18,8 @@ class roomFactory extends Factory
     {
         return [
             //
-            "name" => fake()->name(),
-            "id_hotel_cate" => fake()->numberBetween(1,10),
-            "status" => fake()->numberBetween(0,1),
-
+            "id_hotel" => fake()->numberBetween(0,10),
+            "id_cate" => fake()->numberBetween(0,10),
         ];
     }
 }

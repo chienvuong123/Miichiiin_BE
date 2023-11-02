@@ -17,27 +17,27 @@ class roomSeeder extends Seeder
                 [
                     "name" => "P101",
                     "status" => 2,
-                    "id_cate" => $i
+                    "id_hotel_cate" => $i
                 ],
                 [
                     "name" => "P102",
                     "status" => 2,
-                    "id_cate" => $i
+                    "id_hotel_cate" => $i
                 ],
                 [
                     "name" => "P201",
                     "status" => 2,
-                    "id_cate" => $i
+                    "id_hotel_cate" => $i
                 ],
                 [
                     "name" => "P202",
                     "status" => 2,
-                    "id_cate" => $i
+                    "id_hotel_cate" => $i
                 ],
                 [
                     "name" => "P301",
                     "status" => 2,
-                    "id_cate" => $i
+                    "id_hotel_cate" => $i
                 ],
             ];
             room::query()->insert($rooms);

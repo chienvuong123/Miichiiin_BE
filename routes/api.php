@@ -46,7 +46,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
         Route::prefix('banner')->group(function () {
             Route::get('/{id}', [BannerController::class, 'show']);
             Route::middleware('permission:add banner,admins')->post('/', [BannerController::class, 'store']);
-            Route::middleware('permission:update banner,admins')->put('/{id}', [BannerController::class, 'update']);
+            Route::middleware('permission:update banner,admins')->post('/{id}', [BannerController::class, 'update']);
             Route::middleware('permission:delete banner,admins')->delete('/{id}', [BannerController::class, 'destroy']);
         });
     });
@@ -90,7 +90,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
         Route::prefix('room')->group(function () {
             Route::get('/{id}', [roomsController::class, 'show']);
             Route::middleware('permission:add room,admins')->post('/', [roomsController::class, 'store']);
-            Route::middleware('permission:update room,admins')->put('/{id}', [roomsController::class, 'update']);
+            Route::middleware('permission:update room,admins')->post('/{id}', [roomsController::class, 'update']);
             Route::middleware('permission:delete room,admins')->delete('/{id}', [roomsController::class, 'destroy']);
             Route::get('/cate_room/{id}', [roomsController::class, 'room_cate']);
             Route::middleware('permission:update room,admins')->put('{id}/status', [roomsController::class, 'updateState']);
@@ -103,7 +103,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
         Route::prefix('category')->group(function () {
             Route::get('/{id}', [CateRoomController::class, 'show']);
             Route::middleware('permission:add category,admins')->post('', [CateRoomController::class, 'store']);
-            Route::middleware('permission:update category,admins')->put('/{id}', [CateRoomController::class, 'update']);
+            Route::middleware('permission:update category,admins')->post('/{id}', [CateRoomController::class, 'update']);
             Route::middleware('permission:delete category,admins')->delete('/{id}', [CateRoomController::class, 'destroy']);
 
             Route::middleware('permission:update category,admins')->put('{id}/status', [CateRoomController::class, 'updateState_cate']);
@@ -116,7 +116,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
         Route::prefix('service')->group(function () {
             Route::get('/{id}', [ServiceController::class, 'show']);
             Route::middleware('permission:add service,admins')->post('/', [ServiceController::class, 'store']);
-            Route::middleware('permission:update service,admins')->put('/{id}', [ServiceController::class, 'update']);
+            Route::middleware('permission:update service,admins')->post('/{id}', [ServiceController::class, 'update']);
             Route::middleware('permission:delete service,admins')->delete('/{id}', [ServiceController::class, 'destroy']);
 
             Route::middleware('permission:update service,admins')->put('{id}/status', [ServiceController::class, 'updateState_services']);
@@ -156,7 +156,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
         Route::prefix('admin')->group(function () {
             Route::get('/{id}', [AdminController::class, 'show']);
             Route::middleware('permission:add admin,admins')->post('/', [AdminController::class, 'store']);
-            Route::middleware('permission:update admin,admins')->put('/{id}', [AdminController::class, 'update']);
+            Route::middleware('permission:update admin,admins')->post('/{id}', [AdminController::class, 'update']);
             Route::middleware('permission:delete admin,admins')->delete('/{id}', [AdminController::class, 'destroy']);
 
             Route::middleware('permission:update admin,admins')->put('{id}/status', [AdminController::class, 'updateState_admin']);
@@ -188,8 +188,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::get('/statistical_rates/{month}/{year}/{category}', [CateRoomController::class, 'statistical_rates_inchain']);
 
 
-
-    // test
     // thống kê loại phòng đặt trong 12 tháng của năm của tất cả
      //( có thể làm thêm tính riêng từng khách sạn và theo tháng)
     Route::get('/statistical_cate_in_hotel/{year}', [CateRoomController::class, 'statistical_cate_in_hotel']);
@@ -216,7 +214,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
         Route::prefix('user')->group(function () {
             Route::get('/{id}', [UserController::class, 'show']);
             Route::middleware('permission:add user,admins')->post('/', [UserController::class, 'store']);
-            Route::middleware('permission:update user,admins')->put('/{id}', [UserController::class, 'update']);
+            Route::middleware('permission:update user,admins')->post('/{id}', [UserController::class, 'update']);
             Route::middleware('permission:delete user,admins')->delete('/{id}', [UserController::class, 'destroy']);
             Route::middleware('permission:update user,admins')->put('{id}/status', [UserController::class, 'updateState_user']);
             Route::get('/statistical_user_month', [UserController::class, 'statistical_user_month']);

@@ -18,7 +18,6 @@ class cateRoomSeeder extends Seeder
 //        categoryRoom::factory()->count(10)->create();
         $categories = [
             [
-                "id_hotel" => 1,
                 "name" => "Phòng tiêu chuẩn",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -32,7 +31,7 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 1,
+
                 "name" => "Phòng gia đình",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -46,7 +45,6 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 1,
                 "name" => "Phòng view biển",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -60,7 +58,7 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 1,
+
                 "name" => "Phòng hạng sang",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -74,7 +72,6 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 1,
                 "name" => "Phòng suite",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -88,7 +85,6 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 2,
                 "name" => "Phòng tiêu chuẩn",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -102,7 +98,6 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 2,
                 "name" => "Phòng gia đình",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -116,7 +111,6 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 2,
                 "name" => "Phòng view biển",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -130,7 +124,7 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 2,
+
                 "name" => "Phòng hạng sang",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -144,7 +138,6 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 2,
                 "name" => "Phòng suite",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -158,7 +151,6 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 3,
                 "name" => "Phòng tiêu chuẩn",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -172,7 +164,6 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 3,
                 "name" => "Phòng gia đình",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -186,7 +177,7 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 3,
+
                 "name" => "Phòng view biển",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -200,7 +191,7 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 3,
+
                 "name" => "Phòng hạng sang",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -214,7 +205,7 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 3,
+
                 "name" => "Phòng suite",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -228,7 +219,7 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 4,
+
                 "name" => "Phòng tiêu chuẩn",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -242,7 +233,7 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 4,
+
                 "name" => "Phòng gia đình",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -256,7 +247,7 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 4,
+
                 "name" => "Phòng view biển",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -270,7 +261,7 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 4,
+
                 "name" => "Phòng hạng sang",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -284,7 +275,7 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 4,
+
                 "name" => "Phòng suite",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -298,7 +289,7 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 5,
+
                 "name" => "Phòng tiêu chuẩn",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -312,7 +303,7 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 5,
+
                 "name" => "Phòng gia đình",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -326,7 +317,7 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 5,
+
                 "name" => "Phòng view biển",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -340,7 +331,7 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 5,
+
                 "name" => "Phòng hạng sang",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,
@@ -354,7 +345,7 @@ class cateRoomSeeder extends Seeder
                 "views" => fake()->numberBetween(1,100),
             ],
             [
-                "id_hotel" => 5,
+
                 "name" => "Phòng suite",
                 "description" =>fake()->text(20),
                 "image" => fake()->imageUrl,

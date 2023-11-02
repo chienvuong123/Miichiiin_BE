@@ -36,7 +36,6 @@ class UserController extends Controller
             $user->password = bcrypt($request->password);
         }
         $uploadedImage = Cloudinary::upload($request->image->getRealPath());
-        dd($uploadedImage);
         $user->image = $uploadedImage->getSecurePath();
         $user->save();
 
