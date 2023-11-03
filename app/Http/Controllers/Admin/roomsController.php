@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RoomRequest;
 use App\Models\room;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
 
@@ -13,10 +14,12 @@ class roomsController extends Controller
     //
     public function index()
     {
+        $admin = Auth::guard('admins')->user();
         $room = room::select('rooms.*', 'hotels.name as name_hotel','category_rooms.name as name_category')
         ->join('hotel_categories', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
         ->join('category_rooms', 'hotel_categories.id_cate', '=', 'category_rooms.id')
         ->join('hotels', 'hotel_categories.id_hotel', '=', 'hotels.id')
+        ->where("hotels.id","=",$admin->id_hotel)
         ->get();
         return response()->json($room);
     }
