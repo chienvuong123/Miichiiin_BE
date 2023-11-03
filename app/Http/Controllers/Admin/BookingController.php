@@ -43,7 +43,9 @@ class BookingController extends Controller
         $auth_admin = Auth::guard('admins')->user();
         $data = $request->except('_token');
         $reponse_data = create_booking($auth_admin->id_hotel, $data);
-        return response()->json($reponse_data['message'], $reponse_data['status']);
+        return response()->json([
+            "error_message" => $reponse_data['message']
+        ], $reponse_data['status']);
     }
     public function create()
     {
@@ -78,9 +80,10 @@ class BookingController extends Controller
                     return response()->json("Bạn chưa chọn phòng", Response::HTTP_BAD_REQUEST);
                 }
                 $id_cate = room::query()
-                    ->select('id_cate')
-                    ->where('id', $cart[$i]['id_room'])
-                    ->pluck('id_cate')
+                    ->select('hotel_categories.id_cate')
+                    ->join('hotel_categories', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
+                    ->where('rooms.id', $cart[$i]['id_room'])
+                    ->pluck('hotel_categories.id_cate')
                     ->first();
 
                 if (empty($cart[$i]['services'])) {

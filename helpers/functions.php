@@ -57,7 +57,7 @@ function create_booking($id_hotel, $data, $id_user=null) {
         ->select('id')
         ->where('check_out', '>=', $check_in)
         ->orWhere('check_in', '<=', $check_out)
-        ->whereNotIn('status', ["FAIL", "COMPLETED"])
+        ->whereNotIn('status', [2, 3])
         ->get();
 
     $room_ignore = bookingDetail::query()
@@ -83,10 +83,11 @@ function create_booking($id_hotel, $data, $id_user=null) {
     $reset = 0;
     for ($i = 0; $i < count($cart); $i++) {
         $list_room = room::query()
-            ->select('id')
-            ->whereNotIn('id', $room_ignore)
-            ->where('id_cate', $cart[$i]['id_cate'])
-            ->orderBy('name')
+            ->select('rooms.id')
+            ->join('hotel_categories', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
+            ->whereNotIn('room.id', $room_ignore)
+            ->where('hotel_categories.id_cate', $cart[$i]['id_cate'])
+            ->orderBy('rooms.name')
             ->get();
 
         if ($i != 0) {
@@ -168,7 +169,8 @@ function get_detail_booking($id) {
     foreach ($booking_d_record as $value) {
         $room = room::query()
             ->select('rooms.id', 'rooms.name', 'category_rooms.id as id_category', 'category_rooms.name as category_name')
-            ->join('category_rooms', 'category_rooms.id', '=', 'rooms.id_cate')
+            ->join('hotel_categories', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
+            ->join('category_rooms', 'category_rooms.id', '=', 'hotel_categories.id_cate')
             ->where('rooms.id', $value->id_room)
             ->first();
         if (in_array($room, $list_room)) {
