@@ -313,6 +313,7 @@ Route::get('/services/hotels={id}', [ServiceController::class, 'list_services_ho
 
 // hiển thị cate_room theo id
 Route::get('/cateRoom/{id}', [CateRoomController::class, 'detail_list_cate']);
+Route::get('/cateRoom/hotel={id}', [CateRoomController::class, 'detail_list_cate_inhotel']);
 // hiển thị cate_room theo hotel
 Route::get(
     '/listRoom/hotels={id}/{check_in?}/{check_out?}/{number_people?}/{total_room?}',
