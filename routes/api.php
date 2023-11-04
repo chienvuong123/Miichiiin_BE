@@ -57,7 +57,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
         Route::prefix('voucher')->group(function () {
             Route::get('/{id}', [VoucherController::class, 'show']);
             Route::middleware('permission:add voucher,admins')->post('/', [VoucherController::class, 'store']);
-            Route::middleware('permission:update voucher,admins')->put('/{id}', [VoucherController::class, 'update']);
+            Route::middleware('permission:update voucher,admins')->post('/{id}', [VoucherController::class, 'update']);
             Route::middleware('permission:delete voucher,admins')->delete('/{id}', [VoucherController::class, 'destroy']);
             Route::middleware('permission:update voucher,admins')->put('{id}/status', [VoucherController::class, 'updateState_voucher']);
         });

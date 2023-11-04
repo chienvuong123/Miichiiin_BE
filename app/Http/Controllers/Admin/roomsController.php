@@ -15,7 +15,7 @@ class roomsController extends Controller
     public function index()
     {
         $admin = Auth::guard('admins')->user();
-        $room = room::select('rooms.*', 'hotels.name as name_hotel','category_rooms.name as name_category')
+        $room = room::select('rooms.*', 'hotels.name as name_hotel','category_rooms.name as name_category','category_rooms.id as id_cate')
         ->join('hotel_categories', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
         ->join('category_rooms', 'hotel_categories.id_cate', '=', 'category_rooms.id')
         ->join('hotels', 'hotel_categories.id_hotel', '=', 'hotels.id')
