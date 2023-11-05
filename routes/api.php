@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\districtController;
 use App\Http\Controllers\Admin\ComfortDetailController;
 use App\Http\Controllers\Admin\VoucherController;
+use App\Http\Controllers\Admin\WalletController;
 use App\Http\Controllers\BookingUserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -343,3 +344,11 @@ Route::resource('permissions', PermissionController::class)->except(['create', '
 
 Route::post('/rate', [RateController::class, 'store']);
 Route::get('/services/id_hotel={id}', [ServiceController::class, 'list_services_hotel']);
+
+// Wallet
+Route::post('/topup', [WalletController::class, 'topup_coin_api']);
+Route::post('/voucher/{id_voucher}/wallet', [WalletController::class, 'add_voucher_to_wallet']);
+
+// Get user with quantity booking
+Route::get('/user/booking', [UserController::class, 'get_user_with_quantity_booking']);
+Route::get('/profile/{id_user}/voucher', [UserController::class, 'list_voucher_of_user']);

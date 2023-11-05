@@ -5,6 +5,7 @@ use App\Models\bookingDetail;
 use App\Models\categoryRoom;
 use App\Models\room;
 use App\Models\Service;
+use App\Models\Wallet;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -201,4 +202,16 @@ function get_detail_booking($id) {
         "message" => $booking,
         "status" => Response::HTTP_OK
     ];
+}
+
+function get_wallet_via_user($id_user) {
+    try {
+        return Wallet::query()
+            ->select('wallets.*')
+            ->join('users', 'users.id', '=', 'wallets.id')
+            ->where('wallets.id_user', $id_user)
+            ->first();
+    } catch (Exception $error) {
+        return $error->getMessage();
+    }
 }
