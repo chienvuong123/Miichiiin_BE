@@ -58,7 +58,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
         Route::prefix('voucher')->group(function () {
             Route::get('/{id}', [VoucherController::class, 'show']);
             Route::middleware('permission:add voucher,admins')->post('/', [VoucherController::class, 'store']);
-            Route::middleware('permission:update voucher,admins')->put('/{id}', [VoucherController::class, 'update']);
+            Route::middleware('permission:update voucher,admins')->post('/{id}', [VoucherController::class, 'update']);
             Route::middleware('permission:delete voucher,admins')->delete('/{id}', [VoucherController::class, 'destroy']);
             Route::middleware('permission:update voucher,admins')->put('{id}/status', [VoucherController::class, 'updateState_voucher']);
         });
@@ -79,7 +79,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
         Route::prefix('hotel')->group(function () {
             Route::get('/{id}', [hotelController::class, 'show']);
             Route::middleware('permission:add hotel,admins')->post('/', [hotelController::class, 'store']);
-            Route::middleware('permission:update hotel,admins')->put('/{id}', [hotelController::class, 'update']);
+            Route::middleware('permission:update hotel,admins')->post('/{id}', [hotelController::class, 'update']);
             Route::middleware('permission:delete hotel,admins')->delete('/{id}', [hotelController::class, 'destroy']);
             Route::middleware('permission:update hotel,admins')->put('{id}/status', [hotelController::class, 'updateState_hotel']);
         });
@@ -248,7 +248,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
         Route::prefix('image')->group(function () {
             Route::get('/{id}', [ImageController::class, 'show']);
             Route::middleware('permission:add image,admins')->post('/', [ImageController::class, 'store']);
-            Route::middleware('permission:update image,admins')->put('/{id}', [ImageController::class, 'update']);
+            Route::middleware('permission:update image,admins')->post('/{id}', [ImageController::class, 'update']);
             Route::middleware('permission:delete image,admins')->delete('/{id}', [ImageController::class, 'destroy']);
         });
     });
@@ -311,6 +311,7 @@ Route::get('/services', [ServiceController::class, 'index']);
 // hiển thị services theo id_hotel
 Route::get('/services/hotels={id}', [ServiceController::class, 'list_services_hotel']);
 // hiển thị comment theo id_cate
+Route::get('/cateRoom/hotel={id}', [CateRoomController::class, 'detail_list_cate_inhotel']);
 
 // hiển thị cate_room theo id
 Route::get('/cateRoom/{id}', [CateRoomController::class, 'detail_list_cate']);

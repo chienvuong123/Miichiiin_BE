@@ -54,8 +54,10 @@ class AdminController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
-
-        $admin = Admin::where('email', $credentials['email'])->first();
+        $admin = Admin::join('hotels', 'admins.id_hotel', '=', 'hotels.id')
+        ->where('admins.email', $credentials['email'])
+        ->select('admins.*', 'hotels.name as name_hotel')
+        ->first();
         if ($admin == null) {
             return \response()->json(['message' => 'wrong email'], Response::HTTP_BAD_REQUEST);
         }
