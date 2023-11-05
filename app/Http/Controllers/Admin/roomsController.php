@@ -40,6 +40,7 @@ class roomsController extends Controller
             return  room::select('rooms.*','category_rooms.id as id_cate')
             ->join('hotel_categories', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
             ->join('category_rooms', 'hotel_categories.id_cate', '=', 'category_rooms.id')
+            ->where('rooms.id',"=",$id)
             ->get();
         });
         return response()->json($hotel);
