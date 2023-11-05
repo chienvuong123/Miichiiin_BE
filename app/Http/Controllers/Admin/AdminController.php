@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminRequest;
 use App\Models\Admin;
+use App\Models\hotel;
 use App\Models\Role;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
@@ -62,18 +63,30 @@ class AdminController extends Controller
         }
 
         if (Hash::check($credentials['password'], $admin->password)) {
-            if ($admin) {
-                $token = $admin->createToken('adminToken', ['admins'])->accessToken;
-                $role = $admin->getRoleNames();
-                $permissions = $admin->getAllPermissions()->pluck('name');
+            $adminWithHotel = Admin::query()
+                ->where('email', $credentials['email'])
+                ->select('*')
+                ->first();
+            $hotel_name = "Quản lý chuỗi khách sạn Michi";
+            if ($adminWithHotel->id_hotel) {
+                $hotel_name = hotel::query()
+                    ->select("name")
+                    ->where('id', $adminWithHotel->id_hotel)
+                    ->first();
+            }
+
+            if ($adminWithHotel) {
+                $token = $adminWithHotel->createToken('adminToken', ['admins'])->accessToken;
+                $role = $adminWithHotel->getRoleNames();
+                $permissions = $adminWithHotel->getAllPermissions()->pluck('name');
                 return response()->json([
                     'token' => $token,
                     'admin' => [
-                        'id' => $admin->id,
-                        'name' => $admin->name,
-                        'image' => $admin->image,
-                        'id_hotel' => $admin->id_hotel,
-                        'name_hotel' => $admin->name_hotel,
+                        'id' => $adminWithHotel->id,
+                        'name' => $adminWithHotel->name,
+                        'image' => $adminWithHotel->image,
+                        'id_hotel' => $adminWithHotel->id_hotel,
+                        'name_hotel' => $hotel_name,
                         'role' => $role[0],
                         'permissions' => $permissions
                     ]
