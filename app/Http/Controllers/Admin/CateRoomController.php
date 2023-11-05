@@ -117,8 +117,8 @@ class CateRoomController extends Controller
             ->leftJoin('hotels', 'hotels.id', '=', 'hotel_categories.id_hotel')
             ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
             ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
-            ->where('hotels.id', '=', $id)
             ->where('category_rooms.status', '=', $status)
+            ->where('hotel_categories.id_hotel', '=', $id)
             ->groupBy(
                 'category_rooms.id',
                 'category_rooms.name',

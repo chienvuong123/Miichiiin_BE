@@ -310,10 +310,10 @@ Route::get('/services', [ServiceController::class, 'index']);
 // hiển thị services theo id_hotel
 Route::get('/services/hotels={id}', [ServiceController::class, 'list_services_hotel']);
 // hiển thị comment theo id_cate
+Route::get('/cateRoom/hotel={id}', [CateRoomController::class, 'detail_list_cate_inhotel']);
 
 // hiển thị cate_room theo id
 Route::get('/cateRoom/{id}', [CateRoomController::class, 'detail_list_cate']);
-Route::get('/cateRoom/hotel={id}', [CateRoomController::class, 'detail_list_cate_inhotel']);
 // hiển thị cate_room theo hotel
 Route::get(
     '/listRoom/hotels={id}/{check_in?}/{check_out?}/{number_people?}/{total_room?}',
