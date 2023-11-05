@@ -37,7 +37,10 @@ class roomsController extends Controller
     {
         $key = 'hotel_' . $id;
         $hotel = Cache::remember($key, 5, function () use ($id) {
-            return room::find($id);
+            return  room::select('rooms.*','category_rooms.id as id_cate')
+            ->join('hotel_categories', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
+            ->join('category_rooms', 'hotel_categories.id_cate', '=', 'category_rooms.id')
+            ->get();
         });
         return response()->json($hotel);
     }
