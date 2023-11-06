@@ -39,11 +39,6 @@ class BookingUserController extends Controller {
             ->where('id', $id_booking)
             ->where('id_user', $id_user)
             ->first();
-        if (count($booking)) {
-            return response()->json(
-                ["error_message" => "Không tìm thấy đơn hàng của người dùng có id là " . $id_user]
-            , Response::HTTP_BAD_REQUEST);
-        }
         $list_room = [];
         $total_service = 0;
         // GET ALL BOOKING OF user($id)
