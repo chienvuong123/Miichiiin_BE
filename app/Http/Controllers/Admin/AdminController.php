@@ -54,46 +54,39 @@ class AdminController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
-        $admin = Admin::join('hotels', 'admins.id_hotel', '=', 'hotels.id')
-        ->where('admins.email', $credentials['email'])
-        ->select('admins.*', 'hotels.name as name_hotel')
-        ->first();
+        $admin = Admin::query()
+            ->where('email', $credentials['email'])
+            ->select('*')
+            ->first();
         if ($admin == null) {
             return \response()->json(['message' => 'wrong email'], Response::HTTP_BAD_REQUEST);
         }
 
         if (Hash::check($credentials['password'], $admin->password)) {
-            $adminWithHotel = Admin::query()
-                ->where('email', $credentials['email'])
-                ->select('*')
-                ->first();
             $hotel_name = "Quản lý chuỗi khách sạn Michi";
-            if ($adminWithHotel->id_hotel) {
+            if ($admin->id_hotel) {
                 $hotel_name = hotel::query()
                     ->select("name")
-                    ->where('id', $adminWithHotel->id_hotel)
+                    ->where('id', $admin->id_hotel)
                     ->first();
             }
-
-            if ($adminWithHotel) {
-                $token = $adminWithHotel->createToken('adminToken', ['admins'])->accessToken;
-                $role = $adminWithHotel->getRoleNames();
-                $permissions = $adminWithHotel->getAllPermissions()->pluck('name');
-                return response()->json([
-                    'token' => $token,
-                    'admin' => [
-                        'id' => $adminWithHotel->id,
-                        'name' => $adminWithHotel->name,
-                        'image' => $adminWithHotel->image,
-                        'id_hotel' => $adminWithHotel->id_hotel,
-                        'name_hotel' => $hotel_name,
-                        'role' => $role[0],
-                        'permissions' => $permissions
-                    ]
-                ]);
-            }
+            $token = $admin->createToken('adminToken', ['admins'])->accessToken;
+            $role = $admin->getRoleNames();
+            $permissions = $admin->getAllPermissions()->pluck('name');
+            return response()->json([
+                'token' => $token,
+                'admin' => [
+                    'id' => $admin->id,
+                    'name' => $admin->name,
+                    'image' => $admin->image,
+                    'id_hotel' => $admin->id_hotel,
+                    'name_hotel' => $hotel_name,
+                    'role' => $role[0],
+                    'permissions' => $permissions
+                ]
+            ]);
         }
-        return response()->json(['message' => 'wrong password']);
+        return response()->json(['message' => 'wrong password'], Response::HTTP_BAD_REQUEST);
     }
 
     /**
