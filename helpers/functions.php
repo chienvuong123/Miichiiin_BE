@@ -86,7 +86,7 @@ function create_booking($id_hotel, $data, $id_user=null) {
         $list_room = room::query()
             ->select('rooms.id')
             ->join('hotel_categories', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
-            ->whereNotIn('room.id', $room_ignore)
+            ->whereNotIn('rooms.id', $room_ignore)
             ->where('hotel_categories.id_cate', $cart[$i]['id_cate'])
             ->orderBy('rooms.name')
             ->get();
