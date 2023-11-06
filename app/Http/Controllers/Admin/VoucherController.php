@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\VoucherRequest;
 use App\Models\Voucher;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -39,8 +40,9 @@ class VoucherController extends Controller
         $voucher = new Voucher();
 
         $voucher->fill($request->except('_token'));
-
-        $voucher->image = upload_file('image', $request->file('image'));
+        $uploadedImage = Cloudinary::upload($request->image->getRealPath());
+        // Tạo bản ghi mới trong bảng `images`
+        $voucher->image = $uploadedImage->getSecurePath();
         $voucher->save();
 
         return response()->json($voucher);
@@ -70,14 +72,11 @@ class VoucherController extends Controller
     {
         $voucher = Voucher::query()->find($id);
 
-        $oldImg = $voucher->image;
-
         $voucher->fill($request->except('_token'));
 
-        if ($request->file('image')) {
-            $voucher->image = upload_file('image', $request->file('image'));
-            delete_file($oldImg);
-        }
+        $uploadedImage = Cloudinary::upload($request->image->getRealPath());
+        // Tạo bản ghi mới trong bảng `images`
+        $voucher->image = $uploadedImage->getSecurePath();
 
         $voucher->save();
 

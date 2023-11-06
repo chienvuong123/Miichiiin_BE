@@ -91,6 +91,62 @@ class CateRoomController extends Controller
 
         return response()->json($rooms);
     }
+    public function detail_list_cate_inhotel($id)
+    {
+        $status = 2;
+        $rooms = CategoryRoom::select(
+            'category_rooms.id',
+            'category_rooms.name',
+            'category_rooms.description',
+            'category_rooms.image',
+            'category_rooms.short_description',
+            'category_rooms.quantity_of_people',
+            'category_rooms.price',
+            'category_rooms.acreage',
+            'category_rooms.floor',
+            'category_rooms.likes',
+            'category_rooms.views',
+            'category_rooms.created_at',
+            'category_rooms.updated_at',
+            'hotels.name as nameHotel',
+            DB::raw('COUNT(DISTINCT rooms.id) as total_rooms'),
+            DB::raw('COUNT(DISTINCT comforts.id) as total_comfort'),
+        )
+        ->leftJoin('hotel_categories', 'category_rooms.id', '=', 'hotel_categories.id_cate')
+        ->leftJoin('rooms', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
+            ->leftJoin('hotels', 'hotels.id', '=', 'hotel_categories.id_hotel')
+            ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
+            ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
+            ->where('category_rooms.status', '=', $status)
+            ->where('hotel_categories.id_hotel', '=', $id)
+            ->groupBy(
+                'category_rooms.id',
+                'category_rooms.name',
+                'category_rooms.description',
+                'category_rooms.image',
+                'category_rooms.short_description',
+                'category_rooms.quantity_of_people',
+                'category_rooms.price',
+                'category_rooms.acreage',
+                'category_rooms.floor',
+                'category_rooms.likes',
+                'category_rooms.views',
+                'category_rooms.created_at',
+                'category_rooms.updated_at',
+                'hotels.name'
+            )
+            ->get();
+        foreach ($rooms as $key => $listImage) {
+            $image = image::select('images.image')
+                ->leftJoin('image_details', 'images.id', '=', 'image_details.id_image')
+                ->leftJoin('category_rooms', 'image_details.id_cate', '=', 'category_rooms.id')
+                ->where('category_rooms.id', '=', $listImage->id)
+                ->get();
+            $rooms[$key]['imageUrl'] = $image;
+        }
+
+        return response()->json($rooms);
+    }
     public function list_cate($id, $check_in = null, $check_out = null, $number_people = null, $total_room = null)
     {
         $status = 2;

@@ -15,9 +15,12 @@ class roomsController extends Controller
     //
     public function index()
     {
-        $room = room::select('rooms.*', 'hotels.name as name_hotel','category_rooms.name as name_category')
-        ->join('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id')
-        ->join('hotels', 'category_rooms.id_hotel', '=', 'hotels.id')
+        $admin = Auth::guard('admins')->user();
+        $room = room::select('rooms.*', 'hotels.name as name_hotel','category_rooms.name as name_category','category_rooms.id as id_cate')
+        ->join('hotel_categories', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
+        ->join('category_rooms', 'hotel_categories.id_cate', '=', 'category_rooms.id')
+        ->join('hotels', 'hotel_categories.id_hotel', '=', 'hotels.id')
+        ->where("hotels.id","=",$admin->id_hotel)
         ->get();
         return response()->json($room);
     }
@@ -34,7 +37,11 @@ class roomsController extends Controller
     {
         $key = 'hotel_' . $id;
         $hotel = Cache::remember($key, 5, function () use ($id) {
-            return room::find($id);
+            return  room::select('rooms.*','category_rooms.id as id_cate')
+            ->join('hotel_categories', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
+            ->join('category_rooms', 'hotel_categories.id_cate', '=', 'category_rooms.id')
+            ->where('rooms.id',"=",$id)
+            ->get();
         });
         return response()->json($hotel);
     }
