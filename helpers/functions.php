@@ -100,6 +100,12 @@ function create_booking($id_hotel, $data, $id_user=null) {
         if ($reset == count($list_room)) {
             $cate = categoryRoom::query()->find($cart[$i]['id_cate']);
             set_fail($booking);
+            if ($cate == null) {
+                return [
+                    "message" => 'Không tìm thấy loại phòng',
+                    "status" => Response::HTTP_BAD_REQUEST
+                ];
+            }
             return [
                 "message" => 'Đã hết phòng trong loại phòng ' . $cate->name,
                 "status" => Response::HTTP_BAD_REQUEST
@@ -118,6 +124,7 @@ function create_booking($id_hotel, $data, $id_user=null) {
                 'id_room' => $list_room[$j]->id,
                 'id_cate' => $cart[$i]['id_cate'],
                 'id_services' => -1,
+                'quantity_service' => null,
 //                    'id_promotions' => $promotion,
             ];
             $reset++;
@@ -125,6 +132,13 @@ function create_booking($id_hotel, $data, $id_user=null) {
         }
 
         foreach ($cart[$i]['services'] as $service) {
+//            $quantity_service = $service['quantity'];
+//            dd($service['id_service'] == -1);
+////            if (){
+////                dd($service['id_service']);
+////                $quantity_service = -1;
+////            }
+
             $booking_d_record[] = [
                 'id_booking' => $booking->id,
                 'id_room' => $list_room[$j]->id,
@@ -169,7 +183,7 @@ function get_detail_booking($id) {
     // GET ROOM IN BOOKING
     foreach ($booking_d_record as $value) {
         $room = room::query()
-            ->select('rooms.id', 'rooms.name', 'category_rooms.id as id_category', 'category_rooms.name as category_name')
+            ->select('rooms.id', 'rooms.name', 'category_rooms.id as id_category', 'category_rooms.name as category_name', 'category_rooms.image as category_image')
             ->join('hotel_categories', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
             ->join('category_rooms', 'category_rooms.id', '=', 'hotel_categories.id_cate')
             ->where('rooms.id', $value->id_room)
@@ -182,6 +196,7 @@ function get_detail_booking($id) {
 
     // GET SERVICES IN ROOM
     foreach ($list_room as $list_room_key => $room) {
+
         $services = service::query()
             ->select('services.id', 'services.name', 'services.price', 'booking_details.quantity_service')
             ->join('booking_details', 'services.id', '=', 'booking_details.id_services')

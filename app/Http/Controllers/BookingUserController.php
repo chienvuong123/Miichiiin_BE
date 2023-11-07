@@ -26,10 +26,47 @@ class BookingUserController extends Controller {
     public function list_history_booking($id_user)
     {
         // LỊCH SỬ ĐẶT HÀNG (USER)
-        $booking = booking::select('*')
+        $bookings = booking::select('*')
             ->where('id_user', $id_user)
             ->get();
-        return response()->json($booking);
+        foreach ($bookings as $booking) {
+            $hotel = hotel::query()
+                ->select('id', 'name')
+                ->where('id', $booking->id_hotel)
+                ->first();
+            $image = image::query()
+                ->select('images.*')
+                ->join('image_details', 'image_details.id_image', '=', 'images.id')
+                ->join('hotels', 'image_details.id_hotel', '=', 'hotels.id')
+                ->first();
+            $total_room = Booking::query()
+                ->join('booking_details', 'bookings.id', '=', 'booking_details.id_booking')
+                ->where('bookings.id', $booking->id)
+                ->groupBy('bookings.id')
+                ->selectRaw('bookings.id, COUNT(DISTINCT booking_details.id_room) as room_count')
+                ->first();
+            $service = Booking::query()
+                ->join('booking_details', 'bookings.id', '=', 'booking_details.id_booking')
+                ->where('bookings.id', $booking->id)
+                ->whereNot('booking_details.id_services', -1)
+                ->groupBy('bookings.id')
+                ->selectRaw('bookings.id, COUNT(DISTINCT booking_details.id_services) as service_count')
+                ->first();
+            if (!isset($service)) {
+                $total_service = 0;
+            } else {
+                $total_service = $service["service_count"];
+            }
+            $booking["total_service"] = $total_service;
+            $booking["total_room"] = $total_room["room_count"];
+            $booking['hotel'] = [
+                "name" => $hotel->name,
+                "image" => $image->image,
+                "alt" => $image->alt
+            ];
+        }
+
+        return response()->json($bookings);
     }
 
     public function detaill_history_booking($id_user, $id_booking)
