@@ -5,13 +5,17 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
+use App\Models\WalletVoucher;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Laravel\Passport\Passport;
 use Laravel\Passport\Token;
+use App\Http\Controllers\Admin\WalletController;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class UserController extends Controller
 {
@@ -36,7 +40,6 @@ class UserController extends Controller
             $user->password = bcrypt($request->password);
         }
         $uploadedImage = Cloudinary::upload($request->image->getRealPath());
-        dd($uploadedImage);
         $user->image = $uploadedImage->getSecurePath();
         $user->save();
 
@@ -112,17 +115,19 @@ class UserController extends Controller
 
     public function register(UserRequest $request)
     {
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->only('name', 'email', 'password');
         $credentials['password'] = bcrypt($credentials['password']);
 
         $user = User::create($credentials);
 
         if ($user) {
+            $wallet = new WalletController();
+            $wallet->create_wallet($user->id);
             $token = $user->createToken('token')->accessToken;
             return response()->json(['token' => $token, 'user' => $user], 200);
         }
 
-        return response()->json(['error' => 'Registration failed'], 500);
+        return response()->json(['error' => 'Registration failed'], ResponseAlias::HTTP_BAD_REQUEST);
     }
 
     public function logout(Request $request)
@@ -258,5 +263,23 @@ class UserController extends Controller
                 'error' => 'Authentication failed.',
             ], 401);
         }
+    }
+
+    public function get_user_with_quantity_booking() {
+        $list_user = User::query()
+            ->select('users.id as id_user' ,DB::raw('count(bookings.id) as quantity_booking'))
+            ->join('bookings', 'users.id', '=', 'bookings.id')
+            ->groupBy('users.id')
+            ->get();
+        return response()->json($list_user);
+    }
+
+    public function list_voucher_of_user(string $id_user) {
+        $wallet = get_wallet_via_user($id_user);
+        $list_voucher = WalletVoucher::query()
+            ->select('*')
+            ->where('id_wallet', $wallet->id)
+            ->get();
+        return response()->json($list_voucher);
     }
 }

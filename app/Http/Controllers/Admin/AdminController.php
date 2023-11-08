@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminRequest;
 use App\Models\Admin;
+use App\Models\hotel;
 use App\Models\Role;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
@@ -53,37 +54,39 @@ class AdminController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
-
-        $admin = Admin::where('email', $credentials['email'])->first();
+        $admin = Admin::query()
+            ->where('email', $credentials['email'])
+            ->select('*')
+            ->first();
         if ($admin == null) {
             return \response()->json(['message' => 'wrong email'], Response::HTTP_BAD_REQUEST);
         }
 
         if (Hash::check($credentials['password'], $admin->password)) {
-            $adminWithHotel = Admin::join('hotels', 'admins.id_hotel', '=', 'hotels.id')
-                ->where('admins.email', $credentials['email'])
-                ->select('admins.*', 'hotels.name as name_hotel')
-                ->first();
-
-            if ($adminWithHotel) {
-                $token = $adminWithHotel->createToken('adminToken', ['admins'])->accessToken;
-                $role = $adminWithHotel->getRoleNames();
-                $permissions = $adminWithHotel->getAllPermissions()->pluck('name');
-                return response()->json([
-                    'token' => $token,
-                    'admin' => [
-                        'id' => $adminWithHotel->id,
-                        'name' => $adminWithHotel->name,
-                        'image' => $adminWithHotel->image,
-                        'id_hotel' => $adminWithHotel->id_hotel,
-                        'name_hotel' => $adminWithHotel->name_hotel,
-                        'role' => $role[0],
-                        'permissions' => $permissions
-                    ]
-                ]);
+            $hotel_name = "Quản lý chuỗi khách sạn Michi";
+            if ($admin->id_hotel) {
+                $hotel_name = hotel::query()
+                    ->select("name")
+                    ->where('id', $admin->id_hotel)
+                    ->first();
             }
+            $token = $admin->createToken('adminToken', ['admins'])->accessToken;
+            $role = $admin->getRoleNames();
+            $permissions = $admin->getAllPermissions()->pluck('name');
+            return response()->json([
+                'token' => $token,
+                'admin' => [
+                    'id' => $admin->id,
+                    'name' => $admin->name,
+                    'image' => $admin->image,
+                    'id_hotel' => $admin->id_hotel,
+                    'name_hotel' => $hotel_name,
+                    'role' => $role[0],
+                    'permissions' => $permissions
+                ]
+            ]);
         }
-        return response()->json(['message' => 'wrong password']);
+        return response()->json(['message' => 'wrong password'], Response::HTTP_BAD_REQUEST);
     }
 
     /**

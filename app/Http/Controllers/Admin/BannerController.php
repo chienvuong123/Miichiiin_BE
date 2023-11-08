@@ -65,9 +65,7 @@ class BannerController extends Controller
         $oldImg = $banner->image;
         $banner->fill($request->except(['re_password', '_token']));
         if ($request->file('image')) {
-            if ($oldImg) {
-                Cloudinary::destroy($oldImg);
-            }
+
             $uploadedImage = Cloudinary::upload($request->image->getRealPath());
             $banner->image = $uploadedImage->getSecurePath();
         }

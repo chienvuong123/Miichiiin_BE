@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RoomRequest;
+use App\Models\hotel_category;
 use App\Models\room;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
 
@@ -13,9 +15,12 @@ class roomsController extends Controller
     //
     public function index()
     {
-        $room = room::select('rooms.*', 'hotels.name as name_hotel','category_rooms.name as name_category')
-        ->join('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id')
-        ->join('hotels', 'category_rooms.id_hotel', '=', 'hotels.id')
+        $admin = Auth::guard('admins')->user();
+        $room = room::select('rooms.*', 'hotels.name as name_hotel','category_rooms.name as name_category','category_rooms.id as id_cate')
+        ->join('hotel_categories', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
+        ->join('category_rooms', 'hotel_categories.id_cate', '=', 'category_rooms.id')
+        ->join('hotels', 'hotel_categories.id_hotel', '=', 'hotels.id')
+        ->where("hotels.id","=",$admin->id_hotel)
         ->get();
         return response()->json($room);
     }
@@ -32,18 +37,32 @@ class roomsController extends Controller
     {
         $key = 'hotel_' . $id;
         $hotel = Cache::remember($key, 5, function () use ($id) {
-            return room::find($id);
+            return  room::select('rooms.*','category_rooms.id as id_cate')
+            ->join('hotel_categories', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
+            ->join('category_rooms', 'hotel_categories.id_cate', '=', 'category_rooms.id')
+            ->where('rooms.id',"=",$id)
+            ->get();
         });
         return response()->json($hotel);
     }
     public function store(RoomRequest $request)
     {
         // nếu như tồn tại file sẽ upload file
-        $params = $request->except('_token');
-        $room  = room::create($params);
-        if ($room->id) {
+        $rooms = new room();
+        $rooms->name = $request->name;
+        $rooms->status = $request->status;
+        $admin = Auth::guard('admins')->user();
+
+
+        $hotel_cate = new hotel_category();
+        $hotel_cate->id_cate = $request->id_cate;
+        $hotel_cate->id_hotel = $admin->id_hotel;
+        $hotel_cate->save();
+        $rooms->id_hotel_cate = $hotel_cate->id;
+        $rooms->save();
+        if ($rooms->id) {
             return response()->json([
-                'message' => $room,
+                'message' => $rooms,
                 'status' => 200
             ]);
         }
@@ -53,11 +72,18 @@ class roomsController extends Controller
     }
     public function update(RoomRequest $request, $id)
     {
+        $admin = Auth::guard('admins')->user();
+
         $params = $request->except('_token');
         $key = 'hotel_' . $id;
         Cache::forget($key); // Xóa bỏ cache của khách sạn đã được cập nhật
         $room = room::find($id);
+
         if ($room) {
+            $hotel_cate = hotel_category::find($room->id_hotel_cate);
+            $hotel_cate->id_cate = $request->id_cate;
+            $hotel_cate->id_hotel =$admin->id_hotel;
+            $hotel_cate->save();
             $room->update($params);
             return response()->json([
                 'message' => $room,
@@ -79,6 +105,8 @@ class roomsController extends Controller
     {
         $room = room::find($id);
         if ($room) {
+            $hotel_cate = hotel_category::find($room->id_hotel_cate);
+            $hotel_cate->delete();
             $room->delete();
             return response()->json([
                 'message' => "Delete success",

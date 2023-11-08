@@ -62,8 +62,10 @@ trait BaseRequest
 
             //rate
             'content.required' => 'Nội dung không được để trống',
-            'rating.required' => 'Đánh giá không được để trống'
+            'rating.required' => 'Đánh giá không được để trống',
 
+            // User
+            'name.string' => "Tên phải là dạng chữ",
         ];
     }
 

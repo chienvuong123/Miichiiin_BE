@@ -49,6 +49,7 @@ class UserRequest extends FormRequest
                 }
                 if ($currentAction == 'register') {
                     $rules = [
+                        'name' => 'required|string',
                         'email' => 'required|email|unique:users,email',
                         'password' => 'required',
                     ];

@@ -8,10 +8,12 @@ use App\Models\booking;
 use App\Models\bookingDetail;
 use App\Models\categoryRoom;
 use App\Models\hotel;
+use App\Models\hotel_category;
 use App\Models\image;
 use App\Models\imageDetail;
 use App\Models\room;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,12 +56,69 @@ class CateRoomController extends Controller
             DB::raw('COUNT(DISTINCT rooms.id) as total_rooms'),
             DB::raw('COUNT(DISTINCT comforts.id) as total_comfort'),
         )
-            ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
-            ->leftJoin('hotels', 'hotels.id', '=', 'category_rooms.id_hotel')
+        ->leftJoin('hotel_categories', 'category_rooms.id', '=', 'hotel_categories.id_cate')
+        ->leftJoin('rooms', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
+            ->leftJoin('hotels', 'hotels.id', '=', 'hotel_categories.id_hotel')
             ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
             ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
             ->where('category_rooms.id', '=', $id)
             ->where('category_rooms.status', '=', $status)
+            ->groupBy(
+                'category_rooms.id',
+                'category_rooms.name',
+                'category_rooms.description',
+                'category_rooms.image',
+                'category_rooms.short_description',
+                'category_rooms.quantity_of_people',
+                'category_rooms.price',
+                'category_rooms.acreage',
+                'category_rooms.floor',
+                'category_rooms.likes',
+                'category_rooms.views',
+                'category_rooms.created_at',
+                'category_rooms.updated_at',
+                'hotels.name'
+            )
+            ->get();
+        foreach ($rooms as $key => $listImage) {
+            $image = image::select('images.image')
+                ->leftJoin('image_details', 'images.id', '=', 'image_details.id_image')
+                ->leftJoin('category_rooms', 'image_details.id_cate', '=', 'category_rooms.id')
+                ->where('category_rooms.id', '=', $listImage->id)
+                ->get();
+            $rooms[$key]['imageUrl'] = $image;
+        }
+
+        return response()->json($rooms);
+    }
+    public function detail_list_cate_inhotel($id)
+    {
+        $status = 2;
+        $rooms = CategoryRoom::select(
+            'category_rooms.id',
+            'category_rooms.name',
+            'category_rooms.description',
+            'category_rooms.image',
+            'category_rooms.short_description',
+            'category_rooms.quantity_of_people',
+            'category_rooms.price',
+            'category_rooms.acreage',
+            'category_rooms.floor',
+            'category_rooms.likes',
+            'category_rooms.views',
+            'category_rooms.created_at',
+            'category_rooms.updated_at',
+            'hotels.name as nameHotel',
+            DB::raw('COUNT(DISTINCT rooms.id) as total_rooms'),
+            DB::raw('COUNT(DISTINCT comforts.id) as total_comfort'),
+        )
+        ->leftJoin('hotel_categories', 'category_rooms.id', '=', 'hotel_categories.id_cate')
+        ->leftJoin('rooms', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
+            ->leftJoin('hotels', 'hotels.id', '=', 'hotel_categories.id_hotel')
+            ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
+            ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
+            ->where('category_rooms.status', '=', $status)
+            ->where('hotel_categories.id_hotel', '=', $id)
             ->groupBy(
                 'category_rooms.id',
                 'category_rooms.name',
@@ -115,8 +174,9 @@ class CateRoomController extends Controller
             'hotels.name as nameHotel',
             DB::raw('COUNT(DISTINCT comforts.id) as Total_comfort')
         )
-            ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
-            ->leftJoin('hotels', 'hotels.id', '=', 'category_rooms.id_hotel')
+        ->leftJoin('hotel_categories', 'category_rooms.id', '=', 'hotel_categories.id_cate')
+        ->leftJoin('rooms', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
+            ->leftJoin('hotels', 'hotels.id', '=', 'hotel_categories.id_hotel')
             ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
             ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
             ->leftJoin('booking_details', 'booking_details.id_room', '=', 'rooms.id')
@@ -146,10 +206,11 @@ class CateRoomController extends Controller
             $categoryId = $category->id;
 
             // Lấy danh sách các phòng thuộc loại phòng hiện tại
-            $rooms = Room::where('id_cate', $categoryId)
-                ->leftJoin('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id')
-                ->leftJoin('hotels', 'hotels.id', '=', 'category_rooms.id_hotel')
+            $rooms = Room::leftJoin('hotel_categories', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
+                ->leftJoin('category_rooms', 'hotel_categories.id_cate', '=', 'category_rooms.id')
+                ->leftJoin('hotels', 'hotels.id', '=', 'hotel_categories.id_hotel')
                 ->where('id_hotel', $id)
+                ->where('id_cate', $categoryId)
                 ->get();
 
             $bookedRooms = BookingDetail::whereHas('bookings', function ($query) use ($startDate, $endDate) {
@@ -212,8 +273,9 @@ class CateRoomController extends Controller
             DB::raw('COUNT(DISTINCT rooms.id) as Total_rooms'),
             DB::raw('COUNT(DISTINCT comforts.id) as Total_comfort')
         )
-            ->leftJoin('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
-            ->leftJoin('hotels', 'hotels.id', '=', 'category_rooms.id_hotel')
+        ->leftJoin('hotel_categories', 'category_rooms.id', '=', 'hotel_categories.id_cate')
+        ->leftJoin('rooms', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
+            ->leftJoin('hotels', 'hotels.id', '=', 'hotel_categories.id_hotel')
             ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
             ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
             ->leftJoin('booking_details', 'booking_details.id_room', '=', 'rooms.id')
@@ -269,11 +331,14 @@ class CateRoomController extends Controller
     }
     public function store(CategoryRoomRequest $request)
     {
+        $admin = Auth::guard('admins')->user();
         // nếu như tồn tại file sẽ upload file
         $params = $request->except('_token');
         $uploadedImage = Cloudinary::upload($params['image']->getRealPath());
         $params['image'] = $uploadedImage->getSecurePath();
         $categoryRoom = categoryRoom::create($params);
+
+
 
         $cate = categoryRoom::find($categoryRoom->id);
         $imageRecord = new Image();
@@ -284,6 +349,7 @@ class CateRoomController extends Controller
         $imageDetail->id_cate = $cate->id;
         $imageDetail->id_image = $imageRecord->id;
         $imageDetail->save();
+
         if ($categoryRoom->id) {
             return response()->json($categoryRoom, Response::HTTP_CREATED);
         }
@@ -320,15 +386,14 @@ class CateRoomController extends Controller
     }
     public function update(CategoryRoomRequest $request, $id)
     {
+
         $categoryRoom = categoryRoom::find($id);
         $params = $request->except('_token');
-        $oldImg = $params['image'];
+
 
         if ($request->hasFile('image') && $request->file('image')) {
-            if ($oldImg) {
-                Cloudinary::destroy($oldImg);
-            }
-            $uploadedImage = Cloudinary::upload($request->image->getRealPath());
+            $publicId = uniqid(); // Tạo một public_id duy nhất
+            $uploadedImage = Cloudinary::upload($request->image->getRealPath(), ['public_id' => $publicId]);
             $imageRecord = new Image();
             $imageRecord->image = $uploadedImage->getSecurePath();
             $imageRecord->save();
@@ -338,6 +403,7 @@ class CateRoomController extends Controller
             $imageDetail->id_image = $imageRecord->id;
             $imageDetail->save();
             $params['image'] = $uploadedImage->getSecurePath();
+
         }
         if ($categoryRoom) {
             $categoryRoom->update($params);
@@ -361,11 +427,10 @@ class CateRoomController extends Controller
     public function destroy($id)
     {
         $categoryRoom = categoryRoom::find($id);
+        $admin = Auth::guard('admins')->user();
+
         if ($categoryRoom) {
-            $oldImg = $categoryRoom->image;
-            if ($oldImg) {
-                Cloudinary::destroy($oldImg);
-            }
+
             $categoryRoom->delete();
             return response()->json([
                 'message' => "Delete success",
@@ -701,8 +766,9 @@ class CateRoomController extends Controller
         $bookings = DB::table('bookings')
             ->join('booking_details', 'bookings.id', '=', 'booking_details.id_booking')
             ->join('rooms', 'booking_details.id_room', '=', 'rooms.id')
-            ->join('category_rooms', 'category_rooms.id', '=', 'rooms.id_cate')
-            ->join('hotels', 'category_rooms.id_hotel', '=', 'hotels.id')
+            ->join('hotel_categories', 'hotel_categories.id', '=', 'rooms.id_hotel_cate')
+            ->join('category_rooms', 'category_rooms.id', '=', 'hotel_categories.id_cate')
+            ->join('hotels', 'hotel_categories.id_hotel', '=', 'hotels.id')
             ->where('bookings.check_in', '>=', $checkInTime)
             ->where('bookings.check_out', '<=', $checkOutTime)
             ->select('hotels.name', 'booking_details.id_booking')
@@ -733,8 +799,9 @@ class CateRoomController extends Controller
         $bookings = DB::table('bookings')
             ->join('booking_details', 'bookings.id', '=', 'booking_details.id_booking')
             ->join('rooms', 'booking_details.id_room', '=', 'rooms.id')
-            ->join('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id') // Liên kết với bảng danh mục
-            ->join('hotels', 'category_rooms.id_hotel', '=', 'hotels.id')
+            ->join('hotel_categories', 'hotel_categories.id', '=', 'rooms.id_hotel_cate')
+            ->join('category_rooms', 'hotel_categories.id_cate', '=', 'category_rooms.id') // Liên kết với bảng danh mục
+            ->join('hotels', 'hotel_categories.id_hotel', '=', 'hotels.id')
             ->where('hotels.id', '=', $id_hotels)
             ->whereYear('bookings.check_in', '=', $year)
             ->get();
@@ -784,8 +851,9 @@ class CateRoomController extends Controller
         $bookings = DB::table('bookings')
             ->join('booking_details', 'bookings.id', '=', 'booking_details.id_booking')
             ->join('rooms', 'booking_details.id_room', '=', 'rooms.id')
-            ->join('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id')
-            ->join('hotels', 'category_rooms.id_hotel', '=', 'hotels.id')
+            ->join('hotel_categories', 'hotel_categories.id', '=', 'rooms.id_hotel_cate')
+            ->join('category_rooms', 'hotel_categories.id_cate', '=', 'category_rooms.id')
+            ->join('hotels', 'hotel_categories.id_hotel', '=', 'hotels.id')
             ->where('hotels.id', '=', $id_hotels)
             ->whereYear('bookings.check_in', '=', $year)
             ->whereMonth('bookings.check_in', '=', $month)
@@ -840,8 +908,9 @@ class CateRoomController extends Controller
         $bookings = DB::table('bookings')
             ->join('booking_details', 'bookings.id', '=', 'booking_details.id_booking')
             ->join('rooms', 'booking_details.id_room', '=', 'rooms.id')
-            ->join('category_rooms', 'category_rooms.id', '=', 'rooms.id_cate')
-            ->join('hotels', 'category_rooms.id_hotel', '=', 'hotels.id')
+            ->join('hotel_categories', 'hotel_categories.id', '=', 'rooms.id_hotel_cate')
+            ->join('category_rooms', 'category_rooms.id', '=', 'hotel_categories.id_cate')
+            ->join('hotels', 'hotel_categories.id_hotel', '=', 'hotels.id')
             ->whereBetween('bookings.check_in', [$startDate, $endDate])
             ->get();
 
@@ -1053,6 +1122,46 @@ class CateRoomController extends Controller
 
     return response()->json($roomCounts);
     }
+
+    public function statistical_services_inchain($month,$year)
+    {
+        $hotels = DB::table('hotels')->select('id', 'name')->get();
+        $roomCounts = [];
+
+        foreach ($hotels as $hotel) {
+            $hotelId = $hotel->id;
+            $hotelName = $hotel->name;
+
+            $services = DB::table('booking_details')
+                ->select('services.name AS servicename', DB::raw('SUM(booking_details.quantity_service) AS count'))
+                ->join('services', 'booking_details.id_services', '=', 'services.id')
+                ->join('bookings', 'booking_details.id_booking', '=', 'bookings.id')
+                ->where('bookings.id_hotel', $hotelId)
+                ->whereYear('bookings.check_in', $year)
+                ->whereMonth('bookings.check_in', $month)
+                ->groupBy('services.name')
+                ->get();
+
+            $serviceCounts = $services->map(function ($service) use ($month, $year) {
+                return [
+                    'servicename' => $service->servicename,
+                    'count' => $service->count,
+                    'month' => 'Tháng ' . $month,
+                    'year' => $year,
+                ];
+            });
+
+            $hotelObject = [
+                'id' => $hotelId,
+                'hotel' => $hotelName,
+                'services' => $serviceCounts,
+            ];
+
+            $roomCounts[] = $hotelObject;
+        }
+
+        return response()->json($roomCounts);
+}
     public function statistical_rates($idHotel, $month, $year)
     {
         // Truyền vào id_hotel, month và year từ client
@@ -1063,8 +1172,10 @@ class CateRoomController extends Controller
 
         // Lấy danh sách tất cả các loại phòng của khách sạn
         $categories = DB::table('category_rooms')
-            ->select('id', 'name')
-            ->where('id_hotel', $idHotel) // Lọc theo id_hotel
+        ->join('hotel_categories', 'category_rooms.id', '=', 'hotel_categories.id_cate')
+        ->join('hotels', 'hotels.id', '=', 'hotel_categories.id_hotel')
+            ->select('category_rooms.id', 'category_rooms.name')
+            ->where('hotels.id', $idHotel) // Lọc theo id_hotel
             ->get();
 
         // Đưa tất cả các loại phòng vào mảng tạm với giá trị ban đầu
@@ -1082,7 +1193,9 @@ class CateRoomController extends Controller
         $rates = DB::table('rates')
             ->join('category_rooms', 'category_rooms.id', '=', 'rates.id_category')
             ->select('category_rooms.id', 'rates.rating', DB::raw('COUNT(rates.id) AS comment_count'))
-            ->where('category_rooms.id_hotel', $idHotel) // Lọc theo id_hotel
+            ->join('hotel_categories', 'category_rooms.id', '=', 'hotel_categories.id_cate')
+            ->join('hotels', 'hotels.id', '=', 'hotel_categories.id_hotel')
+            ->where('hotel_categories.id_hotel', $idHotel) // Lọc theo id_hotel
             ->whereMonth('rates.created_at', $month) // Lọc theo tháng
             ->whereYear('rates.created_at', $year) // Lọc theo năm
             ->groupBy('category_rooms.id', 'rates.rating')
@@ -1090,10 +1203,11 @@ class CateRoomController extends Controller
 
         // Lấy thông tin số lượng đặt phòng của từng loại phòng trong tháng và năm được chỉ định
         $bookings = DB::table('category_rooms')
-            ->join('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
+            ->join('hotel_categories', 'category_rooms.id', '=', 'hotel_categories.id_cate')
+            ->join('rooms', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
             ->join('booking_details', 'booking_details.id_room', '=', 'rooms.id')
             ->select('category_rooms.id', DB::raw('COUNT(booking_details.id) AS booking_count'))
-            ->where('category_rooms.id_hotel', $idHotel) // Lọc theo id_hotel
+            ->where('hotel_categories.id_hotel', $idHotel) // Lọc theo id_hotel
             ->whereMonth('booking_details.created_at', $month) // Lọc theo tháng
             ->whereYear('booking_details.created_at', $year) // Lọc theo năm
             ->groupBy('category_rooms.id')
@@ -1143,12 +1257,14 @@ class CateRoomController extends Controller
 
           // Lấy danh sách tất cả các loại phòng của khách sạn
           $categoriesQuery = DB::table('category_rooms')
-              ->select('id', 'name')
-              ->where('id_hotel', $hotelId); // Lọc theo id_hotel
+          ->join('hotel_categories', 'category_rooms.id', '=', 'hotel_categories.id_cate')
+          ->join('hotels', 'hotels.id', '=', 'hotel_categories.id_hotel')
+          ->select('category_rooms.id', 'category_rooms.name')
+          ->where('hotel_categories.id_hotel', $hotelId); // Lọc theo id_hotel
 
-          if ($categoryId !== null) {
-              $categoriesQuery->where('id', $categoryId);
-          }
+if ($categoryId !== null) {
+    $categoriesQuery->where('category_rooms.id', $categoryId);
+}
 
           $categories = $categoriesQuery->get();
 
@@ -1175,8 +1291,10 @@ class CateRoomController extends Controller
           // Lấy thông tin đánh giá của từng loại phòng trong tháng và năm được chỉ định
           $ratesQuery = DB::table('rates')
               ->join('category_rooms', 'category_rooms.id', '=', 'rates.id_category')
+              ->join('hotel_categories', 'category_rooms.id', '=', 'hotel_categories.id_cate')
+              ->join('hotels', 'hotels.id', '=', 'hotel_categories.id_hotel')
               ->select('category_rooms.id', 'rates.rating', DB::raw('COUNT(rates.id) AS comment_count'))
-              ->where('category_rooms.id_hotel', $hotelId) // Lọc theo id_hotel
+              ->where('hotel_categories.id_hotel', $hotelId) // Lọc theo id_hotel
               ->whereMonth('rates.created_at', $month) // Lọc theo tháng
               ->whereYear('rates.created_at', $year) // Lọc theo năm
               ->groupBy('category_rooms.id', 'rates.rating');
@@ -1189,10 +1307,12 @@ class CateRoomController extends Controller
 
           // Lấy thông tin số lượng đặt phòng của từng loại phòng trong tháng và năm được chỉ định
           $bookingsQuery = DB::table('category_rooms')
-              ->join('rooms', 'rooms.id_cate', '=', 'category_rooms.id')
+          ->join('hotel_categories', 'category_rooms.id', '=', 'hotel_categories.id_cate')
+
+              ->join('rooms', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
               ->join('booking_details', 'booking_details.id_room', '=', 'rooms.id')
               ->select('category_rooms.id', DB::raw('COUNT(booking_details.id) AS booking_count'))
-              ->where('category_rooms.id_hotel', $hotelId) // Lọc theo id_hotel
+              ->where('hotel_categories.id_hotel', $hotelId) // Lọc theo id_hotel
               ->whereMonth('booking_details.created_at', $month) // Lọc theo tháng
               ->whereYear('booking_details.created_at', $year) // Lọc theo năm
               ->groupBy('category_rooms.id');

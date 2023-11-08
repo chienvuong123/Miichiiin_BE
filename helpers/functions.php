@@ -5,6 +5,7 @@ use App\Models\bookingDetail;
 use App\Models\categoryRoom;
 use App\Models\room;
 use App\Models\Service;
+use App\Models\Wallet;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -57,7 +58,7 @@ function create_booking($id_hotel, $data, $id_user=null) {
         ->select('id')
         ->where('check_out', '>=', $check_in)
         ->orWhere('check_in', '<=', $check_out)
-        ->whereNotIn('status', ["FAIL", "COMPLETED"])
+        ->whereNotIn('status', [2, 3])
         ->get();
 
     $room_ignore = bookingDetail::query()
@@ -83,10 +84,11 @@ function create_booking($id_hotel, $data, $id_user=null) {
     $reset = 0;
     for ($i = 0; $i < count($cart); $i++) {
         $list_room = room::query()
-            ->select('id')
-            ->whereNotIn('id', $room_ignore)
-            ->where('id_cate', $cart[$i]['id_cate'])
-            ->orderBy('name')
+            ->select('rooms.id')
+            ->join('hotel_categories', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
+            ->whereNotIn('rooms.id', $room_ignore)
+            ->where('hotel_categories.id_cate', $cart[$i]['id_cate'])
+            ->orderBy('rooms.name')
             ->get();
 
         if ($i != 0) {
@@ -98,6 +100,12 @@ function create_booking($id_hotel, $data, $id_user=null) {
         if ($reset == count($list_room)) {
             $cate = categoryRoom::query()->find($cart[$i]['id_cate']);
             set_fail($booking);
+            if ($cate == null) {
+                return [
+                    "message" => 'Không tìm thấy loại phòng',
+                    "status" => Response::HTTP_BAD_REQUEST
+                ];
+            }
             return [
                 "message" => 'Đã hết phòng trong loại phòng ' . $cate->name,
                 "status" => Response::HTTP_BAD_REQUEST
@@ -116,6 +124,7 @@ function create_booking($id_hotel, $data, $id_user=null) {
                 'id_room' => $list_room[$j]->id,
                 'id_cate' => $cart[$i]['id_cate'],
                 'id_services' => -1,
+                'quantity_service' => null,
 //                    'id_promotions' => $promotion,
             ];
             $reset++;
@@ -123,6 +132,13 @@ function create_booking($id_hotel, $data, $id_user=null) {
         }
 
         foreach ($cart[$i]['services'] as $service) {
+//            $quantity_service = $service['quantity'];
+//            dd($service['id_service'] == -1);
+////            if (){
+////                dd($service['id_service']);
+////                $quantity_service = -1;
+////            }
+
             $booking_d_record[] = [
                 'id_booking' => $booking->id,
                 'id_room' => $list_room[$j]->id,
@@ -167,8 +183,9 @@ function get_detail_booking($id) {
     // GET ROOM IN BOOKING
     foreach ($booking_d_record as $value) {
         $room = room::query()
-            ->select('rooms.id', 'rooms.name', 'category_rooms.id as id_category', 'category_rooms.name as category_name')
-            ->join('category_rooms', 'category_rooms.id', '=', 'rooms.id_cate')
+            ->select('rooms.id', 'rooms.name', 'category_rooms.id as id_category', 'category_rooms.name as category_name', 'category_rooms.image as category_image')
+            ->join('hotel_categories', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
+            ->join('category_rooms', 'category_rooms.id', '=', 'hotel_categories.id_cate')
             ->where('rooms.id', $value->id_room)
             ->first();
         if (in_array($room, $list_room)) {
@@ -179,6 +196,7 @@ function get_detail_booking($id) {
 
     // GET SERVICES IN ROOM
     foreach ($list_room as $list_room_key => $room) {
+
         $services = service::query()
             ->select('services.id', 'services.name', 'services.price', 'booking_details.quantity_service')
             ->join('booking_details', 'services.id', '=', 'booking_details.id_services')
@@ -199,4 +217,16 @@ function get_detail_booking($id) {
         "message" => $booking,
         "status" => Response::HTTP_OK
     ];
+}
+
+function get_wallet_via_user($id_user) {
+    try {
+        return Wallet::query()
+            ->select('wallets.*')
+            ->join('users', 'users.id', '=', 'wallets.id')
+            ->where('wallets.id_user', $id_user)
+            ->first();
+    } catch (Exception $error) {
+        return $error->getMessage();
+    }
 }

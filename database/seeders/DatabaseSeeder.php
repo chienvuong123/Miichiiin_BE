@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             roomSeeder::class,
             cateRoomSeeder::class,
             CitySeeder::class,
+            hotel_categorySeeder::class,
 //            BookingSeeder::class,
             districtSeeder::class,
 //            BookingDetailSeeder::class,
@@ -44,7 +45,8 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             PermissionSeeder::class,
             AssignRoleSeeder::class,
-            AssignPermissionSeeder::class
+            AssignPermissionSeeder::class,
+            WalletSeeder::class,
         ]);
     }
 }
