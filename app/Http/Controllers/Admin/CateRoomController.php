@@ -1385,8 +1385,9 @@ if ($categoryId !== null) {
 
                 if (!in_array($roomId, $processedRoomIds)) {
                     $room = DB::table('rooms')
-                        ->join('category_rooms', 'rooms.id_cate', '=', 'category_rooms.id')
-                        ->join('hotels', 'category_rooms.id_hotel', '=', 'hotels.id')
+                    ->join('hotel_categories', 'hotel_categories.id', '=', 'rooms.id_hotel_cate')
+                        ->join('category_rooms', 'hotel_categories.id_cate', '=', 'category_rooms.id')
+                        ->join('hotels', 'hotel_categories.id_hotel', '=', 'hotels.id')
                         ->where('rooms.id', $roomId)
                         ->select('hotels.name as hotel_name')
                         ->first();
