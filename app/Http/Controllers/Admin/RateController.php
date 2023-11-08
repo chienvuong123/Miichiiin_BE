@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RateRequest;
+use App\Models\booking;
 use App\Models\Rate;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -35,11 +36,22 @@ class RateController extends Controller
      */
     public function store(RateRequest $request)
     {
-        $rate = new Rate();
-        $rate->fill($request->except('_token'));
+        $bookings = Booking::select('booking_details.id_cate as id_cate')
+    ->join('booking_details', 'booking_details.id_booking', '=', 'bookings.id')
+    ->where('bookings.id_user', $request->id_user)
+    ->get();
 
-        $rate->save();
-        return response()->json($rate);
+$existingCates = $bookings->pluck('id_cate')->toArray();
+if (in_array($request->id_category, $existingCates)) {
+    $rate = new Rate();
+    $rate->fill($request->except('_token'));
+    $rate->save();
+
+    return response()->json($rate);
+} else {
+    // Handle the case when the id_cate does not exist in bookings
+    return response()->json(['error' => 'Invalid id_cate'], 400);
+}
     }
     /**
      * Display the specified resource.
