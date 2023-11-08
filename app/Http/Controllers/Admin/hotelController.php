@@ -218,8 +218,36 @@ class hotelController extends Controller
     }
     public function show($id)
     {
-        $hotel = hotel::find($id);
-        return response()->json($hotel);
+        $hotels = Hotel::select('hotels.*', 'cities.name as name_cities')
+        ->leftJoin('cities', 'hotels.id_city', '=', 'cities.id')
+        ->groupBy(
+            'hotels.id',
+            'hotels.name',
+            'hotels.description',
+            'hotels.quantity_of_room',
+            'hotels.id_city',
+            'hotels.star',
+            'hotels.phone',
+            'hotels.address',
+            'hotels.email',
+            'hotels.status',
+            'hotels.deleted_at',
+            'hotels.quantity_floor',
+            'hotels.created_at',
+            'hotels.updated_at',
+            'cities.name',
+        )
+        ->where('hotels.id',"=", $id)
+        ->get();
+    foreach ($hotels as $key => $listImage) {
+        $image = image::select('images.image')
+            ->leftJoin('image_details', 'images.id', '=', 'image_details.id_image')
+            ->leftJoin('hotels', 'image_details.id_hotel', '=', 'hotels.id')
+            ->where('hotels.id', '=', $listImage->id)
+            ->get();
+        $hotels[$key]['image'] = $image;
+    }
+    return response()->json($hotels);
     }
     public function store(HotelRequest $request)
     {
