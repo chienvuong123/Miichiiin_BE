@@ -35,7 +35,7 @@ class CateRoomController extends Controller
         }
         return response()->json($categoryRoom);
     }
-    public function detail_list_cate($id)
+    public function detail_list_cate($id,$id_hotel)
     {
         $status = 2;
         $rooms = CategoryRoom::select(
@@ -61,7 +61,8 @@ class CateRoomController extends Controller
             ->leftJoin('hotels', 'hotels.id', '=', 'hotel_categories.id_hotel')
             ->leftJoin('comfort_details', 'comfort_details.id_cate_room', '=', 'category_rooms.id')
             ->leftJoin('comforts', 'comforts.id', '=', 'comfort_details.id_comfort')
-            ->where('category_rooms.id', '=', $id)
+            ->where('hotel_categories.id_cate', '=', $id)
+             ->where('hotel_categories.id_hotel', '=', $id_hotel)
             ->where('category_rooms.status', '=', $status)
             ->groupBy(
                 'category_rooms.id',
