@@ -267,7 +267,7 @@ class UserController extends Controller
 
     public function get_user_with_quantity_booking() {
         $list_user = User::query()
-            ->select('users.id as id_user' ,DB::raw('count(bookings.id) as quantity_booking'))
+            ->select('users.id as id_user', DB::raw('count(bookings.id) as quantity_booking'))
             ->join('bookings', 'users.id', '=', 'bookings.id')
             ->groupBy('users.id')
             ->get();
@@ -277,7 +277,10 @@ class UserController extends Controller
     public function list_voucher_of_user(string $id_user) {
         $wallet = get_wallet_via_user($id_user);
         $list_voucher = WalletVoucher::query()
-            ->select('*')
+            ->select('vouchers.id', 'vouchers.name', 'vouchers.slug',
+                'vouchers.image', 'vouchers.discount', 'vouchers.expire_at',
+                'vouchers.type', 'vouchers.meta')
+            ->join('vouchers', 'vouchers.id', '=', 'wallet_vouchers.id_voucher')
             ->where('id_wallet', $wallet->id)
             ->get();
         return response()->json($list_voucher);

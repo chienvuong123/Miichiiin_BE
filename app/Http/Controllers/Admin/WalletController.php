@@ -75,7 +75,7 @@ class WalletController extends Controller
         if (is_int($user)) {
             $wallet = get_wallet_via_user($user);
             $data = [
-                "id_wallet" => $wallet,
+                "id_wallet" => $wallet->id,
                 "id_voucher" => $id_voucher
             ];
             $check_voucher = $this->check_voucher_in_wallet($wallet->id, $id_voucher);
