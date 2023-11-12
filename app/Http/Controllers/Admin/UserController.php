@@ -267,8 +267,9 @@ class UserController extends Controller
 
     public function get_user_with_quantity_booking() {
         $list_user = User::query()
-            ->select('users.id as id_user', DB::raw('count(bookings.id) as quantity_booking'))
-            ->join('bookings', 'users.id', '=', 'bookings.id')
+            ->select('users.id as id_user', DB::raw('count(bookings.id) as quantity_booking'),
+                DB::raw('sum(bookings.total_amount) as amount'))
+            ->join('bookings', 'users.id', '=', 'bookings.id_user')
             ->groupBy('users.id')
             ->get();
         return response()->json($list_user);

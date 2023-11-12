@@ -348,7 +348,7 @@ Route::get('/services/id_hotel={id}', [ServiceController::class, 'list_services_
 
 // Wallet
 Route::post('/topup', [WalletController::class, 'topup_coin_api']);
-Route::post('/voucher/{id_voucher}/wallet', [WalletController::class, 'add_voucher_to_wallet']);
+Route::post('/wallet/add_voucher', [WalletController::class, 'add_voucher_to_wallet']);
 
 // Get user with quantity booking
 Route::get('/user/booking', [UserController::class, 'get_user_with_quantity_booking']);

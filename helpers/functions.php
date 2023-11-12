@@ -5,6 +5,7 @@ use App\Models\bookingDetail;
 use App\Models\categoryRoom;
 use App\Models\room;
 use App\Models\Service;
+use App\Models\Voucher;
 use App\Models\Wallet;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -56,7 +57,7 @@ function create_booking($id_hotel, $data, $id_user=null) {
     }
     $booking->phone = $sync_phone;
 
-    $slug = "MiChi-" . strtolower(Str::random(2)) . rand(100, 999);
+    $slug = "MiChi-Booking-" . strtolower(Str::random(2)) . rand(100, 999);
     $booking->slug = $slug;
 
     $check_in = $data['check_in'];
@@ -250,4 +251,17 @@ function sync_phone($phone) {
         $result = $phone;
     }
     return $result;
+}
+
+function minus_quantity_voucher($id_voucher, $quantity) {
+    $voucher = Voucher::query()->find($id_voucher);
+    if ($voucher == null) {
+        return false;
+    }
+    if ($voucher->quantity < $quantity) {
+        return false;
+    }
+    $voucher->quantity -= $quantity;
+    $voucher->save();
+    return true;
 }

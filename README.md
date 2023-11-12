@@ -42,6 +42,10 @@ room => [
 admin => [
     2 => "Hoạt động"
 ]
+
+voucher => [
+    2 => "Hoạt động"
+]
 ````
 
 ## Giới tính
@@ -50,3 +54,9 @@ admin => [
 1 => Nữ
 2 => Khác
 ````
+
+## Loại voucher
+```php
+1 => 'Giảm giá'
+2 => 'Hoàn xu'
+```

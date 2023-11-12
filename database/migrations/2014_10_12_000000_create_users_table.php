@@ -26,6 +26,7 @@ return new class extends Migration
             $table->integer('status')->default(1);
             $table->integer('gender')->nullable();
             $table->date('date')->nullable();
+            $table->json('other_attributes')->nullable();
             $table->softDeletes(); // add
             $table->rememberToken();
             $table->timestamps();
