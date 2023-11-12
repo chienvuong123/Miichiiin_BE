@@ -32,7 +32,7 @@ class UserFactory extends Factory
             'address' => fake()->address(),
             'status' => fake()->numberBetween(0,1),
             'gender' => fake()->numberBetween(0,2),
-            'date' => fake()->date
+            'date' => fake()->date,
         ];
     }
 
