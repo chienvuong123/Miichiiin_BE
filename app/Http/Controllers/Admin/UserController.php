@@ -276,8 +276,6 @@ class UserController extends Controller
     }
 
     public function list_voucher_of_user(string $id_user) {
-        $status = status_received_money(1,true, true);
-        dd($status);
         $wallet = get_wallet_via_user($id_user);
         $list_voucher = WalletVoucher::query()
             ->select('vouchers.id', 'vouchers.name', 'vouchers.slug',
