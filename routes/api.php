@@ -167,46 +167,46 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     // PHÂN QUYỀN SAU
     // thong 'kee =>
     // thống kê số lượng phòng được đặt của cả hệ thống từ trước đến nay
-    Route::get('/statistical/{year}', [CateRoomController::class, 'statistical']);
+    // Route::get('/statistical/{year}', [CateRoomController::class, 'statistical']);
     // thống kê  số lượng phòng được đặt trong  start_year và endYear
-    Route::get('/statistical_year/{startYear}/{endYear}', [CateRoomController::class, 'statistical_year']);
+    // Route::get('/statistical_year/{startYear}/{endYear}', [CateRoomController::class, 'statistical_year']);
     // Route::get('/statistical_room_checkin/{check_in}/{check_out}', [CateRoomController::class, 'statistical_room_checkin']);
     //thống kê booking đặt trong 10 năm trở lại đây của car he thong
 
 
     // thống kê booking và dịch vụ của tất cả khách sạn theo tháng cả năm truyền vào
-    Route::get('/statictical_total_booking_monthl/{month}/{year}', [CateRoomController::class, 'statictical_total_booking_monthl']);
 
     // thống kê  booking và tổng doanh thu của  khách sạn trong  tháng cả năm truyền vào
     Route::get('/statictical_total_booking_month_in_hotel/{id_hotels}/{year}', [CateRoomController::class, 'statictical_total_booking_month_in_hotel']);
-    // tổng doanh thu của cả hệ thống từ trước tới nay
-    Route::get('/statistical_total_amount', [CateRoomController::class, 'statistical_total_amount']);
-
-    Route::get('/statistical_total_amount_day/{id_hotel}/{month}/{year}', [CateRoomController::class, 'statistical_total_amount_day']);
-
-
     Route::get('/statistical_rates_in_hotel/{id_hotel}/{month}/{year}', [CateRoomController::class, 'statistical_rates']);
+    Route::get('statistical_services/{month}/{year}/{id_hotel}', [CateRoomController::class, 'statistical_services']);
+
+    // tổng doanh thu của cả hệ thống từ trước tới nay
+    // Route::get('/statistical_total_amount', [CateRoomController::class, 'statistical_total_amount']);
+
+    // Route::get('/statistical_total_amount_day/{id_hotel}/{month}/{year}', [CateRoomController::class, 'statistical_total_amount_day']);
+
+    Route::get('/statictical_total_booking_monthl/{month}/{year}', [CateRoomController::class, 'statictical_total_booking_monthl']);
+    Route::get('statistical_services_inchain/{month}/{year}', [CateRoomController::class, 'statistical_services_inchain']);
     Route::get('/statistical_rates/{month}/{year}/{category}', [CateRoomController::class, 'statistical_rates_inchain']);
+
 
 
     // thống kê loại phòng đặt trong 12 tháng của năm của tất cả
      //( có thể làm thêm tính riêng từng khách sạn và theo tháng)
-    Route::get('/statistical_cate_in_hotel/{year}', [CateRoomController::class, 'statistical_cate_in_hotel']);
+    // Route::get('/statistical_cate_in_hotel/{year}', [CateRoomController::class, 'statistical_cate_in_hotel']);
        // thống kê  tổng doanh thu theo hotel trong năm 2023 của từng khách sạn // chỉ thằng chủ chuỗi
 
        // thống kê mỗi doanh thu riêng của khách sạn theo cả năm không phải tháng
        // có thể làm thêm tháng
-    Route::get('/statistical_total_amount_with_hotel/{year}', [CateRoomController::class, 'statistical_total_amount_with_hotel']);
+    // Route::get('/statistical_total_amount_with_hotel/{year}', [CateRoomController::class, 'statistical_total_amount_with_hotel']);
 // thống kê booking theo khoảng riêng
-    Route::get('/statictical_total_booking/{id_hotel}', [CateRoomController::class, 'statictical_total_booking']);
+    // Route::get('/statictical_total_booking/{id_hotel}', [CateRoomController::class, 'statictical_total_booking']);
     // thống kê booking cả hệ thống 10 năm gần nhất
-    Route::get('statictical_total_booking_bettween_year_in_system', [CateRoomController::class, 'statictical_total_booking_bettween_year_in_system']);
+    // Route::get('statictical_total_booking_bettween_year_in_system', [CateRoomController::class, 'statictical_total_booking_bettween_year_in_system']);
     // thống kê loại phòng theo khoảng
-    Route::get('statistical_cateRoom_checkin/{check_in}/{check_out}', [CateRoomController::class, 'statistical_cateRoom_checkin']);
+    // Route::get('statistical_cateRoom_checkin/{check_in}/{check_out}', [CateRoomController::class, 'statistical_cateRoom_checkin']);
 
-    Route::get('statistical_services/{month}/{year}/{id_hotel}', [CateRoomController::class, 'statistical_services']);
-
-    Route::get('statistical_services_inchain/{month}/{year}', [CateRoomController::class, 'statistical_services_inchain']);
 
     // PHÂN QUYỀN SAU
 
@@ -314,7 +314,7 @@ Route::get('/services/hotels={id}', [ServiceController::class, 'list_services_ho
 Route::get('/cateRoom/hotel={id}', [CateRoomController::class, 'detail_list_cate_inhotel']);
 
 // hiển thị cate_room theo id
-Route::get('/cateRoom/{id}', [CateRoomController::class, 'detail_list_cate']);
+Route::get('/cateRoom/{id}/hotel={id_hotel}', [CateRoomController::class, 'detail_list_cate']);
 // hiển thị cate_room theo hotel
 Route::get(
     '/listRoom/hotels={id}/{check_in?}/{check_out?}/{number_people?}/{total_room?}',
@@ -327,7 +327,7 @@ Route::get(
 // hiển thị booking theo id_user
 Route::get('profile/{id_user}/booking/', [BookingUserController::class, 'list_history_booking']);
 Route::get('profile/{id_user}/booking/{id_booking}', [BookingUserController::class, 'detaill_history_booking']);
-Route::get('profile/booking/{slug}', [BookingUserController::class, 'find_booking']);
+Route::post('user/find_booking', [BookingUserController::class, 'find_booking']);
 
 // hiển thị booking_detail theo id_user
 Route::get('/bookingDetail/{id}', [BookingDetailController::class, 'booking_detail_list']);
@@ -348,7 +348,7 @@ Route::get('/services/id_hotel={id}', [ServiceController::class, 'list_services_
 
 // Wallet
 Route::post('/topup', [WalletController::class, 'topup_coin_api']);
-Route::post('/voucher/{id_voucher}/wallet', [WalletController::class, 'add_voucher_to_wallet']);
+Route::post('/wallet/add_voucher', [WalletController::class, 'add_voucher_to_wallet']);
 
 // Get user with quantity booking
 Route::get('/user/booking', [UserController::class, 'get_user_with_quantity_booking']);

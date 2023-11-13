@@ -5,6 +5,7 @@ use App\Models\bookingDetail;
 use App\Models\categoryRoom;
 use App\Models\room;
 use App\Models\Service;
+use App\Models\Voucher;
 use App\Models\Wallet;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -47,8 +48,16 @@ function create_booking($id_hotel, $data, $id_user=null) {
     $booking->fill($data);
     $booking->id_hotel = $id_hotel;
     $booking->id_user = $id_user;
+    $sync_phone = sync_phone($booking->phone);
+    if ($sync_phone == null) {
+        return [
+            "message" => "Số điện thoại không hợp lệ",
+            "status" => Response::HTTP_BAD_REQUEST
+        ];
+    }
+    $booking->phone = $sync_phone;
 
-    $slug = "MiChi-" . strtolower(Str::random(2)) . rand(100, 999);
+    $slug = "MiChi-Booking-" . strtolower(Str::random(2)) . rand(100, 999);
     $booking->slug = $slug;
 
     $check_in = $data['check_in'];
@@ -229,4 +238,30 @@ function get_wallet_via_user($id_user) {
     } catch (Exception $error) {
         return $error->getMessage();
     }
+}
+
+function sync_phone($phone) {
+    $phone_len = strlen($phone);
+    $result = null;
+    if (Str::startsWith($phone, '0') && $phone_len == 10) {
+        $result = '84' . substr($phone, 1);
+    } elseif (Str::startsWith($phone, '+84') && $phone_len == 12) {
+        $result = '84' . substr($phone, 3);
+    } elseif (Str::startsWith($phone, '84') && $phone_len == 11) {
+        $result = $phone;
+    }
+    return $result;
+}
+
+function minus_quantity_voucher($id_voucher, $quantity) {
+    $voucher = Voucher::query()->find($id_voucher);
+    if ($voucher == null) {
+        return false;
+    }
+    if ($voucher->quantity < $quantity) {
+        return false;
+    }
+    $voucher->quantity -= $quantity;
+    $voucher->save();
+    return true;
 }

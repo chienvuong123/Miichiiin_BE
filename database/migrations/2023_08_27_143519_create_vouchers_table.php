@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->string('slug')->nullable();
             $table->string('image')->nullable();
+            $table->integer('type')->default(1);
             $table->integer('quantity')->nullable();
             $table->integer('discount')->nullable();
             $table->timestamp('start_at')->nullable();
@@ -25,7 +26,6 @@ return new class extends Migration
             $table->string('meta')->nullable();
             $table->string('description')->nullable();
             $table->softDeletes(); // add
-
             $table->timestamps();
         });
     }

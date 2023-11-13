@@ -19,6 +19,11 @@ class BookingUserController extends Controller {
         $id_user = $request->id_user ?? null;
         $data = $request->except('_token');
         $booking = create_booking($data["id_hotel"], $data, $id_user);
+        if ($booking["status"] == 400) {
+            return response()->json(
+                ["error_message" => $booking["message"]]
+            , $booking["status"]);
+        }
         $response = get_detail_booking($booking["message"]["id"]);
         return response()->json($response["message"], $response["status"]);
     }
@@ -134,14 +139,25 @@ class BookingUserController extends Controller {
         return response()->json($booking);
     }
 
-    public function find_booking($slug) {
+    public function find_booking(Request $request) {
+        $slug = $request->slug;
+        $phone = $request->phone;
+        if ($slug == null || $phone == null) {
+            return response()->json(
+                [
+                    "error_message" => "Tham số không hợp lệ"
+                ], Response::HTTP_BAD_REQUEST
+            );
+        }
+
         $booking = booking::query()
             ->select("*")
             ->where('slug', $slug)
+            ->where('phone', $phone)
             ->first();
         if ($booking == null) {
             return response()->json(
-                ["error_message" => "Không tìm thấy đơn hàng với mã " . $slug]
+                ["error_message" => "Không tìm thấy đơn hàng hợp lệ"]
             , Response::HTTP_BAD_REQUEST);
         }
         $detail_booking = get_detail_booking($booking->id);
