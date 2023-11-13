@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('wallets', function (Blueprint $table) {
             $table->id();
+            $table->string('slug');
             $table->integer('id_user');
             $table->integer('coin')->default(0);
+            $table->string('referrer')->nullable();
             $table->softDeletes(); // add
             $table->timestamps();
         });
