@@ -286,6 +286,9 @@ Route::middleware('admin')->prefix('admin')->group(function () {
 Route::post('create_booking', [BookingUserController::class, 'create_booking']);
 //Login
 Route::post('login', [UserController::class, 'login'])->name('login');
+Route::post('views/{id}', [CateRoomController::class, 'views']);
+Route::post('likes/{id}', [CateRoomController::class, 'likes']);
+
 Route::post('register', [UserController::class, 'register'])->name('register');
 Route::post('logout', [UserController::class, 'logout'])->name('logout');
 Route::post('loginGoogle', [UserController::class, 'loginGoogle'])->name('loginGoogle');
