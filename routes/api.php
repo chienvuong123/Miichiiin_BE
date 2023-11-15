@@ -64,15 +64,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
         });
     });
 
-    // CITY
-    Route::resource('city', CityController::class);
-
-    // DISTRICT
-    Route::resource('district', districtController::class);
-    Route::prefix('district')->group(function () {
-        Route::put('{id}/status', [districtController::class, 'updateState_district']);
-    });
-
     // HOTEL
     Route::middleware('permission:get hotel,admins')->group(function () {
         Route::get('hotels', [hotelController::class, 'index']);
@@ -283,6 +274,14 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     });
 });
 // USER
+// CITY
+Route::resource('city', CityController::class);
+
+// DISTRICT
+Route::resource('district', districtController::class);
+Route::prefix('district')->group(function () {
+    Route::put('{id}/status', [districtController::class, 'updateState_district']);
+});
 Route::post('create_booking', [BookingUserController::class, 'create_booking']);
 //Login
 Route::post('login', [UserController::class, 'login'])->name('login');
