@@ -127,7 +127,7 @@ class WalletController extends Controller
         $voucher->quantity -= count($array_user);
         $voucher->save();
         return response()->json(
-            ["message" => "Thêm voucher thành công"]
+            ["message" => "Đã phát voucher thành công cho " . count($array_user) . " người dùng"]
         );
     }
 
