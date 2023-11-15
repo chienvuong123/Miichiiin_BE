@@ -351,5 +351,5 @@ Route::post('/topup', [WalletController::class, 'topup_coin_api']);
 Route::post('/wallet/add_voucher', [WalletController::class, 'add_voucher_to_wallet']);
 
 // Get user with quantity booking
-Route::get('/user/booking', [UserController::class, 'get_user_with_quantity_booking']);
+Route::get('/user/booking', [UserController::class, 'user_with_type']);
 Route::get('/profile/{id_user}/voucher', [UserController::class, 'list_voucher_of_user']);

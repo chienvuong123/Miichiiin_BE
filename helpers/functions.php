@@ -254,7 +254,7 @@ function sync_phone($phone) {
     return $result;
 }
 
-function minus_quantity_voucher($id_voucher, $quantity) {
+function check_quantity_voucher($id_voucher, $quantity) {
     $voucher = Voucher::query()->find($id_voucher);
     if ($voucher == null) {
         return false;
@@ -262,8 +262,6 @@ function minus_quantity_voucher($id_voucher, $quantity) {
     if ($voucher->quantity < $quantity) {
         return false;
     }
-    $voucher->quantity -= $quantity;
-    $voucher->save();
     return true;
 }
 
@@ -276,4 +274,16 @@ function status_received_money($id_user, $status, $set=false) {
         $user->save();
     }
     return $other_attributes->received_money;
+}
+
+function topup_coin($id_user, $quantity_coin) {
+    if (!isset($quantity_coin) || !is_int($quantity_coin) || $quantity_coin <= 0) {
+        return response()->json([
+            "error_message" => "Tham số coin không hợp lệ"
+        ], Response::HTTP_BAD_REQUEST);
+    }
+    $wallet = get_wallet_via_user($id_user);
+    $wallet->coin += $quantity_coin;
+    $wallet->save();
+    return $wallet;
 }

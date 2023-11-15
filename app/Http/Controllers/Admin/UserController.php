@@ -265,7 +265,24 @@ class UserController extends Controller
         }
     }
 
-    public function get_user_with_quantity_booking() {
+    public function user_with_type(Request $request) {
+        $id_voucher = $request->voucher;
+        $type_of_user = $request->type;
+
+        switch ($type_of_user) {
+            case 'new_customer':
+                break;
+            case 'date':
+                break;
+            case 'quantity_of_booking':
+                break;
+            case 'quantity_of_amount':
+                break;
+            case 'area':
+                break;
+            default:
+
+        }
         $list_user = User::query()
             ->select('users.id as id_user', DB::raw('count(bookings.id) as quantity_booking'),
                 DB::raw('sum(bookings.total_amount) as amount'))

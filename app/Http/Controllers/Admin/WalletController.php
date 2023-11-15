@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\hotel;
+use App\Models\Voucher;
 use App\Models\WalletVoucher;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Wallet;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 class WalletController extends Controller
@@ -23,18 +27,6 @@ class WalletController extends Controller
         , Response::HTTP_BAD_REQUEST);
     }
 
-    public function topup_coin($id_user, $quantity_coin) {
-        if (!isset($quantity_coin) || !is_int($quantity_coin) || $quantity_coin <= 0) {
-            return response()->json([
-                "error_message" => "Tham số coin không hợp lệ"
-            ], Response::HTTP_BAD_REQUEST);
-        }
-        $wallet = get_wallet_via_user($id_user);
-        $wallet->coin += $quantity_coin;
-        $wallet->save();
-        return $wallet;
-    }
-
     public function topup_coin_api(Request $request) {
         $coin = $request->coin;
         $id_user = $request->id_user;
@@ -48,70 +40,95 @@ class WalletController extends Controller
                 "error_message" => "Tham số coin không hợp lệ"
             ], Response::HTTP_BAD_REQUEST);
         }
-        $wallet = $this->topup_coin($id_user, $coin);
+        $wallet = topup_coin($id_user, $coin);
         return response()->json($wallet);
     }
 
     public function add_voucher_to_wallet(Request $request) {
-        $user = $request->id_user;
-        $id_voucher = $request->id_voucher;
+        $type_of_users = $request->types;
+        $id_voucher = $request->voucher;
         if (!is_int($id_voucher)) {
             return response()->json(
                 ["error_message" => "Id của voucher không hợp lệ"]
                 , Response::HTTP_BAD_REQUEST);
         }
 
-        if (is_array($user)) {
-            $minus = minus_quantity_voucher($id_voucher, count($user));
-            if (!$minus) {
-                return response()->json(
-                    ["error_message" => "Số lượng voucher trên hệ thống không đủ"]
-                    , Response::HTTP_BAD_REQUEST);
+        $list_user = [];
+        foreach ($type_of_users as $type) {
+            switch ($type) {
+                case 'new_customer':
+                    $list_user[] = User::query()
+                        ->select('id')
+                        ->whereBetween('created_at', [now()->subDays(30), now()])
+                        ->get();
+                    break;
+                case 'date':
+                    $end_date = $request->start_date ?? now()->subYear();
+                    $start_date = $request->end_date ?? now()->subDays(30)->subYear();
+                    $list_user[] = User::query()
+                        ->join('bookings', 'bookings.id_user', '=', 'users.id')
+                        ->select('users.id')
+                        ->whereBetween('bookings.created_at', [$start_date, $end_date])
+                        ->get();
+                    break;
+                case 'quantity_of_booking':
+                    $quantity = $request->quantity_of_booking ?? 5;
+                    $list_user[] = User::query()
+                        ->select('users.id as id_user', DB::raw('count(bookings.id) as quantity_booking'))
+                        ->join('bookings', 'users.id', '=', 'bookings.id_user')
+                        ->groupBy('users.id')
+                        ->having('quantity_booking', '>=', $quantity)
+                        ->pluck('users.id');
+                    break;
+                case 'total_of_amount':
+                    $amount = $request->amount ?? 5000000;
+                    $list_user[] = User::query()
+                        ->select('users.id as id_user', DB::raw('sum(bookings.total_amount) as amount'))
+                        ->join('bookings', 'users.id', '=', 'bookings.id_user')
+                        ->groupBy('users.id')
+                        ->having('amount', '>=', $amount)
+                        ->pluck('users.id');
+                    break;
+                case 'area':
+                    $area = $request->area ?? "hà nội";
+                    $list_user[] = User::query()
+                        ->select('id')
+                        ->where('address', 'like', '%'.strtolower($area).'%')
+                        ->get();
+                    break;
+                default:
+                    $list_user[] = User::query()
+                        ->select('id')
+                        ->get();
             }
-            foreach ($user as $user_item) {
-                $wallet = get_wallet_via_user($user_item);
-                $check_voucher = $this->check_voucher_in_wallet($wallet->id, $id_voucher);
-                if ($check_voucher) {
-                    continue;
-                }
-                $data = [
-                    "id_wallet" => $wallet->id,
-                    "id_voucher" => $id_voucher
-                ];
-                WalletVoucher::query()->create($data);
-            }
-            return response()->json(
-                ["message" => "Thêm voucher thành công"]
-            );
         }
 
-        if (is_int($user)) {
-            $minus = minus_quantity_voucher($id_voucher, 1);
-            if (!$minus) {
-                return response()->json(
-                    ["error_message" => "Số lượng voucher trên hệ thống không đủ"]
-                    , Response::HTTP_BAD_REQUEST);
-            }
+        $collection = collect($list_user);
+        $array_user = $collection->flatten()->all();
+        $minus = check_quantity_voucher($id_voucher, count($array_user));
+        if (!$minus) {
+            return response()->json(
+                ["error_message" => "Số lượng voucher trên hệ thống không đủ"]
+                , Response::HTTP_BAD_REQUEST);
+        }
+        foreach ($array_user as $user) {
             $wallet = get_wallet_via_user($user);
+            $check_voucher = $this->check_voucher_in_wallet($wallet->id, $id_voucher);
+            if ($check_voucher) {
+                continue;
+            }
             $data = [
                 "id_wallet" => $wallet->id,
                 "id_voucher" => $id_voucher
             ];
-            $check_voucher = $this->check_voucher_in_wallet($wallet->id, $id_voucher);
-            if ($check_voucher) {
-                return response()->json(
-                    ["error_message" => "User đã có voucher trong ví"]
-                , Response::HTTP_BAD_REQUEST);
-            }
             WalletVoucher::query()->create($data);
-            return response()->json(
-                ["message" => "Thêm voucher thành công"]
-            );
         }
-
+        $voucher = Voucher::query()->find($id_voucher);
+        $voucher->quantity -= count($array_user);
+        $voucher->save();
         return response()->json(
-            ["error_message" => "Id của user không hợp lệ"]
-        , Response::HTTP_BAD_REQUEST);
+            ["message" => "Thêm voucher thành công"]
+        );
     }
 
     public function check_voucher_in_wallet($id_wallet, $id_voucher) {
