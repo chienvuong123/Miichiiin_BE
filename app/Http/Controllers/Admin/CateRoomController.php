@@ -148,6 +148,25 @@ class CateRoomController extends Controller
 
         return response()->json($rooms);
     }
+
+    public function views($id)
+    {
+        $cate = CategoryRoom::find($id);
+        $cate->views = $cate->views + 1;
+        $cate->save();
+
+        return response()->json($cate);
+    }
+    public function likes($id)
+    {
+        $cate = CategoryRoom::find($id);
+        $cate->likes = $cate->likes + 1;
+        $cate->save();
+
+        return response()->json($cate);
+    }
+
+
     public function list_cate($id, $check_in = null, $check_out = null, $number_people = null, $total_room = null)
     {
         $status = 2;

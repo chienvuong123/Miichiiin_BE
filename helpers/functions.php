@@ -5,6 +5,7 @@ use App\Models\bookingDetail;
 use App\Models\categoryRoom;
 use App\Models\room;
 use App\Models\Service;
+use App\Models\User;
 use App\Models\Voucher;
 use App\Models\Wallet;
 use Illuminate\Support\Facades\Auth;
@@ -264,4 +265,15 @@ function minus_quantity_voucher($id_voucher, $quantity) {
     $voucher->quantity -= $quantity;
     $voucher->save();
     return true;
+}
+
+function status_received_money($id_user, $status, $set=false) {
+    $user = User::query()->find($id_user);
+    $other_attributes = json_decode($user->other_attributes);
+    if ($set) {
+        $other_attributes->received_money = $status;
+        $user->other_attributes = json_encode($other_attributes);
+        $user->save();
+    }
+    return $other_attributes->received_money;
 }
