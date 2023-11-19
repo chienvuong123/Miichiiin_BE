@@ -56,6 +56,9 @@ class WalletController extends Controller
         $list_user = [];
         foreach ($type_of_users as $type) {
             switch ($type) {
+                case 'all':
+                    $list_user[] = User::all();
+                    break;
                 case 'new_customer':
                     $list_user[] = User::query()
                         ->select('id')

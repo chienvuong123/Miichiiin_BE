@@ -39,12 +39,13 @@ class BookingController extends Controller
     }
     public function store(BookingRequest $request)
     {
+//        return view('mails.mail_booking');
         // Create Booking
         $auth_admin = Auth::guard('admins')->user();
         $data = $request->except('_token');
         $reponse_data = create_booking($auth_admin->id_hotel, $data);
         return response()->json([
-            "error_message" => $reponse_data['message']
+            "message" => $reponse_data['message']
         ], $reponse_data['status']);
     }
     public function create()
