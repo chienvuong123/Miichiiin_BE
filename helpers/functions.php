@@ -1,5 +1,6 @@
 <?php
 
+use App\Mail\Sendmail;
 use App\Models\booking;
 use App\Models\bookingDetail;
 use App\Models\categoryRoom;
@@ -9,6 +10,7 @@ use App\Models\User;
 use App\Models\Voucher;
 use App\Models\Wallet;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
@@ -98,6 +100,7 @@ function create_booking($id_hotel, $data, $id_user=null) {
             ->join('hotel_categories', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
             ->whereNotIn('rooms.id', $room_ignore)
             ->where('hotel_categories.id_cate', $cart[$i]['id_cate'])
+            ->where('hotel_categories.id_hotel', $id_hotel)
             ->orderBy('rooms.name')
             ->get();
 
@@ -163,6 +166,7 @@ function create_booking($id_hotel, $data, $id_user=null) {
     bookingDetail::query()->insert($booking_d_record);
 
     set_success_booking($booking);
+    Mail::to('ntt091103@gmail.com')->send(new Sendmail());
     return [
         "message" => $booking,
         "status" => Response::HTTP_OK
@@ -286,4 +290,21 @@ function topup_coin($id_user, $quantity_coin) {
     $wallet->coin += $quantity_coin;
     $wallet->save();
     return $wallet;
+}
+
+function send_email() {
+
+    # Instantiate the client.
+        $mgClient = new Mailgun('ENTER_API_KEY_HERE');
+        $domain = "michi.com";
+
+    # Make the call to the client.
+        $result = $mgClient->sendMessage("$domain",
+            array('from'    => 'Mailgun Sandbox <postmaster@michi.com>',
+                'to'      => 'Nguyen Nhat Thien <thiennnph25438@fpt.edu.vn>',
+                'subject' => 'Hello Nguyen Nhat Thien',
+                'template'    => 'test',
+                'h:X-Mailgun-Variables'    => '{"test": "test"}'));
+    # Send an email using your active template with the above snippet
+    # You can see a record of this email in your logs: https://app.mailgun.com/app/logs.
 }
