@@ -33,6 +33,8 @@ class UserFactory extends Factory
             'status' => fake()->numberBetween(0,1),
             'gender' => fake()->numberBetween(0,2),
             'date' => fake()->date,
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
     }
 

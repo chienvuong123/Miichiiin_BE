@@ -64,15 +64,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
         });
     });
 
-    // CITY
-    Route::resource('city', CityController::class);
-
-    // DISTRICT
-    Route::resource('district', districtController::class);
-    Route::prefix('district')->group(function () {
-        Route::put('{id}/status', [districtController::class, 'updateState_district']);
-    });
-
     // HOTEL
     Route::middleware('permission:get hotel,admins')->group(function () {
         Route::get('hotels', [hotelController::class, 'index']);
@@ -283,6 +274,14 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     });
 });
 // USER
+// CITY
+Route::resource('city', CityController::class);
+
+// DISTRICT
+Route::resource('district', districtController::class);
+Route::prefix('district')->group(function () {
+    Route::put('{id}/status', [districtController::class, 'updateState_district']);
+});
 Route::post('create_booking', [BookingUserController::class, 'create_booking']);
 //Login
 Route::post('login', [UserController::class, 'login'])->name('login');
@@ -354,5 +353,5 @@ Route::post('/topup', [WalletController::class, 'topup_coin_api']);
 Route::post('/wallet/add_voucher', [WalletController::class, 'add_voucher_to_wallet']);
 
 // Get user with quantity booking
-Route::get('/user/booking', [UserController::class, 'get_user_with_quantity_booking']);
-Route::get('/profile/{id_user}/voucher', [UserController::class, 'list_voucher_of_user']);
+//Route::get('/user/booking', [UserController::class, 'user_with_type']);
+Route::get('/profile/{id_user}/wallet', [UserController::class, 'list_voucher_of_user']);
