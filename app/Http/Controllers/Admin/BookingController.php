@@ -44,9 +44,7 @@ class BookingController extends Controller
         $auth_admin = Auth::guard('admins')->user();
         $data = $request->except('_token');
         $reponse_data = create_booking($auth_admin->id_hotel, $data);
-        return response()->json([
-            "message" => $reponse_data['message']
-        ], $reponse_data['status']);
+        return response()->json($reponse_data['message'], $reponse_data['status']);
     }
     public function create()
     {
