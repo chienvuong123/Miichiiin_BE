@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RoomRequest;
+use App\Models\booking;
 use App\Models\hotel_category;
 use App\Models\room;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
@@ -13,16 +15,41 @@ use Illuminate\Http\Request;
 class roomsController extends Controller
 {
     //
-    public function index()
+    public function index($check_in = null, $check_out = null)
     {
         $admin = Auth::guard('admins')->user();
-        $room = room::select('rooms.*', 'hotels.name as name_hotel','category_rooms.name as name_category','category_rooms.id as id_cate')
-        ->join('hotel_categories', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
-        ->join('category_rooms', 'hotel_categories.id_cate', '=', 'category_rooms.id')
-        ->join('hotels', 'hotel_categories.id_hotel', '=', 'hotels.id')
-        ->where("hotels.id","=",$admin->id_hotel)
-        ->get();
-        return response()->json($room);
+$startDate = isset($check_in) ? Carbon::parse($check_in) : Carbon::now()->setTime(0, 0);
+$endDate = isset($check_out) ? Carbon::parse($check_out) : $startDate->copy()->addDays(5)->setTime(0, 0);
+
+$rooms = Room::select('rooms.*', 'hotels.name as name_hotel', 'category_rooms.name as name_category', 'category_rooms.id as id_cate')
+    ->join('hotel_categories', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
+    ->join('category_rooms', 'hotel_categories.id_cate', '=', 'category_rooms.id')
+    ->join('hotels', 'hotel_categories.id_hotel', '=', 'hotels.id')
+    ->where('hotels.id', '=', $admin->id_hotel)
+    ->get();
+    foreach ($rooms as $room) {
+        $isBooked = Booking::where('booking_details.id_room', $room->id)
+            ->join('booking_details', 'booking_details.id_booking', '=', 'bookings.id')
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->where(function ($query) use ($startDate, $endDate) {
+                    $query->where('bookings.check_in', '>=', $startDate)
+                        ->where('bookings.check_in', '<=', $endDate);
+                })
+                ->orWhere(function ($query) use ($startDate, $endDate) {
+                    $query->where('bookings.check_out', '>=', $startDate)
+                        ->where('bookings.check_out', '<=', $endDate);
+                })
+                ->orWhere(function ($query) use ($startDate, $endDate) {
+                    $query->where('bookings.check_in', '<=', $startDate)
+                        ->where('bookings.check_out', '>=', $endDate);
+                });
+            })
+            ->doesntExist();
+
+        $room->state = !$isBooked;
+    }
+
+    return response()->json($rooms);
     }
     public function room_cate($cate)
     {
@@ -37,12 +64,28 @@ class roomsController extends Controller
     {
         $key = 'hotel_' . $id;
         $hotel = Cache::remember($key, 5, function () use ($id) {
-            return  room::select('rooms.*','category_rooms.id as id_cate')
-            ->join('hotel_categories', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
-            ->join('category_rooms', 'hotel_categories.id_cate', '=', 'category_rooms.id')
-            ->where('rooms.id',"=",$id)
+            $hotelData = Room::select('rooms.*', 'category_rooms.id as id_cate')
+                ->join('hotel_categories', 'rooms.id_hotel_cate', '=', 'hotel_categories.id')
+                ->join('category_rooms', 'hotel_categories.id_cate', '=', 'category_rooms.id')
+                ->where('rooms.id', '=', $id)
+                ->get();
+
+            $bookings = Booking::where('booking_details.id_room', $id)
+            ->join('booking_details', 'booking_details.id_booking', '=', 'bookings.id')
             ->get();
+
+            $hotelData->each(function ($room) use ($bookings) {
+                $room->bookings = $bookings->where('id_room', $room->id)->map(function ($booking) {
+                    return [
+                        'check_in' => $booking->check_in,
+                        'check_out' => $booking->check_out
+                    ];
+                });
+            });
+
+            return $hotelData;
         });
+
         return response()->json($hotel);
     }
     public function store(RoomRequest $request)

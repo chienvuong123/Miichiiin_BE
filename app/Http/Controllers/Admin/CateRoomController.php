@@ -1232,6 +1232,7 @@ class CateRoomController extends Controller
             ->whereYear('booking_details.created_at', $year) // Lọc theo năm
             ->groupBy('category_rooms.id')
             ->get();
+        dd($bookings);
 
         // Cập nhật thông tin đánh giá trong mảng tạm
         foreach ($rates as $rate) {
@@ -1247,14 +1248,15 @@ class CateRoomController extends Controller
         }
 
         // Cập nhật thông tin số lượng đặt phòng trong mảng tạm
-        foreach ($bookings as $booking) {
-            $categoryId = $booking->id;
-            $bookingCount = $booking->booking_count;
+     // Cập nhật thông tin số lượng đặt phòng trong mảng tạm
+foreach ($bookings as $booking) {
+    $categoryId = $booking->id;
+    $bookingCount = $booking->booking_count;
 
-            if (isset($tempArray[$categoryId])) {
-                $tempArray[$categoryId]['bookingCount'] = $bookingCount;
-            }
-        }
+    if (isset($tempArray[$categoryId])) {
+        $tempArray[$categoryId]['bookingCount'] += 1;
+    }
+}
 
         // Chuyển đổi mảng tạm thành mảng kết quả cuối cùng
         $roomAverages = array_values($tempArray);
