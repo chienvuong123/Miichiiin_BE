@@ -78,7 +78,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
 
     // ROOM
     Route::middleware('permission:get room,admins')->group(function () {
-        Route::get('rooms', [roomsController::class, 'index']);
+        Route::get('rooms/{check_in?}/{check_out?}', [roomsController::class, 'index']);
         Route::prefix('room')->group(function () {
             Route::get('/{id}', [roomsController::class, 'show']);
             Route::middleware('permission:add room,admins')->post('/', [roomsController::class, 'store']);

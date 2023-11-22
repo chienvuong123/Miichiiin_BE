@@ -192,6 +192,9 @@ class UserController extends Controller
     }
     public function loginGoogle(Request $request)
     {
+            return response()->json([
+                'user' => $request,
+            ]);
         $idToken = $request->input('idToken');
 
         // Gửi yêu cầu xác thực đến Google API

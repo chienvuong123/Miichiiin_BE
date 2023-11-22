@@ -103,6 +103,7 @@ function create_booking($id_hotel, $data, $id_user=null) {
             ->where('hotel_categories.id_hotel', $id_hotel)
             ->orderBy('rooms.name')
             ->get();
+//        dd($list_room);
 
         if ($i != 0) {
             if ($cart[$i]['id_cate'] != $cart[$i - 1]['id_cate']) {
@@ -166,7 +167,7 @@ function create_booking($id_hotel, $data, $id_user=null) {
     bookingDetail::query()->insert($booking_d_record);
 
     set_success_booking($booking);
-    Mail::to('ntt091103@gmail.com')->send(new Sendmail());
+    Mail::to($data['email'])->send(new Sendmail());
     return [
         "message" => $booking,
         "status" => Response::HTTP_OK
