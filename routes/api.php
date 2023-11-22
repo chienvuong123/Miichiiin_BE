@@ -297,10 +297,11 @@ Route::post('loginFacebook', [UserController::class, 'loginFacebook'])->name('lo
 //
 Route::middleware('auth:api')->prefix('users')->group(function () {
     // Các routes cần xác thực token
-    Route::get('/comment/id_cate={id}', [RateController::class, 'comment_cate']);
-    Route::get('/comment/id_hotel={id}', [RateController::class, 'comment_hotel']);
+
     // ...
 });
+Route::get('/comment/id_cate={id}', [RateController::class, 'comment_cate']);
+Route::get('/comment/id_hotel={id}', [RateController::class, 'comment_hotel']);
 Route::get('hotel', [hotelController::class, 'home_user']);
 Route::get('/hotel/city={id}', [hotelController::class, 'home_city']);
 // hiển thị thông tin hotel trang home_user
